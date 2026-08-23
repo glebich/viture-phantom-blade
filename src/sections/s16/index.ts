@@ -1,65 +1,77 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
-import { splitWords } from "../../lib/textfx";
 
-/* The relic cards were cropped from the plate at these exact design rects —
- * landing at identity hides the baked twins beneath (pixel-registered). */
-const CARDS = [
-  { src: "card-blade", x: 180, y: 342, w: 315, h: 395, rot: -10 },
-  { src: "card-strap", x: 548, y: 408, w: 305, h: 360, rot: 8 },
-  { src: "card-cloth", x: 886, y: 375, w: 275, h: 335, rot: -7 },
-  { src: "card-cards", x: 1276, y: 335, w: 280, h: 355, rot: 9 },
-];
+/* ONE fixed wash behind s16 AND s17 (client: the bg must stay the same
+ * across both pages) — sections stay transparent; a red glow layer behind
+ * the map scroll fades in/out with s17's scrub. */
+let washMounted = false;
+const washHosts: HTMLElement[] = [];
+export function mountWashRail(host: HTMLElement): void {
+  washHosts.push(host);
+  if (washMounted) return;
+  washMounted = true;
+  const wash = document.createElement("div");
+  wash.id = "wash-rail";
+  const glow = document.createElement("div");
+  glow.id = "wash-glow";
+  const mainEl = document.getElementById("sections")!;
+  document.body.insertBefore(wash, mainEl);
+  document.body.insertBefore(glow, mainEl);
+  const tick = () => {
+    let on = false;
+    for (const h of washHosts) {
+      const r = h.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < innerHeight) { on = true; break; }
+    }
+    wash.style.opacity = on ? "1" : "0";
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+/* Official card PNGs from the client — tilt, border, label and glow baked. */
+const CARDS = ["card1", "card2", "card3", "card4"];
 
 export const s16: Section = {
   id: "s16",
   html: `
-    <div class="s16-plate"></div>
     <div class="stage">
-      <img class="pb-threads" src="/assets/ui/threads16.png" alt="" aria-hidden="true" />
       <p class="s16-eyebrow">What Else Within The Box</p>
       <h2 class="s16-title">More treasures await within</h2>
       <p class="s16-foot">Starting in October, a new reveal every week.</p>
       ${CARDS.map(
-        (c, i) => `<img class="s16-card s16-c${i}" src="/assets/ui/${c.src}.webp" alt="" data-rot="${c.rot}" />`
+        (c, i) => `<img class="s16-card s16-c${i}" src="/assets/ui/${c}.png" alt="" />`
       ).join("")}
     </div>
   `,
   init(el, ctx: SectionCtx) {
     const { gsap } = ctx;
+    mountWashRail(el);
     const title = el.querySelector<HTMLElement>(".s16-title")!;
     const eyebrow = el.querySelector<HTMLElement>(".s16-eyebrow")!;
     const foot = el.querySelector<HTMLElement>(".s16-foot")!;
     const cards = Array.from(el.querySelectorAll<HTMLElement>(".s16-card"));
-    const words = splitWords(title);
-    gsap.set(words, { opacity: 0 });
 
+    // simple, light: blocks rise and fade in, scrub-linked both ways
     const tl = gsap.timeline({
       defaults: { ease: "none" },
       scrollTrigger: {
         trigger: el,
         start: "top top",
-        end: "+=260%",
+        end: "+=180%",
         pin: true,
         scrub: true,
         anticipatePin: 1,
       },
     });
     tl.to({}, { duration: 1 }, 0);
-
-    tl.fromTo(eyebrow, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.08, immediateRender: true }, 0.06);
-    words.forEach((w, i) => {
-      tl.fromTo(w, { opacity: 0, y: 22, filter: "blur(7px)" },
-        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.09, ease: "power2.out", immediateRender: true },
-        0.09 + i * 0.012);
-    });
+    tl.fromTo(eyebrow, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "sine.out", immediateRender: true }, 0.05);
+    tl.fromTo(title, { opacity: 0 }, { opacity: 1, duration: 0.14, ease: "sine.out", immediateRender: true }, 0.08);
     cards.forEach((c, i) => {
-      const rot = Number(c.dataset.rot);
-      tl.fromTo(c,
-        { opacity: 0, y: 90, rotation: rot, transformOrigin: "50% 50%" },
-        { opacity: 1, y: 0, rotation: 0, duration: 0.16, ease: "power2.out", immediateRender: true },
-        0.18 + i * 0.12);
+      tl.fromTo(c, { opacity: 0 },
+        { opacity: 1, duration: 0.16, ease: "sine.out", immediateRender: true },
+        0.16 + i * 0.09);
     });
-    tl.fromTo(foot, { opacity: 0 }, { opacity: 1, duration: 0.1, immediateRender: true }, 0.68);
+    tl.fromTo(foot, { opacity: 0 }, { opacity: 1, duration: 0.12, immediateRender: true }, 0.56);
   },
 };

@@ -11,6 +11,7 @@ const PREORDER_URL = "https://www.viture.com/";
 export const s02: Section = {
   id: "s02",
   html: cineHtml(`
+    <video class="s02-gameplay" src="/video/gameplay.mp4" muted loop playsinline preload="auto"></video>
     <div class="stage">
       <button class="s02-skip" type="button">Skip</button>
       <div class="s02-logo"><img src="/assets/ui/logo-pbz.png" alt="VITURE × Phantom Blade Ø" /></div>
@@ -51,6 +52,11 @@ export const s02: Section = {
         { sel: ".hero-cta", at: 0.925, words: false, drift: 14 },
       ],
       onTimeline(tl) {
+        // gameplay loop (chapter 02 rest): plays after the loader; the first
+        // scroll (or Skip) dissolves it into the intro scrub — and scrolling
+        // back to the top brings it back
+        const gp = el.querySelector<HTMLVideoElement>(".s02-gameplay")!;
+        tl.fromTo(gp, { opacity: 1 }, { opacity: 0, duration: 0.06, ease: "sine.in", immediateRender: false }, 0.005);
         // Ø logo beat (chapter 04) — in around the 2s mark of the clip
         const logo = el.querySelector<HTMLElement>(".s02-logo")!;
         tl.fromTo(logo, { opacity: 0, scale: 0.97 },
@@ -61,10 +67,14 @@ export const s02: Section = {
       },
     });
 
-    // header phasing: no menu until the hero rest (design 02–04 headers
-    // carry no nav)
+    // header phasing (no menu until the hero rest) + gameplay-loop gating
+    const gp = el.querySelector<HTMLVideoElement>(".s02-gameplay")!;
     const phase = () => {
-      document.documentElement.classList.toggle("cinema", tl.progress() < 0.8);
+      const p = tl.progress();
+      document.documentElement.classList.toggle("cinema", p < 0.8);
+      const on = p < 0.08 && !document.documentElement.classList.contains("loading");
+      if (on && gp.paused) gp.play().catch(() => {});
+      else if (!on && !gp.paused) gp.pause();
     };
     tl.eventCallback("onUpdate", phase);
 
@@ -104,6 +114,7 @@ export const s02: Section = {
       ctx.lenis.start();
       // show whatever frame the scrub owns right now (harness sets progress)
       rail.show("intro", Math.min(1, tl.progress() / 0.82));
+      if (tl.progress() < 0.08) gp.play().catch(() => {});
     };
     const tick = () => {
       if (done) return;

@@ -2,6 +2,16 @@
    (chapters 02–03) → Phantom Blade Ø logo beat (chapter 04) → hero rest
    (chapter 05). The film itself renders on the shared #cine-rail. */
 
+/* ---------- gameplay loop (chapter 02 rest) ---------- */
+.s02-gameplay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
 /* ---------- loader (chapter 01) ---------- */
 .s02-loader {
   position: fixed;
@@ -17,6 +27,9 @@
   background: rgba(5, 2, 3, 0.18);
 }
 .s02-loader .stage {
+  z-index: 2;
+}
+#s02 > .stage {
   z-index: 2;
 }
 .ld-wordmark {
@@ -56,9 +69,9 @@
 .ld-thread {
   position: absolute;
   left: 0;
-  top: 500px;
+  top: 260px;
   width: 1920px;
-  height: 560px;
+  height: 800px;
   clip-path: inset(0 100% 0 0);
   filter: drop-shadow(0 0 16px rgba(232, 52, 42, 0.5));
 }
@@ -99,6 +112,7 @@
 .s02-logo img {
   width: 100%;
   height: auto;
+  filter: drop-shadow(0 0 22px rgba(0, 0, 0, 0.2)) drop-shadow(0 4px 40px rgba(0, 0, 0, 0.2));
 }
 
 /* ---------- hero rest (chapter 05) ---------- */
@@ -152,7 +166,7 @@
   .ld-count { top: 470px; font-size: 150px; }
   .ld-count sup { font-size: 64px; }
   .ld-label { top: 1010px; font-size: 18px; }
-  .ld-thread { top: 470px; width: 1500px; left: -378px; height: 438px; }
+  .ld-thread { top: 300px; width: 1500px; left: -378px; height: 625px; }
   .s02-skip { top: 1000px; font-size: 18px; }
   .s02-logo { left: 122px; top: 340px; width: 500px; }
   .s02-hero .hero-title { left: 52px; top: 800px; width: 560px; font-size: 46px; }
@@ -169,7 +183,7 @@
   .ld-count { top: 340px; font-size: 96px; }
   .ld-count sup { font-size: 44px; vertical-align: 12px; }
   .ld-label { top: 715px; font-size: 14px; }
-  .ld-thread { top: 350px; width: 760px; left: -192px; height: 222px; }
+  .ld-thread { top: 280px; width: 760px; left: -192px; height: 317px; }
   .s02-skip { top: 720px; font-size: 15px; }
   .s02-logo { left: 38px; top: 245px; width: 300px; }
   .s02-hero .hero-title { left: 24px; top: 425px; width: 330px; font-size: 30px; }

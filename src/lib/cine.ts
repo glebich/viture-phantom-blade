@@ -84,23 +84,23 @@ export function mountCine(opts: CineOptions) {
         const at = b.at + (i / Math.max(1, words.length - 1)) * 0.035;
         tl.fromTo(
           w,
-          { opacity: 0, y: b.drift ?? 26, filter: "blur(7px)" },
-          { opacity: 1, y: 0, filter: "blur(0px)", duration: IN, ease: "power2.out", immediateRender: true },
+          { opacity: 0 },
+          { opacity: 1, duration: IN, ease: "power2.out", immediateRender: true },
           at
         );
         if (b.out !== undefined) {
-          tl.to(w, { opacity: 0, y: -14, filter: "blur(5px)", duration: 0.05, ease: "sine.in" }, b.out + i * 0.004);
+          tl.to(w, { opacity: 0, duration: 0.05, ease: "sine.in" }, b.out + i * 0.004);
         }
       });
     } else {
       tl.fromTo(
         box,
-        { opacity: 0, y: b.drift ?? 18 },
-        { opacity: 1, y: 0, duration: IN, ease: "sine.out", immediateRender: true },
+        { opacity: 0 },
+        { opacity: 1, duration: IN, ease: "sine.out", immediateRender: true },
         b.at
       );
       if (b.out !== undefined) {
-        tl.to(box, { opacity: 0, y: -10, duration: 0.05, ease: "sine.in" }, b.out);
+        tl.to(box, { opacity: 0, duration: 0.05, ease: "sine.in" }, b.out);
       }
     }
   }
@@ -114,8 +114,8 @@ export function mountCine(opts: CineOptions) {
       ease: "none",
       scrollTrigger: {
         trigger: el,
-        start: "bottom 92%",
-        end: "bottom 45%",
+        start: "bottom 55%",
+        end: "bottom 18%",
         scrub: true,
       },
     });

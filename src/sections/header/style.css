@@ -8,6 +8,7 @@
   inset: 0 0 auto 0;
   z-index: 80;
   pointer-events: none;
+  transform: translateZ(0); /* Safari: pin the header to one stable layer */
 }
 #site-header a,
 #site-header button {

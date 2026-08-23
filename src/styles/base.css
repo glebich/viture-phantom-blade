@@ -134,8 +134,9 @@ main#sections {
   transition: opacity 0.4s ease;
 }
 
-/* cinematic chapters are windows onto the rail */
-#s02, #s06, #s07, #s09, #s10, #s11 {
+/* cinematic chapters are windows onto the rail; living rooms onto theirs */
+#s02, #s06, #s07, #s09, #s10, #s11,
+#s14, #s15, #s16, #s17 {
   background: transparent;
 }
 

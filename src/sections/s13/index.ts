@@ -100,10 +100,10 @@ export const s13: Section = {
       const at = i * SEG + 0.02;
       const out = (i + 1) * SEG - 0.045;
       wordSets[i].forEach((w, k) => {
-        tl.fromTo(w, { opacity: 0, y: 20, filter: "blur(6px)" },
-          { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.04, ease: "power2.out", immediateRender: true },
+        tl.fromTo(w, { opacity: 0 },
+          { opacity: 1, duration: 0.04, ease: "power2.out", immediateRender: true },
           at + k * 0.0035);
-        if (i < 3) tl.to(w, { opacity: 0, y: -12, duration: 0.03, ease: "sine.in" }, out + k * 0.001);
+        if (i < 3) tl.to(w, { opacity: 0, duration: 0.03, ease: "sine.in" }, out + k * 0.001);
       });
     });
 

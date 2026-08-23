@@ -10,7 +10,6 @@ import { header } from "./sections/header";
 import { mountPaginator } from "./lib/paginator";
 import { mountScrollHint } from "./lib/scrollhint";
 import { mountSnap } from "./lib/snap";
-import { mountScrollFx } from "./lib/scrollfx";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -163,9 +162,6 @@ if (!qaOnly) {
 
   mountScrollHint();
   mountSnap(lenis, gsap);
-  if (!matchMedia("(pointer: coarse)").matches && !qaParams.has("nofx")) {
-    mountScrollFx(lenis, gsap);
-  }
 }
 
 requestAnimationFrame(() => ScrollTrigger.refresh());
