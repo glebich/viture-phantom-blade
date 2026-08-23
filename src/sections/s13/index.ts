@@ -123,9 +123,9 @@ export const s13: Section = {
     tl.to(v3d, { opacity: 0, duration: 0.05 }, 3 * SEG - 0.04);
     tl.to(vAnchor, { opacity: 0, duration: 0.05 }, 2 * SEG - 0.01);  // anchor clip off during 3d/side
     // side mode: full-bleed clip; screen + border dissolve
-    tl.to(vSide, { opacity: 1, duration: 0.07 }, 3 * SEG);
-    tl.to(sideVeil, { opacity: 1, duration: 0.07 }, 3 * SEG);
-    tl.to(screen, { opacity: 0, duration: 0.06 }, 3 * SEG);
+    tl.to(vSide, { opacity: 1, duration: 0.05 }, 3 * SEG - 0.01);
+    tl.to(sideVeil, { opacity: 1, duration: 0.05 }, 3 * SEG - 0.01);
+    tl.to(screen, { opacity: 0, duration: 0.035 }, 3 * SEG - 0.03);
 
     // active tab tracking + proximity playback
     let cur = -1;

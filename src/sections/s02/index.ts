@@ -102,7 +102,8 @@ export const s02: Section = {
         },
       });
       ctx.lenis.start();
-      rail.show("intro", 0);
+      // show whatever frame the scrub owns right now (harness sets progress)
+      rail.show("intro", Math.min(1, tl.progress() / 0.82));
     };
     const tick = () => {
       if (done) return;

@@ -24,7 +24,7 @@
 #s13 .s13-side-veil {
   position: absolute;
   inset: 0;
-  background: rgba(24, 4, 5, 0.45);
+  background: rgba(24, 4, 5, 0.18);
   opacity: 0;
 }
 

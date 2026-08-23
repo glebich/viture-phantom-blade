@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://viture-minidock.vercel.app/sitemap.xml
+Sitemap: https://phantom-blade-insidemilk.vercel.app/sitemap.xml
