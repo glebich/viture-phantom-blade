@@ -13,18 +13,29 @@
 }
 
 /* ---------- loader (chapter 01) ---------- */
+/* The ground was the exported Figma plate, which has the counter, the label
+   and a thread BAKED into it — a ghost "Loading…" sat beside the live one
+   (client). It is only a soft black→red wash, so it is drawn here instead:
+   no baked artefacts, sharp at any size, and one less image on the critical
+   path while the film is still downloading. Stops sampled off the plate. */
 .s02-loader {
   position: fixed;
   inset: 0;
   z-index: 70;
-  background: url("/assets/ui/plate01.webp") center / cover no-repeat;
-}
-/* veil dims the plate (and its baked counter/label/thread) so the LIVE
-   counter + growing thread read as the only light */
-.s02-loader .ld-veil {
-  position: absolute;
-  inset: 0;
-  background: rgba(5, 2, 3, 0.18);
+  background:
+    radial-gradient(130% 90% at 50% 50%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, 0.42) 100%),
+    radial-gradient(120% 78% at 50% 97%, rgba(196, 28, 17, 0.5) 0%, rgba(150, 15, 10, 0) 62%),
+    linear-gradient(
+      180deg,
+      #020202 0%,
+      #060201 14%,
+      #1c0302 30%,
+      #3a0304 45%,
+      #5c0603 60%,
+      #7c0b08 75%,
+      #960f0a 90%,
+      #7a0a06 100%
+    );
 }
 .s02-loader .stage {
   z-index: 2;

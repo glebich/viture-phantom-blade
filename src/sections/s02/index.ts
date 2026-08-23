@@ -26,7 +26,6 @@ export const s02: Section = {
       </div>
     </div>
     <div class="s02-loader">
-      <div class="ld-veil"></div>
       <div class="stage">
         <img class="ld-wordmark" src="/assets/ui/wordmark.png" alt="VITURE" />
         <img class="ld-thread" src="/assets/ui/loader-thread.png" alt="" aria-hidden="true" />

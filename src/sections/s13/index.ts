@@ -41,14 +41,14 @@ const MODES = [
 export const s13: Section = {
   id: "s13",
   html: `
-    <video class="s13-side" muted loop playsinline preload="none" src="/video/sidemode.mp4"></video>
+    <video class="s13-side" muted loop playsinline preload="metadata" src="/video/sidemode.mp4"></video>
     <div class="s13-side-veil"></div>
     <div class="stage">
       <div class="s13-screen">
-        <video class="s13-v s13-v-anchor" muted loop playsinline preload="none" src="/video/ultrawide.mp4"></video>
-        <video class="s13-v s13-v-uwide" muted loop playsinline preload="none" src="/video/ultrawide.mp4" style="object-fit:contain;opacity:0"></video>
+        <video class="s13-v s13-v-anchor" muted loop playsinline preload="metadata" src="/video/ultrawide.mp4"></video>
+        <video class="s13-v s13-v-uwide" muted loop playsinline preload="metadata" src="/video/ultrawide.mp4" style="object-fit:contain;opacity:0"></video>
       </div>
-      <video class="s13-3d" muted loop playsinline preload="none" src="/video/3dmode.mp4"></video>
+      <video class="s13-3d" muted loop playsinline preload="metadata" src="/video/3dmode.mp4"></video>
       ${MODES.map((m, i) => `
         <button class="s13-tab${i === 0 ? " on" : ""}" role="tab" data-i="${i}" aria-label="${m.title}"
           style="left:${[759, 877, 995, 1114][i]}px">

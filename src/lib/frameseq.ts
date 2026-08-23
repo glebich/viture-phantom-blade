@@ -78,9 +78,17 @@ function pump(): void {
     img.addEventListener(
       "load",
       () => {
-        e.loaded[i] = true;
-        e.onLoad.forEach((f) => f(i));
-        done();
+        // Decode BEFORE publishing the frame. `load` only means the bytes
+        // arrived; the first drawImage would otherwise decode synchronously
+        // on the scroll frame that needs it, which is exactly the hitch you
+        // feel scrubbing. decode() moves that work off the critical path.
+        const publish = () => {
+          e.loaded[i] = true;
+          e.onLoad.forEach((f) => f(i));
+          done();
+        };
+        if (img.decode) img.decode().then(publish, publish);
+        else publish();
       },
       { once: true },
     );

@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://phantom-blade-insidemilk.vercel.app/sitemap.xml
+
+Sitemap: https://phantom-blade.vercel.app/sitemap.xml
