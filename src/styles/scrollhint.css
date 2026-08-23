@@ -1,0 +1,58 @@
+/* ---------- Scroll hint (owned by src/lib/scrollhint.ts) ----------
+   Small mouse glyph in the bottom-left corner, left-aligned with the
+   paginator dots (client round 21: "show that you need to scroll").
+   The wheel dot drifts down and fades on a slow loop. Pure CSS animation
+   — nothing scroll-bound, zero layout cost. Hidden on mobile alongside
+   the dots (a mouse is a desktop metaphor); reduced motion parks the dot
+   static. */
+#scrollhint {
+  position: fixed;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+#scrollhint svg {
+  display: block;
+  /* soft dark halo keeps the white glyph legible over the site's bright
+     washed sections without changing its look on dark ones */
+  filter: drop-shadow(0 1px 5px rgba(10, 14, 28, 0.4));
+}
+
+#scrollhint .sh-dot {
+  animation: sh-drift 2.6s infinite;
+}
+
+/* one soft breath per cycle: the dot condenses in at the top, glides down
+   on an eased curve, dissolves near the base, then the glyph rests a beat
+   before the next pass — no hard restart edge */
+@keyframes sh-drift {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.33, 0, 0.3, 1);
+  }
+  16% {
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
+  }
+  58% {
+    transform: translateY(8px);
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+  }
+  80% {
+    transform: translateY(11px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(11px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #scrollhint .sh-dot {
+    animation: none;
+  }
+}

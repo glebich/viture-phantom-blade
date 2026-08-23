@@ -1,0 +1,115 @@
+import type { SectionCtx } from "./section";
+import { splitWords } from "./textfx";
+import { getRail } from "./cinerail";
+
+/* ---------------------------------------------------------------------------
+ * cine.ts — the Phantom Blade chapter engine.
+ *
+ * Every cinematic chapter pins and scrubs ITS clip on the shared fixed
+ * rail canvas (cinerail.ts) — the film plays in place while sections
+ * hand off, so no fold line ever divides an asset. Statement copy
+ * condenses in inside a progress window and dissolves back out when the
+ * visitor scrubs away (scrub-linked, so scrolling back reverses it).
+ * ------------------------------------------------------------------------- */
+
+export interface CineBeat {
+  sel: string;
+  at: number;
+  out?: number;
+  words?: boolean;
+  drift?: number;
+}
+
+export interface CineOptions {
+  id: string;
+  clip: string;
+  count: number;
+  lengthVh: number;
+  videoSpan?: number;
+  /** progress at which the clip starts playing (leading hold) */
+  videoStart?: number;
+  beats?: CineBeat[];
+  ctx: SectionCtx;
+  el: HTMLElement;
+  onTimeline?: (tl: gsap.core.Timeline) => void;
+}
+
+export function tierUrl(clip: string): (i: number) => string {
+  const small = window.matchMedia("(max-width: 1024px)").matches;
+  const size = small && (window.devicePixelRatio || 1) < 2.5 ? 960 : 1920;
+  return (i) => `/assets/${clip}-${size}/f_${String(i).padStart(3, "0")}.webp`;
+}
+
+export function mountCine(opts: CineOptions) {
+  const { ctx, el } = opts;
+  const { gsap } = ctx;
+
+  const rail = getRail(ctx);
+  rail.register(opts.clip, opts.count, el);
+
+  const videoSpan = opts.videoSpan ?? 1;
+
+  const tl = gsap.timeline({
+    defaults: { ease: "none" },
+    scrollTrigger: {
+      trigger: el,
+      start: "top top",
+      end: `+=${opts.lengthVh * 100}%`,
+      pin: true,
+      scrub: true,
+      anticipatePin: 1,
+      onEnter() { rail.show(opts.clip, 0); },
+      onEnterBack() { rail.show(opts.clip, 1); },
+    },
+  });
+  // drive the rail from the timeline itself so the QA harness
+  // (?progress=…, ScrollTrigger disabled) scrubs it too
+  const videoStart = opts.videoStart ?? 0;
+  const drive = { p: 0 };
+  tl.to(drive, {
+    p: 1,
+    duration: Math.max(0.001, videoSpan - videoStart),
+    onUpdate: () => rail.show(opts.clip, drive.p),
+  }, videoStart);
+  tl.to({}, { duration: Math.max(0.001, 1 - videoSpan) }, videoSpan);
+
+  const IN = 0.06;
+  for (const b of opts.beats ?? []) {
+    const box = el.querySelector<HTMLElement>(b.sel);
+    if (!box) continue;
+    gsap.set(box, { opacity: 1 });
+    if (b.words !== false) {
+      const words = splitWords(box);
+      words.forEach((w, i) => {
+        const at = b.at + (i / Math.max(1, words.length - 1)) * 0.035;
+        tl.fromTo(
+          w,
+          { opacity: 0, y: b.drift ?? 26, filter: "blur(7px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: IN, ease: "power2.out", immediateRender: true },
+          at
+        );
+        if (b.out !== undefined) {
+          tl.to(w, { opacity: 0, y: -14, filter: "blur(5px)", duration: 0.05, ease: "sine.in" }, b.out + i * 0.004);
+        }
+      });
+    } else {
+      tl.fromTo(
+        box,
+        { opacity: 0, y: b.drift ?? 18 },
+        { opacity: 1, y: 0, duration: IN, ease: "sine.out", immediateRender: true },
+        b.at
+      );
+      if (b.out !== undefined) {
+        tl.to(box, { opacity: 0, y: -10, duration: 0.05, ease: "sine.in" }, b.out);
+      }
+    }
+  }
+
+  opts.onTimeline?.(tl);
+  return { tl, rail };
+}
+
+/** chapter shell — cinematic chapters are transparent; the rail shows through */
+export function cineHtml(inner: string): string {
+  return inner;
+}

@@ -1,0 +1,50 @@
+/* s16 — MORE TREASURES AWAIT WITHIN. Wash plate + red thread baked; the
+   four relic cards (crops cut from the plate at exact rects) deal in over
+   their baked twins and land pixel-perfectly. */
+
+#s16 .s16-plate {
+  position: absolute;
+  inset: 0;
+  background: url("/assets/ui/plate16.webp") center / cover no-repeat;
+}
+
+#s16 .s16-patch {
+  position: absolute;
+  background: radial-gradient(60% 60% at 50% 50%, rgba(4, 2, 2, 0.92), rgba(4, 2, 2, 0));
+  filter: blur(2px);
+}
+
+.s16-eyebrow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 184px;
+  text-align: center;
+  font-size: 20px;
+  color: #cfc4bb;
+}
+.s16-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 245px;
+  text-align: center;
+  font-size: 40px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: #fff;
+}
+.s16-foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 963px;
+  text-align: center;
+  font-size: 20px;
+  color: #cfc4bb;
+}
+
+.s16-card {
+  position: absolute;
+  object-fit: cover;
+}

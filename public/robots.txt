@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://viture-minidock.vercel.app/sitemap.xml

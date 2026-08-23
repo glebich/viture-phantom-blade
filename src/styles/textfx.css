@@ -1,0 +1,44 @@
+/* textfx — ambient text-reveal word spans (see src/lib/textfx.ts).
+   The split must be visually transparent at rest: word spans stay
+   display:inline (an inline-block box re-rounds every word's advance and
+   the line drifts ~1px by its end — measured), whitespace text nodes
+   between them are preserved, and the reveal's vertical drift rides
+   position:relative `top` — a paint-only offset that cannot perturb line
+   layout the way transforms-on-inline-blocks would. */
+
+.tfx-w {
+  position: relative;
+  top: 0;
+}
+
+/* Gradient-clipped headlines: after the split the PARENT stops painting its
+   .gtx gradient and every word paints its own copy, re-anchored with inline
+   background-size/position (design px, measured against the parent box) so
+   the words composite into the exact same continuous gradient. --g inherits
+   from the parent's .gtx--* preset. Without this handoff, per-word
+   opacity/filter tweens would either restart the gradient per word or (with
+   parent-level clipping) drop glyphs entirely on WebKit once a word gains
+   its own compositing layer. */
+/* minidock gradient presets — the headline ramps are VERTICAL (180deg),
+   so per-word recomposition is per-line rather than per-box: every word
+   paints the full white→cream ramp over its own inline box. The ramps are
+   subtle enough that lines read identical to the parent-clipped original
+   (QA-checked against the Figma renders); the horizontal re-anchor in
+   textfx.ts keeps X exact. --g mirrors each section's own `background`. */
+.gtx--cream {
+  --g: linear-gradient(180deg, #ffffff 0%, #ffdbbc 100%);
+}
+.gtx--blush {
+  --g: linear-gradient(180deg, #ffffff 0%, #ffefe1 100%);
+}
+
+.gtx.tfx-split {
+  background-image: none;
+}
+.gtx.tfx-split .tfx-w.tfx-g {
+  background-image: var(--g);
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-repeat: no-repeat;
+  color: transparent;
+}

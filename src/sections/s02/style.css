@@ -1,0 +1,146 @@
+/* s02 — the intro cinematic pin. Loader (chapter 01) → intro video scrub
+   (chapters 02–03) → Phantom Blade Ø logo beat (chapter 04) → hero rest
+   (chapter 05). The film itself renders on the shared #cine-rail. */
+
+/* ---------- loader (chapter 01) ---------- */
+.s02-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: url("/assets/ui/plate01.webp") center / cover no-repeat;
+}
+/* veil dims the plate (and its baked counter/label/thread) so the LIVE
+   counter + growing thread read as the only light */
+.s02-loader .ld-veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 2, 3, 0.72);
+}
+.s02-loader .stage {
+  z-index: 2;
+}
+.ld-wordmark {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 57px;
+  width: 111px;
+  height: auto;
+}
+.ld-count {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 505px;
+  text-align: center;
+  font-size: 160px;
+  line-height: 1;
+  color: #fff;
+}
+.ld-count sup {
+  font-size: 72px;
+  vertical-align: 18px;
+  margin-left: 6px;
+}
+.ld-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 945px;
+  text-align: center;
+  font-size: 24px;
+  color: #e8e2da;
+  opacity: 0.9;
+}
+/* the red thread IS the progress bar — it draws in left → right */
+.ld-thread {
+  position: absolute;
+  left: 0;
+  top: 500px;
+  width: 1920px;
+  height: 560px;
+  clip-path: inset(0 100% 0 0);
+  filter: drop-shadow(0 0 14px rgba(232, 52, 42, 0.4));
+}
+
+/* ---------- skip (chapters 02–04 only) ---------- */
+.s02-skip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 905px;
+  font-size: 24px;
+  color: #e8e2da;
+  opacity: 0.75;
+  transition: opacity 0.25s ease;
+  z-index: 5;
+}
+.s02-skip:hover {
+  opacity: 1;
+}
+.s02-skip::after {
+  content: "";
+  display: block;
+  margin: 4px auto 0;
+  width: 42px;
+  height: 1px;
+  background: rgba(232, 226, 218, 0.5);
+}
+
+/* ---------- Phantom Blade Ø logo beat (chapter 04) ---------- */
+.s02-logo {
+  position: absolute;
+  left: 680px;
+  top: 320px;
+  width: 640px;
+  opacity: 0;
+  z-index: 4;
+}
+.s02-logo img {
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- hero rest (chapter 05) ---------- */
+.s02-hero .hero-title {
+  position: absolute;
+  left: 194px;
+  top: 740px;
+  width: 700px;
+  font-size: 72px;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: #fff;
+}
+.s02-hero .hero-tag {
+  position: absolute;
+  left: 194px;
+  top: 925px;
+  font-size: 24px;
+  color: #e8e2da;
+}
+.s02-hero .hero-price {
+  position: absolute;
+  left: 1413px;
+  top: 743px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  color: #fff;
+}
+.s02-hero .hero-price img {
+  width: 78px;
+  height: 44px;
+  object-fit: contain;
+}
+.s02-hero .hero-price b {
+  font-size: 72px;
+  line-height: 1;
+}
+.s02-hero .hero-cta {
+  position: absolute;
+  left: 1500px;
+  top: 878px;
+  width: 230px;
+  height: 62px;
+}

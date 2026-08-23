@@ -1,0 +1,171 @@
+import "./styles/base.css";
+import "./styles/textfx.css";
+import "./styles/scrollfx.css";
+import Lenis from "lenis";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import type { Section, SectionCtx } from "./lib/section";
+import { sections } from "./sections";
+import { header } from "./sections/header";
+import { mountPaginator } from "./lib/paginator";
+import { mountScrollHint } from "./lib/scrollhint";
+import { mountSnap } from "./lib/snap";
+import { mountScrollFx } from "./lib/scrollfx";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const isWebKit =
+  /AppleWebKit/i.test(navigator.userAgent) &&
+  !/Chrome|CriOS|Chromium|Edg\//i.test(navigator.userAgent);
+if (isWebKit) document.documentElement.classList.add("safari");
+
+history.scrollRestoration = "manual";
+window.scrollTo(0, 0);
+
+// Heavy-but-controlled smoothing (matches the shipped minidock feel).
+const lenis = new Lenis({
+  lerp: 0.095,
+  wheelMultiplier: 0.95,
+  smoothWheel: true,
+});
+
+const resetToTop = () => {
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+  lenis.scrollTo(0, { immediate: true, force: true });
+};
+requestAnimationFrame(() => requestAnimationFrame(resetToTop));
+window.addEventListener("load", resetToTop, { once: true });
+window.addEventListener("pageshow", resetToTop);
+
+lenis.on("scroll", ScrollTrigger.update);
+gsap.ticker.add((time) => lenis.raf(time * 1000));
+gsap.ticker.lagSmoothing(0);
+
+const ctx: SectionCtx = { gsap, ScrollTrigger, lenis };
+
+if (import.meta.env.DEV) {
+  (window as unknown as Record<string, unknown>).__pb = {
+    lenis,
+    gsap,
+    ScrollTrigger,
+  };
+}
+
+// ScrollTrigger refreshes triggers in CREATION order; re-sort by live
+// document position on every refresh (pinned timelines built late).
+ScrollTrigger.addEventListener("refreshInit", () => void ScrollTrigger.sort());
+
+// Keep the unitless .stage cover-scale factor synced (100vh probe — see
+// minidock round 21b: innerHeight is the SMALL viewport on iOS at load).
+const vhProbe = document.createElement("div");
+vhProbe.style.cssText =
+  "position:fixed;top:0;left:0;width:0;height:100vh;visibility:hidden;pointer-events:none;";
+document.documentElement.appendChild(vhProbe);
+function syncStageScale() {
+  const cs = getComputedStyle(document.documentElement);
+  const w = parseFloat(cs.getPropertyValue("--stage-w")) || 1920;
+  const h = parseFloat(cs.getPropertyValue("--stage-h")) || 1080;
+  const vh = vhProbe.offsetHeight || window.innerHeight;
+  const s = Math.max(window.innerWidth / w, vh / h);
+  document.documentElement.style.setProperty("--s", String(s));
+}
+syncStageScale();
+window.addEventListener("resize", () => {
+  syncStageScale();
+  ScrollTrigger.refresh();
+});
+
+const headerEl = document.getElementById("site-header")!;
+headerEl.innerHTML = header.html;
+header.init?.(headerEl, ctx);
+
+// QA harness (dev): ?only=s06[&progress=0.5] mounts a single section.
+const qaParams = new URLSearchParams(location.search);
+const qaOnly = import.meta.env.DEV ? qaParams.get("only") : null;
+const qaSections = qaOnly
+  ? (sections as Section[]).filter((s) => s.id === qaOnly)
+  : (sections as Section[]);
+
+const mainEl = document.getElementById("sections")!;
+const EAGER = new Set(["s01", "s02"]);
+const lazyImgs = (html: string) =>
+  html
+    .replace(/<img(?![^>]*\bloading=)/g, '<img loading="lazy" decoding="async"')
+    .replace(/(<video\b[^>]*?)\sautoplay/g, "$1");
+for (const s of qaSections) {
+  const el = document.createElement("section");
+  el.className = "screen";
+  el.id = s.id;
+  el.innerHTML = EAGER.has(s.id) ? s.html : lazyImgs(s.html);
+  mainEl.appendChild(el);
+}
+for (const s of qaSections) {
+  const el = document.getElementById(s.id)!;
+  s.init?.(el, ctx);
+}
+
+if (qaOnly) {
+  const p = parseFloat(qaParams.get("progress") ?? "");
+  if (!Number.isNaN(p)) {
+    requestAnimationFrame(() => {
+      ScrollTrigger.getAll().forEach((st) => {
+        if (!st.vars.scrub) return;
+        st.disable(false);
+        const anim = st.animation;
+        if (anim) anim.progress(p).pause();
+      });
+    });
+  }
+  lenis.stop();
+}
+
+// ---------------------------------------------------------------------------
+// Chapter paginator — the dots+Ø rail. Entries are section ids; the intro
+// pin exposes interior beats through data-chapter markers.
+// ---------------------------------------------------------------------------
+if (!qaOnly) {
+  const pageIds = qaSections.map((s) => s.id);
+  const paginator = mountPaginator(pageIds, (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const box = el.parentElement?.classList.contains("pin-spacer")
+      ? (el.parentElement as HTMLElement)
+      : el;
+    const y = box.getBoundingClientRect().top + window.scrollY;
+    lenis.scrollTo(y, { duration: 1.4, easing: (t) => 1 - Math.pow(1 - t, 3) });
+  });
+
+  let centers: { id: string; top: number; bottom: number }[] = [];
+  const measure = () => {
+    centers = pageIds.map((id) => {
+      const el = document.getElementById(id)!;
+      const box = el.parentElement?.classList.contains("pin-spacer")
+        ? (el.parentElement as HTMLElement)
+        : el;
+      const r = box.getBoundingClientRect();
+      return { id, top: r.top + window.scrollY, bottom: r.bottom + window.scrollY };
+    });
+  };
+  ScrollTrigger.addEventListener("refresh", measure);
+  const trackPage = () => {
+    if (!centers.length) return;
+    const mid = window.scrollY + window.innerHeight / 2;
+    let idx = 0;
+    for (let i = 0; i < centers.length; i++) {
+      if (mid >= centers[i].top) idx = i;
+    }
+    paginator.setPage(idx);
+  };
+  lenis.on("scroll", trackPage);
+  ScrollTrigger.addEventListener("refresh", trackPage);
+
+  mountScrollHint();
+  mountSnap(lenis, gsap);
+  if (!matchMedia("(pointer: coarse)").matches && !qaParams.has("nofx")) {
+    mountScrollFx(lenis, gsap);
+  }
+}
+
+requestAnimationFrame(() => ScrollTrigger.refresh());

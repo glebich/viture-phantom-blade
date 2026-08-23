@@ -1,0 +1,274 @@
+/* ---------- Fonts ----------
+   One serif voice: Alegreya (variable 400–900). Weight 400 everywhere;
+   500 only for price/CTA labels (DESIGN.md). */
+@font-face {
+  font-family: "Alegreya";
+  src: url("/fonts/Alegreya-var.woff2") format("woff2-variations");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: block;
+}
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  overflow-anchor: none;
+}
+
+html,
+body {
+  width: 100%;
+  background: #0a0607;
+  color: #fff;
+  font-family: "Alegreya", Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+video,
+canvas {
+  display: block;
+  max-width: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Alegreya 400 everywhere — emphasis comes from size and case, never
+   weight (DESIGN.md). Browsers default h1/h2 to bold; undo that. */
+h1,
+h2,
+h3,
+h4,
+b,
+strong {
+  font-weight: 400;
+}
+
+/* the design title-cases body copy via textCase */
+.t-caps {
+  text-transform: capitalize;
+}
+
+::selection {
+  background: rgba(194, 42, 32, 0.55);
+  color: #fff;
+}
+
+/* ---------- Design tokens (design-refs/viture-phantom-blade/DESIGN.md) ---------- */
+:root {
+  --red: #e8342a; /* thread / selected accents */
+  --frame-red: #c22a20; /* 1px relic & screen borders */
+  --canvas: #0a0607;
+  --blood-deep: #240709;
+  --blood-mid: #6e0e12;
+  --ink: #ffffff;
+  --body-c: #e8e2da;
+  --muted: #b3a9a0;
+  --paper: #e6dfd2;
+  --on-paper: #291b12;
+}
+
+/* ---------- Stage scaling ----------
+   Sections are authored on fixed design canvases (1920×1080 desktop,
+   744×1133 tablet, 375×812 mobile) in absolute design pixels; the .stage
+   is scaled to COVER the viewport. */
+:root {
+  --stage-w: 1920;
+  --stage-h: 1080;
+  --s: 1; /* unitless cover-scale, synced by JS */
+}
+
+main#sections {
+  position: relative;
+  z-index: 1;
+}
+
+/* the shared cinematic film canvas — fixed behind the sections */
+#cine-rail {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background: #0a0607;
+  transition: opacity 0.4s ease;
+}
+
+/* cinematic chapters are windows onto the rail */
+#s02, #s06, #s07, #s09, #s10, #s11 {
+  background: transparent;
+}
+
+/* header phases: nothing during load; no menu/commerce during the intro */
+html.loading #site-header,
+html.loading #scrollhint,
+html.loading #paginator {
+  opacity: 0;
+  pointer-events: none;
+}
+html.cinema .hd-menu,
+html.cinema .hd-buy {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+#site-header,
+.hd-menu {
+  transition: opacity 0.5s ease;
+}
+
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* Safari LARGE viewport on purpose (minidock round 21b) */
+  overflow: hidden;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100vh;
+  background: #0a0607;
+}
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--stage-w) * 1px);
+  height: calc(var(--stage-h) * 1px);
+  transform: translate(-50%, -50%) scale(var(--s));
+  transform-origin: center center;
+}
+
+.stage.stage--m,
+.stage.stage--t {
+  display: none;
+}
+
+/* tablet: 744×1133 design canvas */
+@media (max-width: 1024px) and (min-width: 641px) {
+  :root {
+    --stage-w: 744;
+    --stage-h: 1133;
+  }
+  .stage.stage--d {
+    display: none;
+  }
+  .stage.stage--t {
+    display: block;
+  }
+}
+
+/* mobile: 375×812 design canvas */
+@media (max-width: 640px) {
+  :root {
+    --stage-w: 375;
+    --stage-h: 812;
+  }
+  .stage.stage--d {
+    display: none;
+  }
+  .stage.stage--m {
+    display: block;
+  }
+}
+
+/* ---------- Shared type ----------
+   Display text is uppercase via text-transform — source strings stay
+   sentence case (clone-not-retype rule). */
+.t-statement {
+  font-size: 112px;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.t-display {
+  font-size: 72px;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+.t-title {
+  font-size: 40px;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.t-lead {
+  font-size: 24px;
+  line-height: 1.45;
+  color: var(--body-c);
+}
+.t-body {
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--body-c);
+}
+
+/* Reduced motion: kill entrance/scrub side effects */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* fold melts between chapters (inherited pattern) */
+.foldfade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.foldfade--btm {
+  bottom: -1px;
+  height: 22vh;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 6, 7, 0) 0%,
+    rgba(10, 6, 7, 0.09) 22%,
+    rgba(10, 6, 7, 0.32) 46%,
+    rgba(10, 6, 7, 0.66) 68%,
+    rgba(10, 6, 7, 0.92) 86%,
+    #0a0607 100%
+  );
+}
+.foldfade--top {
+  top: -1px;
+  height: 18vh;
+  background: linear-gradient(
+    0deg,
+    rgba(10, 6, 7, 0) 0%,
+    rgba(10, 6, 7, 0.09) 22%,
+    rgba(10, 6, 7, 0.32) 46%,
+    rgba(10, 6, 7, 0.66) 68%,
+    rgba(10, 6, 7, 0.92) 86%,
+    #0a0607 100%
+  );
+}
+
+/* touch rests: proximity snap (minidock round 23) */
+@media (max-width: 640px) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+  section.screen,
+  .pin-spacer {
+    scroll-snap-align: start;
+  }
+}

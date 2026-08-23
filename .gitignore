@@ -1,0 +1,10 @@
+node_modules
+dist
+assets-src
+harvest/full2x
+qa
+*.log
+.DS_Store
+.vercel
+harvest
+.claude

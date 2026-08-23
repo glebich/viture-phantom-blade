@@ -1,0 +1,270 @@
+/* Fixed site chrome — VITURE mark (lottie hover), nav, price readout,
+   the ONE paper CTA. Screen-space (not stage-scaled). Design: mark at
+   (40,44), nav x194/373/528/705 y61 fs16, glasses+FROM $599 → x1544,
+   paper CTA 210×52 at (1670,40). */
+
+#site-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 80;
+  pointer-events: none;
+}
+#site-header a,
+#site-header button {
+  pointer-events: auto;
+}
+
+.hd {
+  position: relative;
+  height: 104px;
+}
+
+.hd-logo {
+  position: absolute;
+  left: 40px;
+  top: 40px;
+  width: 56px;
+  height: 48px;
+  cursor: pointer;
+}
+.hd-logo .hd-lottie {
+  position: absolute;
+  inset: 0;
+}
+.hd-logo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.hd-menu a {
+  position: absolute;
+  top: 61px;
+  font-size: 16px;
+  line-height: 1.3;
+  color: #fff;
+  opacity: 0.92;
+  transition: opacity 0.25s ease;
+}
+.hd-menu a:hover {
+  opacity: 0.55;
+}
+.hd-l1 { left: 194px; }
+.hd-l2 { left: 373px; }
+.hd-l3 { left: 528px; }
+.hd-l4 { left: 705px; }
+
+/* right cluster — fades in after the intro cinematic */
+.hd-buy {
+  position: absolute;
+  top: 0;
+  right: 40px;
+  height: 104px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.hd-price {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+}
+.hd-price img {
+  width: 40px;
+  height: 22px;
+  object-fit: contain;
+}
+.hd-price .hd-from {
+  color: #b3a9a0;
+}
+.hd-price b {
+  font-weight: 500;
+  color: #fff;
+}
+
+/* THE paper CTA — photographed torn paper, dark ink label */
+.cta-paper {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 210px;
+  height: 52px;
+  background: url("/assets/ui/cta-paper.png") center / 100% 100% no-repeat;
+  color: #291b12;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+.cta-paper:hover {
+  transform: scale(1.04);
+  filter: brightness(1.06);
+}
+.cta-paper:active {
+  transform: scale(0.98);
+}
+
+/* burger (tablet + mobile) */
+.hd-burger {
+  position: absolute;
+  top: 34px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  display: none;
+  place-items: center;
+}
+.hd-burger span,
+.hd-burger span::before,
+.hd-burger span::after {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 1.6px;
+  background: #fff;
+  position: relative;
+  transition: transform 0.35s ease, opacity 0.3s ease;
+}
+.hd-burger span::before {
+  position: absolute;
+  top: -7px;
+}
+.hd-burger span::after {
+  position: absolute;
+  top: 7px;
+}
+.menu-open .hd-burger span {
+  background: transparent;
+}
+.menu-open .hd-burger span::before {
+  transform: translateY(7px) rotate(45deg);
+}
+.menu-open .hd-burger span::after {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ---------- full-screen menu (tablet/mobile) ---------- */
+.hd-sheet {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 4, 5, 0.92);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.45s ease, visibility 0s linear 0.45s;
+  display: grid;
+  align-content: center;
+  padding: 0 32px;
+  pointer-events: auto;
+}
+.menu-open .hd-sheet {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.45s ease;
+}
+.hd-sheet a {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  padding: 18px 0;
+  font-size: 34px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(232, 226, 218, 0.12);
+}
+.hd-sheet a i {
+  font-style: normal;
+  font-size: 14px;
+  color: #e8342a;
+}
+.hd-sheet .hd-sheet-cta {
+  margin-top: 34px;
+  border: none;
+  padding: 0;
+}
+.hd-sheet::after {
+  content: "Ø";
+  position: absolute;
+  right: -30px;
+  bottom: -60px;
+  font-size: 340px;
+  color: rgba(232, 52, 42, 0.08);
+  pointer-events: none;
+}
+
+/* ---------- mobile commerce dock ---------- */
+#dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 78;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(10, 3, 4, 0.78);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+#dock .dk-info {
+  display: grid;
+  gap: 2px;
+}
+#dock .dk-cap {
+  font-size: 11px;
+  color: #b3a9a0;
+}
+#dock .dk-price {
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+}
+#dock .cta-paper {
+  width: 150px;
+  height: 42px;
+  font-size: 13.5px;
+}
+
+/* ---------- breakpoints ---------- */
+@media (max-width: 1024px) {
+  .hd-menu,
+  .hd-buy .hd-price {
+    display: none;
+  }
+  .hd-burger {
+    display: grid;
+  }
+  .hd-buy {
+    right: 84px;
+  }
+  .cta-paper {
+    width: 176px;
+    height: 46px;
+    font-size: 14px;
+  }
+  .hd-logo {
+    left: 24px;
+    top: 34px;
+    width: 48px;
+    height: 42px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hd-buy {
+    display: none;
+  }
+  #dock {
+    display: flex;
+  }
+  .hd-logo {
+    width: 42px;
+    height: 37px;
+  }
+}

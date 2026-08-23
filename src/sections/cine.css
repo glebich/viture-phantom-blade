@@ -1,0 +1,39 @@
+/* Shared styling for the cinematic statement chapters (s06–s11). */
+/* centered statement near the fold, 72px uppercase (design y815–980) */
+.cine-statement {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1400px;
+  text-align: center;
+  font-size: 72px;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* eyebrow above a statement (s09 "Kungfupunk Style") */
+.cine-eyebrow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 24px;
+  color: #e8e2da;
+}
+
+/* ink flourishes flanking a title (s09) */
+.cine-flourish {
+  position: absolute;
+  width: 165px;
+  height: 30px;
+  object-fit: contain;
+}
+
+/* the 112px full-bleed battlefield statement (s11) */
+.cine-statement--xl {
+  font-size: 112px;
+  line-height: 1.1;
+  width: 1600px;
+}

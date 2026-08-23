@@ -1,0 +1,73 @@
+/* s14 (Duel world) & s15 (OSD) — living-room plates with a framed insert.
+   The plate is the harvested render; live copy zones get a darkening
+   patch (they sit on near-black gradient areas) and HTML copy animates
+   above. The insert (game screen / OSD panel) lands pixel-exactly on its
+   baked position. */
+
+.lr-plate {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+#s14 .lr-plate { background-image: url("/assets/ui/plate14.webp"); }
+#s15 .lr-plate { background-image: url("/assets/ui/plate15.webp"); }
+
+/* copy patches — soft dark veils over the baked text zones */
+.lr-patch {
+  position: absolute;
+  background: radial-gradient(60% 60% at 50% 50%, rgba(5, 2, 3, 0.9), rgba(5, 2, 3, 0));
+  filter: blur(2px);
+}
+
+.lr-title {
+  position: absolute;
+  left: 194px;
+  top: 168px;
+  width: 640px;
+  font-size: 40px;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: #fff;
+}
+.lr-note {
+  position: absolute;
+  left: 1377px;
+  top: 182px;
+  width: 320px;
+  font-size: 20px;
+  line-height: 1.45;
+  color: #d9cfc6;
+}
+.lr-note::before {
+  content: "";
+  position: absolute;
+  left: -32px;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: rgba(232, 226, 218, 0.45);
+}
+
+/* the framed insert */
+.lr-insert {
+  position: absolute;
+  border: 1px solid #c22a20;
+  background: #000 center / cover no-repeat;
+}
+#s14 .lr-insert {
+  left: 490px;
+  top: 388px;
+  width: 942px;
+  height: 512px;
+  background-image: url("/assets/ui/screen14.webp");
+}
+#s15 .lr-insert {
+  left: 604px;
+  top: 304px;
+  width: 528px;
+  height: 442px;
+  border: none;
+  background-image: url("/assets/ui/osd.webp");
+}
