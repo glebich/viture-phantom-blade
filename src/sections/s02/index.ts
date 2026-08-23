@@ -12,9 +12,9 @@ export const s02: Section = {
   id: "s02",
   html: cineHtml(`
     <video class="s02-gameplay" src="/video/gameplay.mp4" muted loop playsinline preload="auto"></video>
+    <div class="s02-logoveil"></div>
     <div class="stage">
       <button class="s02-skip" type="button">Skip</button>
-      <div class="s02-logoveil"></div>
       <div class="s02-logo"><img src="/assets/ui/logo-pbz.png" alt="VITURE × Phantom Blade Ø" /></div>
       <div class="s02-hero">
         <h1 class="hero-title" data-beat="title">Phantom Beast<br/>XR Glasses</h1>

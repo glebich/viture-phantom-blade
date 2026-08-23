@@ -85,9 +85,12 @@
      ~78px) — the eyebrow used to sit under the paper CTA (client) */
   .s16-eyebrow { top: 130px; font-size: 13px; }
   .s16-title { top: 160px; font-size: 24px; padding: 0 20px; }
-  .s16-foot { top: 706px; font-size: 12.5px; }
-  .s16-c0 { left: -4px; top: 246px; width: 190px; height: 207px; }
-  .s16-c1 { left: 186px; top: 268px; width: 190px; height: 207px; }
-  .s16-c2 { left: -4px; top: 452px; width: 190px; height: 207px; }
-  .s16-c3 { left: 186px; top: 474px; width: 190px; height: 207px; }
+  /* the cards carry their own labels — they have to be readable at arm's
+     length, so the grid runs nearly edge to edge (client). The PNGs have
+     wide transparent margins, so the boxes may overhang; the art doesn't. */
+  .s16-foot { top: 744px; font-size: 12.5px; }
+  .s16-c0 { left: -34px; top: 212px; width: 250px; height: 272px; }
+  .s16-c1 { left: 158px; top: 238px; width: 250px; height: 272px; }
+  .s16-c2 { left: -34px; top: 428px; width: 250px; height: 272px; }
+  .s16-c3 { left: 158px; top: 454px; width: 250px; height: 272px; }
 }

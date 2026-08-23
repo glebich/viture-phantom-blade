@@ -1,6 +1,7 @@
 import type { SectionCtx } from "./section";
 import { splitWords } from "./textfx";
 import { getRail } from "./cinerail";
+import { setRest } from "./rests";
 
 /* ---------------------------------------------------------------------------
  * cine.ts — the Phantom Blade chapter engine.
@@ -29,6 +30,9 @@ export interface CineOptions {
   /** progress at which the clip starts playing (leading hold) */
   videoStart?: number;
   beats?: CineBeat[];
+  /** progress where the chapter READS — copy in, film settled (see rests.ts).
+   *  Defaults to just after the last beat has landed. */
+  rest?: number;
   ctx: SectionCtx;
   el: HTMLElement;
   onTimeline?: (tl: gsap.core.Timeline) => void;
@@ -120,6 +124,17 @@ export function mountCine(opts: CineOptions) {
       },
     });
   }
+
+  // where the dots should land: after the last beat has fully arrived, but
+  // clear of any out-beat, so the chapter is caught mid-read
+  const lastIn = Math.max(0, ...(opts.beats ?? []).map((b) => b.at + IN + 0.04));
+  const firstOut = Math.min(
+    ...(opts.beats ?? []).map((b) => b.out ?? Infinity)
+  );
+  const fallback = Number.isFinite(firstOut)
+    ? (lastIn + firstOut) / 2
+    : Math.max(lastIn, videoSpan);
+  setRest(opts.id, tl, Math.min(0.97, opts.rest ?? fallback));
 
   opts.onTimeline?.(tl);
   return { tl, rail };

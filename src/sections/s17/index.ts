@@ -2,6 +2,7 @@ import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { splitWords } from "../../lib/textfx";
 import { scrubAssetArrival } from "../../lib/assetfx";
+import { setRest } from "../../lib/rests";
 import { mountWashRail } from "../s16";
 
 const PREORDER_URL = "https://www.viture.com/";
@@ -39,6 +40,7 @@ export const s17: Section = {
         scrub: true,
       },
     });
+    setRest("s17", tl, 1);
     tl.to({}, { duration: 1 }, 0);
     words.forEach((w, i) => {
       tl.fromTo(w, { opacity: 0 },

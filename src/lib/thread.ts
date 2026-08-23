@@ -25,8 +25,9 @@ import type { SectionCtx } from "./section";
 
 /** traced from the client's frames: [section id, [progress, x / viewport-width]] */
 const ANCHORS: [string, [number, number][]][] = [
-  // Section 12 — the cord swings in from off the right and crosses down
-  ["s11", [[0.0, 1.12], [0.55, 0.82], [1.0, 0.5]]],
+  // The cord starts HERE — the display-modes chapter is the first screen it
+  // appears on, and every screen before it stays clean (client). It enters
+  // from off the left and crosses down.
   // Section 13 — the long left-hand descent (traced x 27→383 over y 261→1001)
   ["s13", [[0.0, 0.5], [0.5, 0.24], [1.0, 0.11]]],
   // Section 14 — the bottom of the arc, out by the left edge (traced x 485→19)
@@ -39,6 +40,9 @@ const ANCHORS: [string, [number, number][]][] = [
   ["s17", [[0.0, 0.42], [0.45, 0.6], [1.0, 0.72]]],
 ];
 
+/** how far past each edge the cord swings — the turnarounds stay off-screen,
+ *  so what you see in frame is only the shallow part of the crossing */
+const SERP_A = 1.0;
 const LUT_STEP = 8; // px of document per lookup-table entry
 const FADE = 420; // px of scroll over which the cord enters / leaves
 const CORE_W = 2.4;
@@ -100,6 +104,22 @@ export function mountThread(ctx: SectionCtx): void {
     const n = Math.max(2, Math.ceil((y1 - y0) / LUT_STEP) + 1);
     lut = new Float32Array(n);
     let seg = 0;
+    // The cord's dominant character (client's reference frames): a LONG,
+    // SHALLOW sweep that enters one edge and leaves the other, not a steep
+    // descent. So the anchors are demoted to a slow lean — which side of the
+    // page the cord favours — and the visible shape is a serpentine whose
+    // turnarounds happen well off-screen, leaving only the shallow crossings
+    // in frame.
+    //
+    // Amplitude and period are set together: their RATIO fixes the rake (a
+    // crossing traverses the full width in ~0.45 of a screen height, ≈14°,
+    // which is what the frames read at) while their absolute size sets how
+    // far apart the crossings sit. Spaced so consecutive crossings can't both
+    // land in one viewport — you see one cord passing through, not a lattice.
+    // A phone is a quarter the width, so it needs a far longer period to stay
+    // anywhere near as shallow.
+    const period = (narrow ? 7.2 : 2.55) * Math.max(560, h);
+    let phase = narrow ? 1.9 : 0.6;
     for (let i = 0; i < n; i++) {
       const y = y0 + i * LUT_STEP;
       while (seg < pts.length - 2 && y > pts[seg + 1].y) seg++;
@@ -118,21 +138,36 @@ export function mountThread(ctx: SectionCtx): void {
           (-p0.x + p2.x) * t +
           (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 +
           (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3);
+      // Over the last stretch the sweep tapers out and the traced anchors
+      // take over completely, so the cord finishes as the finale frame draws
+      // it: a slow descent down the right, passing behind the map scroll.
+      // Without this the serpentine laid a shallow crossing straight through
+      // the "Pre-order Exclusive" copy (client).
+      const tail = Math.min(1, (y1 - y) / (2.2 * Math.max(560, h)));
+      const ease = tail * tail * (3 - 2 * tail); // smoothstep, no crease
+      // the anchors otherwise only LEAN the cord toward the side the
+      // client's frames put it on; the sweep is what you actually read
+      const lean = 0.5 + (base - 0.5) * (0.34 + (1 - ease) * 0.66);
+
+      // Serpentine, mostly sinusoidal: what lands in frame is the shallow
+      // stretch either side of a zero crossing — a gentle arc across the full
+      // width, which is how the cord reads in the client's frames. The turns
+      // are up at the peaks, past the edges and out of sight. A pure triangle
+      // wave would be dead-straight (a laser, not a thread), so it only
+      // contributes enough to hold the crossing shallow a little longer.
+      const per = period * (1 + 0.16 * Math.sin(y / 5600));
+      phase += (2 * Math.PI * LUT_STEP) / per;
+      const tri = Math.asin(Math.sin(phase)) * (2 / Math.PI);
+      const sweep = SERP_A * ease * (0.25 * tri + 0.75 * Math.sin(phase));
+
       // a hand's-breadth of wander so the cord isn't a perfect maths curve —
       // baked into the shape, not animated
       const u = y / 1000;
-      let x =
-        base +
-        0.0055 * Math.sin(u * 2.3 + 1.1) +
-        0.0022 * Math.sin(u * 5.7 + 0.3);
-      // A phone is ~4x taller than it is wide, so the desktop excursions
-      // compress into a vertical stripe. Give the cord a real weave there
-      // instead — it still tracks the same side of the page, it just crosses
-      // the narrow screen often enough to read as a meandering thread.
-      if (narrow) {
-        x += 0.26 * Math.sin(y / 240 + 0.6) + 0.07 * Math.sin(y / 95 + 2.1);
-      }
-      lut[i] = x;
+      lut[i] =
+        lean +
+        sweep +
+        0.006 * Math.sin(u * 2.3 + 1.1) +
+        0.0024 * Math.sin(u * 5.7 + 0.3);
     }
   };
 

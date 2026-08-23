@@ -2,6 +2,7 @@ import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { splitWords } from "../../lib/textfx";
 import { scrubAssetArrival } from "../../lib/assetfx";
+import { setRest } from "../../lib/rests";
 
 /* s13 — display modes. Pinned: scroll advances Anchor → Ultra-Wide →
  * Immersive 3D → Side; the icon tabs are clickable (they glide the scroll
@@ -109,6 +110,9 @@ export const s13: Section = {
         anticipatePin: 1,
       },
     });
+
+    // the dots land on the first mode, read and settled (see rests.ts)
+    setRest("s13", tl, 0.11);
 
     // the virtual screen resolves into focus as the chapter opens
     scrubAssetArrival(tl, screen, 0, { duration: 0.13, drift: 26, blur: 12 });

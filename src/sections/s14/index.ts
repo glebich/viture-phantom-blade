@@ -2,6 +2,7 @@ import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { splitWords } from "../../lib/textfx";
 import { scrubAssetArrival } from "../../lib/assetfx";
+import { setRest } from "../../lib/rests";
 import { mountFrameStore } from "../../lib/frameseq";
 import type { FrameStore } from "../../lib/frameseq";
 
@@ -138,6 +139,8 @@ function livingRoom(opts: { id: string; title: string; note: string }): Section 
         { opacity: 1, duration: 0.12, ease: "sine.out", immediateRender: true }, 0.18);
       // the framed panel resolves out of the air like the copy does
       scrubAssetArrival(tl, insert, 0.14, { duration: 0.34, drift: 30, blur: 14 });
+
+      setRest(opts.id, tl, 0.5);
 
       // tail fade inside the pin — nothing of the stage can ever slice
       // across the header during the release scroll

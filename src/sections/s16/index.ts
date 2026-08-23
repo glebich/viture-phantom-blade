@@ -1,6 +1,7 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { scrubAssetArrival } from "../../lib/assetfx";
+import { setRest } from "../../lib/rests";
 
 /* ONE fixed wash behind s16 AND s17 (client: the bg must stay the same
  * across both pages) — sections stay transparent; a red glow layer behind
@@ -65,6 +66,7 @@ export const s16: Section = {
         anticipatePin: 1,
       },
     });
+    setRest("s16", tl, 0.8);
     tl.to({}, { duration: 1 }, 0);
     tl.fromTo(eyebrow, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "sine.out", immediateRender: true }, 0.05);
     tl.fromTo(title, { opacity: 0 }, { opacity: 1, duration: 0.14, ease: "sine.out", immediateRender: true }, 0.08);

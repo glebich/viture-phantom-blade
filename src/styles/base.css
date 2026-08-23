@@ -92,7 +92,9 @@ strong {
 /* ---------- Stage scaling ----------
    Sections are authored on fixed design canvases (1920×1080 desktop,
    744×1133 tablet, 375×812 mobile) in absolute design pixels; the .stage
-   is scaled to COVER the viewport. */
+   is scaled to CONTAIN the viewport (see syncStageScale in main.ts — cover
+   sliced content off the edges on any non-16:9 window). The imagery still
+   covers: it lives on the fixed rails behind, not in the stage. */
 :root {
   --stage-w: 1920;
   --stage-h: 1080;

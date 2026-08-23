@@ -8,6 +8,7 @@ import type { Section, SectionCtx } from "./lib/section";
 import { sections } from "./sections";
 import { header } from "./sections/header";
 import { mountPaginator } from "./lib/paginator";
+import { restY } from "./lib/rests";
 import { mountScrollHint } from "./lib/scrollhint";
 import { mountIdleCue } from "./lib/idlecue";
 import { mountThread } from "./lib/thread";
@@ -69,7 +70,15 @@ function syncStageScale() {
   const w = parseFloat(cs.getPropertyValue("--stage-w")) || 1920;
   const h = parseFloat(cs.getPropertyValue("--stage-h")) || 1080;
   const vh = vhProbe.offsetHeight || window.innerHeight;
-  const s = Math.max(window.innerWidth / w, vh / h);
+  // CONTAIN, not cover. The stage carries the copy, prices and CTAs; the
+  // film/room/wash backdrops are separate fixed rails that cover on their
+  // own. Cover-scaling the stage meant any window that wasn't 16:9 pushed
+  // the design wider (or taller) than the viewport and sliced the content
+  // off the edges — the hero title and the price were both losing characters
+  // on a tall desktop window (client). Containing keeps every element on
+  // screen at any size, and the design's own margins scale with it, so the
+  // spacing off the edges stays proportional.
+  const s = Math.min(window.innerWidth / w, vh / h);
   document.documentElement.style.setProperty("--s", String(s));
 }
 syncStageScale();
@@ -131,10 +140,12 @@ if (!qaOnly) {
   const paginator = mountPaginator(pageIds, (id) => {
     const el = document.getElementById(id);
     if (!el) return;
+    // land on where the chapter READS — copy in, film settled — not on the
+    // transition at the top of its pin (client). See lib/rests.ts.
     const box = el.parentElement?.classList.contains("pin-spacer")
       ? (el.parentElement as HTMLElement)
       : el;
-    const y = box.getBoundingClientRect().top + window.scrollY;
+    const y = restY(id) ?? box.getBoundingClientRect().top + window.scrollY;
     lenis.scrollTo(y, { duration: 1.4, easing: (t) => 1 - Math.pow(1 - t, 3) });
   });
 

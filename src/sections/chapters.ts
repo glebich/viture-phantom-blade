@@ -100,7 +100,7 @@ export const s11: Section = {
   `),
   init(el, ctx) {
     mountCine({
-      id: "s11", clip: "clip6", count: 30, lengthVh: 4, videoSpan: 0.72,
+      id: "s11", clip: "clip6", count: 30, lengthVh: 4, videoSpan: 0.72, rest: 0.9,
       ctx, el,
       beats: [{ sel: "[data-beat]", at: 0.6, words: true }],
       onTimeline(tl) {

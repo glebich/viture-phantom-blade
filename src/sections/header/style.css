@@ -1,7 +1,17 @@
 /* Fixed site chrome — VITURE mark (lottie hover), nav, price readout,
-   the ONE paper CTA. Screen-space (not stage-scaled). Design: mark at
-   (40,44), nav x194/373/528/705 y61 fs16, glasses+FROM $599 → x1544,
-   paper CTA 210×52 at (1670,40). */
+   the ONE paper CTA. Screen-space (not stage-scaled).
+
+   Figma draws the whole header as ONE 1840x52 row inset 40px from both
+   edges, every item centred on the same line. The first pass gave the mark,
+   the nav and the commerce cluster three different vertical centres (64 /
+   71.5 / 52), which read as a stagger (client). So the row is now a single
+   band — `top: var(--hd-y); height: var(--hd-row)` on every item — and the
+   x positions stay as designed: nav 194/373/528/705, CTA 210x52 at 1670. */
+
+:root {
+  --hd-y: 40px;
+  --hd-row: 52px;
+}
 
 #site-header {
   position: fixed;
@@ -23,9 +33,9 @@
 .hd-logo {
   position: absolute;
   left: 40px;
-  top: 40px;
+  top: var(--hd-y);
   width: 56px;
-  height: 48px;
+  height: var(--hd-row);
   cursor: pointer;
 }
 .hd-logo .hd-lottie,
@@ -33,10 +43,12 @@
   /* the lottie frames draw the V inside ~37% of their 100px box — blow the
      box up so the visible mark matches the design's ~52px width; keeping
      the SAME box for the static frame and the lottie means hover playback
-     is pixel-registered (client) */
+     is pixel-registered (client). Centred on the header row, so the mark
+     sits on the same line as the nav and the CTA. */
   position: absolute;
-  left: -21px;
-  top: -25px;
+  left: 50%;
+  top: 50%;
+  margin: -49px 0 0 -49px;
   width: 98px;
   height: 98px;
   object-fit: contain;
@@ -44,7 +56,10 @@
 
 .hd-menu a {
   position: absolute;
-  top: 61px;
+  top: var(--hd-y);
+  height: var(--hd-row);
+  display: flex;
+  align-items: center;
   font-size: 16px;
   line-height: 1.3;
   color: #fff;
@@ -62,9 +77,9 @@
 /* right cluster — fades in after the intro cinematic */
 .hd-buy {
   position: absolute;
-  top: 0;
+  top: var(--hd-y);
   right: 40px;
-  height: 104px;
+  height: var(--hd-row);
   display: flex;
   align-items: center;
   gap: 18px;
@@ -114,10 +129,10 @@
 /* burger (tablet + mobile) */
 .hd-burger {
   position: absolute;
-  top: 34px;
+  top: var(--hd-y);
   right: 24px;
   width: 44px;
-  height: 44px;
+  height: var(--hd-row);
   display: none;
   place-items: center;
 }
@@ -251,21 +266,26 @@
     height: 46px;
     font-size: 14px;
   }
+  :root {
+    --hd-y: 34px;
+    --hd-row: 44px;
+  }
   .hd-logo {
     left: 24px;
-    top: 34px;
     width: 48px;
-    height: 42px;
   }
 }
 
 @media (max-width: 640px) {
   /* design: the paper CTA rides centered in the phone header */
+  :root {
+    --hd-y: 22px;
+    --hd-row: 44px;
+  }
   .hd-buy {
     right: auto;
     left: 50%;
     transform: translateX(-50%);
-    height: 88px;
   }
   /* client: the phone CTA reads 10% larger than the first pass */
   .cta-paper {
@@ -278,6 +298,5 @@
   }
   .hd-logo {
     width: 42px;
-    height: 37px;
   }
 }
