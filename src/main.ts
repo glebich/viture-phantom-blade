@@ -9,6 +9,8 @@ import { sections } from "./sections";
 import { header } from "./sections/header";
 import { mountPaginator } from "./lib/paginator";
 import { mountScrollHint } from "./lib/scrollhint";
+import { mountIdleCue } from "./lib/idlecue";
+import { mountThread } from "./lib/thread";
 import { mountSnap } from "./lib/snap";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -161,7 +163,19 @@ if (!qaOnly) {
   ScrollTrigger.addEventListener("refresh", trackPage);
 
   mountScrollHint();
+  mountIdleCue(lenis);
   mountSnap(lenis, gsap);
+  // the one continuous cord — it fades up once the loader (which draws its
+  // own thread as the progress bar) has handed the screen over
+  mountThread(ctx);
+  const threadOn = () => {
+    if (document.documentElement.classList.contains("loading")) {
+      setTimeout(threadOn, 200);
+      return;
+    }
+    document.documentElement.classList.add("thread-on");
+  };
+  threadOn();
 }
 
 requestAnimationFrame(() => ScrollTrigger.refresh());

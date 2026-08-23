@@ -1,6 +1,7 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { splitWords } from "../../lib/textfx";
+import { scrubAssetArrival } from "../../lib/assetfx";
 
 /* s13 — display modes. Pinned: scroll advances Anchor → Ultra-Wide →
  * Immersive 3D → Side; the icon tabs are clickable (they glide the scroll
@@ -39,7 +40,6 @@ const MODES = [
 export const s13: Section = {
   id: "s13",
   html: `
-    <div class="s13-bg"></div>
     <video class="s13-side" muted loop playsinline preload="none" src="/video/sidemode.mp4"></video>
     <div class="s13-side-veil"></div>
     <div class="stage">
@@ -62,6 +62,21 @@ export const s13: Section = {
   `,
   init(el, ctx: SectionCtx) {
     const { gsap } = ctx;
+
+    // the section's ground lives behind the red thread (see style.css)
+    const back = document.createElement("div");
+    back.id = "s13-back";
+    back.setAttribute("aria-hidden", "true");
+    const mainEl = document.getElementById("sections")!;
+    document.body.insertBefore(back, mainEl);
+    const backSync = () => {
+      const r = el.getBoundingClientRect();
+      back.style.opacity = r.bottom > 0 && r.top < innerHeight ? "1" : "0";
+    };
+    ctx.lenis.on("scroll", backSync);
+    ctx.ScrollTrigger.addEventListener("refresh", backSync);
+    backSync();
+
     const screen = el.querySelector<HTMLElement>(".s13-screen")!;
     const tabs = Array.from(el.querySelectorAll<HTMLButtonElement>(".s13-tab"));
     const copies = Array.from(el.querySelectorAll<HTMLElement>(".s13-copy"));
@@ -94,6 +109,9 @@ export const s13: Section = {
         anticipatePin: 1,
       },
     });
+
+    // the virtual screen resolves into focus as the chapter opens
+    scrubAssetArrival(tl, screen, 0, { duration: 0.13, drift: 26, blur: 12 });
 
     // copy in/out per beat
     MODES.forEach((_, i) => {

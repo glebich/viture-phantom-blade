@@ -267,9 +267,11 @@
     transform: translateX(-50%);
     height: 88px;
   }
+  /* client: the phone CTA reads 10% larger than the first pass */
   .cta-paper {
-    width: 150px;
-    height: 40px;
+    width: 165px;
+    height: 44px;
+    font-size: 15px;
   }
   #dock {
     display: none;

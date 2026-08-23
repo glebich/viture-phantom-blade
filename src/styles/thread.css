@@ -1,0 +1,27 @@
+/* the one continuous red thread — owned by src/lib/thread.ts.
+   Sits above the film and the sections (it may cross a video), below the
+   header chrome and the loader. */
+#thread-rail {
+  position: fixed;
+  inset: 0;
+  /* behind the sections' assets (client), above the film/room/wash rails —
+     those all share z-index 0, so DOM order decides and lib/thread.ts
+     inserts this canvas last among them, immediately before <main> */
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+html.thread-on #thread-rail {
+  opacity: 1;
+}
+/* the loader owns its own thread (the progress bar) — no double thread */
+html.loading #thread-rail {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #thread-rail {
+    transition: none;
+  }
+}

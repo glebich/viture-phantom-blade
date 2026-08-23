@@ -105,14 +105,15 @@
 
 /* ---------- mobile 375×812 ---------- */
 @media (max-width: 640px) {
-  .s17-lockup { left: 68px; top: 84px; width: 240px; }
-  .s17-title { left: 0; right: 0; width: auto; top: 128px; text-align: center; font-size: 30px; }
-  .s17-body { left: 28px; top: 216px; width: 320px; text-align: center; font-size: 13.5px; }
-  .s17-maplabel { left: 82px; top: 306px; width: 210px; font-size: 13px; }
+  /* everything clears the fixed header (its paper CTA reaches y≈66) */
+  .s17-lockup { left: 68px; top: 128px; width: 240px; }
+  .s17-title { left: 0; right: 0; width: auto; top: 176px; text-align: center; font-size: 30px; }
+  .s17-body { left: 28px; top: 264px; width: 320px; text-align: center; font-size: 13.5px; }
+  .s17-maplabel { left: 82px; top: 348px; width: 210px; font-size: 13px; }
   .s17-maplabel::before, .s17-maplabel::after { width: 60px; top: 18px; }
   .s17-maplabel::before { left: -70px; }
   .s17-maplabel::after { right: -70px; }
-  .s17-map { left: 82px; top: 360px; width: 211px; height: 279px; }
-  .s17-foot { left: 28px; top: 676px; width: 320px; font-size: 12.5px; }
-  .s17-cta { left: 104px; top: 712px; width: 168px; height: 46px; }
+  .s17-map { left: 88px; top: 398px; width: 200px; height: 265px; }
+  .s17-foot { left: 28px; top: 684px; width: 320px; font-size: 12.5px; }
+  .s17-cta { left: 95px; top: 718px; width: 185px; height: 48px; }
 }

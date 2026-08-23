@@ -14,6 +14,7 @@ export const s02: Section = {
     <video class="s02-gameplay" src="/video/gameplay.mp4" muted loop playsinline preload="auto"></video>
     <div class="stage">
       <button class="s02-skip" type="button">Skip</button>
+      <div class="s02-logoveil"></div>
       <div class="s02-logo"><img src="/assets/ui/logo-pbz.png" alt="VITURE × Phantom Blade Ø" /></div>
       <div class="s02-hero">
         <h1 class="hero-title" data-beat="title">Phantom Beast<br/>XR Glasses</h1>
@@ -58,10 +59,19 @@ export const s02: Section = {
         const gp = el.querySelector<HTMLVideoElement>(".s02-gameplay")!;
         tl.fromTo(gp, { opacity: 1 }, { opacity: 0, duration: 0.06, ease: "sine.in", immediateRender: false }, 0.005);
         // Ø logo beat (chapter 04) — in around the 2s mark of the clip
+        // The film dims to near-black under the lockup so the white mark is
+        // actually readable (client), holds through the beat, then lifts.
+        const veil = el.querySelector<HTMLElement>(".s02-logoveil")!;
+        tl.fromTo(veil, { opacity: 0 },
+          { opacity: 0.82, duration: 0.06, ease: "sine.out", immediateRender: true }, 0.26);
+        tl.to(veil, { opacity: 0, duration: 0.09, ease: "sine.inOut" }, 0.66);
         const logo = el.querySelector<HTMLElement>(".s02-logo")!;
-        tl.fromTo(logo, { opacity: 0, scale: 0.97 },
-          { opacity: 1, scale: 1, duration: 0.06, ease: "sine.out", immediateRender: true }, 0.36);
-        tl.to(logo, { opacity: 0, scale: 1.02, duration: 0.06, ease: "sine.in" }, 0.52);
+        // condenses out of the air and dissolves back into it, unhurried —
+        // the window is wide enough to rest on the mark for a couple of
+        // seconds at reading speed instead of flashing past
+        tl.fromTo(logo, { opacity: 0, scale: 0.955, filter: "blur(14px)" },
+          { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.1, ease: "power2.out", immediateRender: true }, 0.29);
+        tl.to(logo, { opacity: 0, scale: 1.03, filter: "blur(8px)", duration: 0.09, ease: "sine.in" }, 0.64);
         const skip = el.querySelector<HTMLElement>(".s02-skip")!;
         tl.fromTo(skip, { opacity: 0.75 }, { opacity: 0, duration: 0.04, immediateRender: false }, 0.8);
       },
@@ -79,11 +89,16 @@ export const s02: Section = {
     tl.eventCallback("onUpdate", phase);
 
     // ---- Skip ----
+    // Play the intro through at the clip's natural speed (62 kept frames =
+    // every 2nd source frame ≈ 4s of footage) instead of a fast scrub —
+    // linear easing so the film advances like a normal player.
     el.querySelector<HTMLButtonElement>(".s02-skip")!.addEventListener("click", () => {
       const st = tl.scrollTrigger!;
+      const CLIP_S = 5.2; // full intro at natural playback speed, logo beat included
+      const remain = Math.max(0, 0.97 - tl.progress());
       ctx.lenis.scrollTo(st.start + (st.end - st.start) * 0.97, {
-        duration: 1.6,
-        easing: (t) => 1 - Math.pow(1 - t, 3),
+        duration: Math.max(0.8, (remain / 0.97) * CLIP_S),
+        easing: (t) => (t < 0.9 ? t : 0.9 + (1 - Math.pow(1 - (t - 0.9) / 0.1, 2)) * 0.1),
       });
     });
 
@@ -94,6 +109,15 @@ export const s02: Section = {
     ctx.lenis.stop();
     document.documentElement.classList.add("loading", "cinema");
 
+    // the drawn thread's tip sits at 69.3% of the artwork width (style.css
+    // scales it so that point clears the right screen edge); revealing a
+    // hair past it lands the tip off-screen at 100% and keeps the PNG's
+    // stray tail fragment clipped away for good
+    const TIP_PCT = 70;
+    const drawThread = (v: number) => {
+      thread.style.clipPath = `inset(0 ${Math.max(0, 100 - v * TIP_PCT)}% 0 0)`;
+    };
+
     const store = rail.store("intro")!;
     const t0 = performance.now();
     const MIN_MS = 2400;
@@ -102,19 +126,33 @@ export const s02: Section = {
     const finish = () => {
       if (done) return;
       done = true;
-      gsap.to(loader, {
-        opacity: 0,
-        duration: 1.0,
-        ease: "sine.inOut",
+      // the thread always completes its draw to the screen edge before the
+      // loader fades — never leave it hanging mid-screen
+      const o = { v: shown };
+      gsap.to(o, {
+        v: 1,
+        duration: Math.max(0.25, (1 - shown) * 0.9),
+        ease: "power1.inOut",
+        onUpdate: () => {
+          num.textContent = String(Math.round(o.v * 100));
+          drawThread(o.v);
+        },
         onComplete: () => {
-          loader.style.display = "none";
-          document.documentElement.classList.remove("loading");
+          gsap.to(loader, {
+            opacity: 0,
+            duration: 1.0,
+            ease: "sine.inOut",
+            onComplete: () => {
+              loader.style.display = "none";
+              document.documentElement.classList.remove("loading");
+            },
+          });
+          ctx.lenis.start();
+          // show whatever frame the scrub owns right now (harness sets progress)
+          rail.show("intro", Math.min(1, tl.progress() / 0.82));
+          if (tl.progress() < 0.08) gp.play().catch(() => {});
         },
       });
-      ctx.lenis.start();
-      // show whatever frame the scrub owns right now (harness sets progress)
-      rail.show("intro", Math.min(1, tl.progress() / 0.82));
-      if (tl.progress() < 0.08) gp.play().catch(() => {});
     };
     const tick = () => {
       if (done) return;
@@ -124,7 +162,7 @@ export const s02: Section = {
       shown += (target - shown) * 0.12; // soft ease toward target
       if (target >= 1) shown = Math.min(1, shown + 0.012);
       num.textContent = String(Math.round(shown * 100));
-      thread.style.clipPath = `inset(0 ${Math.max(0, 100 - shown * 108)}% 0 0)`;
+      drawThread(shown);
       if (shown > 0.995 && real >= 0.35) finish();
       else requestAnimationFrame(tick);
     };

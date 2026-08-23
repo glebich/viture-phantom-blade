@@ -1,0 +1,84 @@
+/* idle prompt — owned by src/lib/idlecue.ts */
+#idlecue {
+  position: fixed;
+  left: 50%;
+  bottom: 46px;
+  z-index: 76;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  pointer-events: none;
+  opacity: 0;
+  filter: blur(8px);
+  transform: translate(-50%, 18px);
+  transition:
+    opacity 1.5s cubic-bezier(0.2, 0.65, 0.3, 1),
+    transform 1.5s cubic-bezier(0.2, 0.65, 0.3, 1),
+    filter 1.5s cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+#idlecue.on {
+  opacity: 1;
+  filter: blur(0);
+  transform: translate(-50%, 0);
+}
+
+/* a soft pool of dark so the label reads over bright gameplay frames too */
+#idlecue::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 330px;
+  height: 200px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(4, 2, 2, 0.72) 0%, rgba(4, 2, 2, 0.42) 45%, rgba(4, 2, 2, 0) 78%);
+  z-index: -1;
+}
+
+#idlecue .ic-label {
+  font-size: 17px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #efe8df;
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.65);
+}
+
+/* a thread of light drawing downward, on a slow loop */
+#idlecue .ic-line {
+  width: 1px;
+  height: 46px;
+  background: linear-gradient(180deg, rgba(232, 52, 42, 0) 0%, #e8342a 55%, rgba(232, 52, 42, 0) 100%);
+  transform-origin: top center;
+}
+#idlecue.on .ic-line {
+  animation: ic-draw 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes ic-draw {
+  0% { transform: scaleY(0); opacity: 0; }
+  35% { transform: scaleY(1); opacity: 1; }
+  75% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1) translateY(46px); opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  #idlecue {
+    bottom: 34px;
+    gap: 9px;
+  }
+  #idlecue::before {
+    width: 260px;
+    height: 160px;
+  }
+  #idlecue .ic-label {
+    font-size: 14px;
+  }
+  #idlecue .ic-line {
+    height: 34px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #idlecue.on .ic-line {
+    animation: none;
+  }
+}

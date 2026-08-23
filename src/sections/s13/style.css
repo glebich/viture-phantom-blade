@@ -2,15 +2,24 @@
    title fs40 y288, sub fs20 y357 (both centered), and the red-bordered
    virtual screen whose mask reshapes per mode. All in 1920 design px. */
 
+/* s13's ground is a FIXED backdrop mounted before <main> (same pattern as
+   #room-rail / #wash-rail) rather than the section's own background: the red
+   thread rides between the backdrops and the sections' assets, so anything
+   painted inside the section would bury it. */
 #s13 {
-  background: #070304;
+  background: transparent;
 }
 
-#s13 .s13-bg {
-  position: absolute;
+#s13-back {
+  position: fixed;
   inset: 0;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
   background:
-    radial-gradient(120% 90% at 50% 118%, #6e0e12 0%, #35090b 42%, #0a0405 78%, #060303 100%);
+    radial-gradient(120% 90% at 50% 118%, #6e0e12 0%, #35090b 42%, #0a0405 78%, #060303 100%),
+    #070304;
 }
 
 #s13 .s13-side {
@@ -132,14 +141,18 @@
 
 /* ---------- mobile 375×812 ---------- */
 @media (max-width: 640px) {
-  .s13-tab { top: 92px; width: 40px; height: 40px; }
+  /* tabs clear the header; the mode clip then runs full-bleed to the bottom
+     edge as in the client's Phone / Section - 13 frame (it used to sit in a
+     band with half the screen left empty) */
+  .s13-tab { top: 112px; width: 40px; height: 40px; }
   .s13-tab img { width: 26px; height: 26px; }
   .s13-tab:nth-of-type(1) { left: 92px !important; }
   .s13-tab:nth-of-type(2) { left: 152px !important; }
   .s13-tab:nth-of-type(3) { left: 212px !important; }
   .s13-tab:nth-of-type(4) { left: 272px !important; }
-  .s13-title { top: 158px; width: 340px; font-size: 24px; }
-  .s13-sub { top: 205px; width: 330px; font-size: 13.5px; }
-  .s13-screen { left: 0 !important; top: 300px !important; width: 375px !important; height: 240px !important; border-left: none; border-right: none; }
-  .s13-3d { left: -20px; top: 270px; width: 415px; height: 300px; }
+  .s13-title { top: 180px; width: 340px; font-size: 24px; }
+  .s13-sub { top: 228px; width: 330px; font-size: 13.5px; }
+  .s13-screen { left: 0 !important; top: 330px !important; width: 375px !important; height: 482px !important; border-left: none; border-right: none; border-bottom: none; }
+  /* clears the sub copy — the screen-blended clip used to wash it out */
+  .s13-3d { left: -30px; top: 318px; width: 435px; height: 494px; }
 }

@@ -65,13 +65,18 @@
   color: #e8e2da;
   opacity: 0.9;
 }
-/* the red thread IS the progress bar — it draws in left → right */
+/* the red thread IS the progress bar — it draws in left → right.
+   The drawn thread's TIP sits at 69.3% of the artwork's width (the rest of
+   the PNG is a stray fragment from the desktop plate), so each breakpoint
+   scales the image until that tip clears the right screen edge — the thread
+   must run all the way off-screen at 100%, never stop mid-canvas (client).
+   src/sections/s02/index.ts reveals to TIP_PCT, hiding the fragment. */
 .ld-thread {
   position: absolute;
   left: 0;
-  top: 260px;
-  width: 1920px;
-  height: 800px;
+  top: -20px;
+  width: 2772px;
+  height: 1155px;
   clip-path: inset(0 100% 0 0);
   filter: drop-shadow(0 0 16px rgba(232, 52, 42, 0.5));
 }
@@ -100,7 +105,16 @@
   background: rgba(232, 226, 218, 0.5);
 }
 
-/* ---------- Phantom Blade Ø logo beat (chapter 04) ---------- */
+/* ---------- Phantom Blade Ø logo beat (chapter 04) ----------
+   the film dims under the lockup so the white mark reads (client) */
+.s02-logoveil {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(74% 62% at 50% 42%, rgba(3, 1, 2, 0.97) 0%, rgba(3, 1, 2, 0.99) 55%, #030102 100%);
+}
 .s02-logo {
   position: absolute;
   left: 680px;
@@ -166,7 +180,7 @@
   .ld-count { top: 470px; font-size: 150px; }
   .ld-count sup { font-size: 64px; }
   .ld-label { top: 1010px; font-size: 18px; }
-  .ld-thread { top: 300px; width: 1500px; left: -378px; height: 625px; }
+  .ld-thread { top: 260px; width: 1620px; left: -378px; height: 675px; }
   .s02-skip { top: 1000px; font-size: 18px; }
   .s02-logo { left: 122px; top: 340px; width: 500px; }
   .s02-hero .hero-title { left: 52px; top: 800px; width: 560px; font-size: 46px; }
@@ -183,13 +197,15 @@
   .ld-count { top: 340px; font-size: 96px; }
   .ld-count sup { font-size: 44px; vertical-align: 12px; }
   .ld-label { top: 715px; font-size: 14px; }
-  .ld-thread { top: 280px; width: 760px; left: -192px; height: 317px; }
+  .ld-thread { top: 260px; width: 820px; left: -192px; height: 342px; }
   .s02-skip { top: 720px; font-size: 15px; }
   .s02-logo { left: 38px; top: 245px; width: 300px; }
-  .s02-hero .hero-title { left: 24px; top: 425px; width: 330px; font-size: 30px; }
-  .s02-hero .hero-tag { left: 24px; top: 525px; font-size: 13.5px; }
-  .s02-hero .hero-price { left: 24px; top: 575px; gap: 12px; }
-  .s02-hero .hero-price img { width: 42px; height: 24px; }
-  .s02-hero .hero-price b { font-size: 30px; }
-  .s02-hero .hero-cta { left: 24px; top: 645px; width: 152px; height: 44px; }
+  /* geometry from the client's own Phone / Section - 05 frame:
+     copy column at x40, title y436, tag y530, price y584, CTA 180x44 y646 */
+  .s02-hero .hero-title { left: 40px; top: 430px; width: 300px; font-size: 27px; }
+  .s02-hero .hero-tag { left: 40px; top: 528px; font-size: 13.5px; }
+  .s02-hero .hero-price { left: 40px; top: 578px; gap: 14px; }
+  .s02-hero .hero-price img { width: 48px; height: 28px; }
+  .s02-hero .hero-price b { font-size: 32px; }
+  .s02-hero .hero-cta { left: 40px; top: 646px; width: 180px; height: 44px; }
 }

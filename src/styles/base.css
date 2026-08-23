@@ -70,25 +70,6 @@ strong {
   text-transform: capitalize;
 }
 
-/* keyed red-thread overlays live in stage space (1920×1080 design px) */
-.pb-threads {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 1920px;
-  height: 1080px;
-  pointer-events: none;
-}
-@media (max-width: 1024px) {
-  .pb-threads {
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: auto;
-    height: 110%;
-  }
-}
-
 ::selection {
   background: rgba(194, 42, 32, 0.55);
   color: #fff;
@@ -151,6 +132,15 @@ html.cinema .hd-menu,
 html.cinema .hd-buy {
   opacity: 0 !important;
   pointer-events: none;
+}
+/* the mouse glyph reads as a stray mark over the intro film (it landed in
+   the corner of the logo beat) — the idle cue is the prompt down here */
+html.cinema #scrollhint {
+  opacity: 0;
+  pointer-events: none;
+}
+#scrollhint {
+  transition: opacity 0.5s ease;
 }
 #site-header,
 .hd-menu {

@@ -1,5 +1,6 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
+import { scrubAssetArrival } from "../../lib/assetfx";
 
 /* ONE fixed wash behind s16 AND s17 (client: the bg must stay the same
  * across both pages) — sections stay transparent; a red glow layer behind
@@ -67,11 +68,11 @@ export const s16: Section = {
     tl.to({}, { duration: 1 }, 0);
     tl.fromTo(eyebrow, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "sine.out", immediateRender: true }, 0.05);
     tl.fromTo(title, { opacity: 0 }, { opacity: 1, duration: 0.14, ease: "sine.out", immediateRender: true }, 0.08);
+    // the relic cards drift up and resolve out of blur, one after another —
+    // slow enough to read as a reveal rather than a switch (client)
     cards.forEach((c, i) => {
-      tl.fromTo(c, { opacity: 0 },
-        { opacity: 1, duration: 0.16, ease: "sine.out", immediateRender: true },
-        0.16 + i * 0.09);
+      scrubAssetArrival(tl, c, 0.16 + i * 0.11, { duration: 0.34, drift: 30, blur: 14 });
     });
-    tl.fromTo(foot, { opacity: 0 }, { opacity: 1, duration: 0.12, immediateRender: true }, 0.56);
+    tl.fromTo(foot, { opacity: 0 }, { opacity: 1, duration: 0.12, immediateRender: true }, 0.72);
   },
 };

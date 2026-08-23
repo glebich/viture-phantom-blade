@@ -115,16 +115,17 @@
 
 /* ---------- mobile 375×812 ---------- */
 @media (max-width: 640px) {
+  /* copy starts below the fixed header, not tucked under it */
   .lr-title {
-    left: 24px;
-    top: 96px;
-    width: 330px;
+    left: 40px;
+    top: 128px;
+    width: 310px;
     font-size: 26px;
   }
   .lr-note {
-    left: 24px;
-    top: 218px;
-    width: 320px;
+    left: 40px;
+    top: 252px;
+    width: 300px;
     font-size: 13.5px;
   }
   .lr-note::before {
@@ -132,16 +133,18 @@
   }
   #s14 .lr-insert {
     left: 0;
-    top: 330px;
+    top: 372px;
     width: 375px;
     height: 204px;
     border-left: none;
     border-right: none;
   }
+  /* the OSD panel sits inside the screen with margins (it used to bleed
+     off both edges, cropping the menu rows) */
   #s15 .lr-insert {
-    left: -60px;
-    top: 235px;
-    width: 497px;
-    height: 449px;
+    left: 12px;
+    top: 320px;
+    width: 351px;
+    height: 317px;
   }
 }

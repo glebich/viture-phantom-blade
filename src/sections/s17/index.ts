@@ -1,6 +1,7 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { splitWords } from "../../lib/textfx";
+import { scrubAssetArrival } from "../../lib/assetfx";
 import { mountWashRail } from "../s16";
 
 const PREORDER_URL = "https://www.viture.com/";
@@ -9,7 +10,6 @@ export const s17: Section = {
   id: "s17",
   html: `
     <div class="stage">
-      <img class="pb-threads" src="/assets/ui/threads17.png" alt="" aria-hidden="true" />
       <img class="s17-lockup" src="/assets/ui/lockup.png" alt="VITURE × Phantom Blade Ø" />
       <h2 class="s17-title">Pre-order<br/>Exclusive</h2>
       <p class="s17-body t-caps">A hand-drawn map of the world shrouded in darkness. Meticulously crafted, richly detailed—made for those who explore every shadow.</p>
@@ -49,8 +49,8 @@ export const s17: Section = {
       tl.fromTo(r, { opacity: 0 },
         { opacity: 1, duration: 0.3, ease: "sine.out", immediateRender: true }, 0.28 + i * 0.06);
     });
-    tl.fromTo(map, { opacity: 0 },
-      { opacity: 1, duration: 0.5, ease: "power2.out", immediateRender: true }, 0.3);
+    // the map scroll unrolls out of the dark — the slowest asset on the page
+    scrubAssetArrival(tl, map, 0.26, { duration: 0.52, drift: 34, blur: 16, scale: 0.955 });
     // the light behind the papyrus breathes in with the page
     tl.fromTo("#wash-glow", { opacity: 0 },
       { opacity: 1, duration: 0.55, ease: "sine.inOut", immediateRender: true }, 0.25);
