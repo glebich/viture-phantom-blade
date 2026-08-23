@@ -5,7 +5,7 @@
 #s17 .s17-plate {
   position: absolute;
   inset: 0;
-  background: url("/assets/ui/plate17.webp") center / cover no-repeat;
+  background: url("/assets/ui/wash17.webp") center / cover no-repeat;
 }
 #s17 .s17-patch {
   position: absolute;
@@ -80,9 +80,9 @@
 .s17-map {
   position: absolute;
   left: 980px;
-  top: 230px;
+  top: 225px;
   width: 580px;
-  height: 740px;
+  height: 650px;
   object-fit: cover;
 }
 .s17-foot {
@@ -93,4 +93,30 @@
   text-align: center;
   font-size: 20px;
   color: #cfc4bb;
+}
+
+
+/* ---------- tablet 744×1133 ---------- */
+@media (max-width: 1024px) and (min-width: 641px) {
+  .s17-lockup { left: 142px; top: 150px; width: 460px; }
+  .s17-title { left: 0; right: 0; width: auto; top: 220px; text-align: center; font-size: 56px; }
+  .s17-body { left: 122px; top: 390px; width: 500px; text-align: center; font-size: 16px; }
+  .s17-maplabel { left: 267px; top: 500px; width: 210px; }
+  .s17-map { left: 152px; top: 560px; width: 440px; height: 420px; }
+  .s17-foot { left: 122px; top: 990px; width: 500px; font-size: 16px; }
+  .s17-cta { left: 276px; top: 1040px; width: 192px; height: 52px; }
+}
+
+/* ---------- mobile 375×812 ---------- */
+@media (max-width: 640px) {
+  .s17-lockup { left: 68px; top: 84px; width: 240px; }
+  .s17-title { left: 0; right: 0; width: auto; top: 128px; text-align: center; font-size: 30px; }
+  .s17-body { left: 28px; top: 216px; width: 320px; text-align: center; font-size: 13.5px; }
+  .s17-maplabel { left: 82px; top: 306px; width: 210px; font-size: 13px; }
+  .s17-maplabel::before, .s17-maplabel::after { width: 60px; top: 18px; }
+  .s17-maplabel::before { left: -70px; }
+  .s17-maplabel::after { right: -70px; }
+  .s17-map { left: 70px; top: 366px; width: 235px; height: 300px; }
+  .s17-foot { left: 28px; top: 676px; width: 320px; font-size: 12.5px; }
+  .s17-cta { left: 104px; top: 712px; width: 168px; height: 46px; }
 }

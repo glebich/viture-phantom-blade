@@ -42,7 +42,7 @@ export const s13: Section = {
     <div class="s13-bg"></div>
     <video class="s13-side" muted loop playsinline preload="none" src="/video/sidemode.mp4"></video>
     <div class="s13-side-veil"></div>
-    <div class="stage stage--d">
+    <div class="stage">
       <div class="s13-screen">
         <video class="s13-v s13-v-anchor" muted loop playsinline preload="none" src="/video/ultrawide.mp4"></video>
         <video class="s13-v s13-v-uwide" muted loop playsinline preload="none" src="/video/ultrawide.mp4" style="object-fit:contain;opacity:0"></video>

@@ -14,7 +14,7 @@
 .s02-loader .ld-veil {
   position: absolute;
   inset: 0;
-  background: rgba(5, 2, 3, 0.72);
+  background: rgba(5, 2, 3, 0.18);
 }
 .s02-loader .stage {
   z-index: 2;
@@ -60,7 +60,7 @@
   width: 1920px;
   height: 560px;
   clip-path: inset(0 100% 0 0);
-  filter: drop-shadow(0 0 14px rgba(232, 52, 42, 0.4));
+  filter: drop-shadow(0 0 16px rgba(232, 52, 42, 0.5));
 }
 
 /* ---------- skip (chapters 02–04 only) ---------- */
@@ -143,4 +143,39 @@
   top: 878px;
   width: 230px;
   height: 62px;
+}
+
+
+/* ---------- tablet 744×1133 ---------- */
+@media (max-width: 1024px) and (min-width: 641px) {
+  .ld-wordmark { top: 48px; width: 96px; }
+  .ld-count { top: 470px; font-size: 150px; }
+  .ld-count sup { font-size: 64px; }
+  .ld-label { top: 1010px; font-size: 18px; }
+  .ld-thread { top: 470px; width: 1500px; left: -378px; height: 438px; }
+  .s02-skip { top: 1000px; font-size: 18px; }
+  .s02-logo { left: 122px; top: 340px; width: 500px; }
+  .s02-hero .hero-title { left: 52px; top: 800px; width: 560px; font-size: 46px; }
+  .s02-hero .hero-tag { left: 52px; top: 930px; font-size: 16px; }
+  .s02-hero .hero-price { left: 52px; top: 975px; gap: 16px; }
+  .s02-hero .hero-price img { width: 56px; height: 32px; }
+  .s02-hero .hero-price b { font-size: 46px; }
+  .s02-hero .hero-cta { left: 500px; top: 985px; width: 192px; height: 52px; }
+}
+
+/* ---------- mobile 375×812 ---------- */
+@media (max-width: 640px) {
+  .ld-wordmark { top: 40px; width: 78px; }
+  .ld-count { top: 340px; font-size: 96px; }
+  .ld-count sup { font-size: 44px; vertical-align: 12px; }
+  .ld-label { top: 715px; font-size: 14px; }
+  .ld-thread { top: 350px; width: 760px; left: -192px; height: 222px; }
+  .s02-skip { top: 720px; font-size: 15px; }
+  .s02-logo { left: 38px; top: 245px; width: 300px; }
+  .s02-hero .hero-title { left: 24px; top: 425px; width: 330px; font-size: 30px; }
+  .s02-hero .hero-tag { left: 24px; top: 525px; font-size: 13.5px; }
+  .s02-hero .hero-price { left: 24px; top: 575px; gap: 12px; }
+  .s02-hero .hero-price img { width: 42px; height: 24px; }
+  .s02-hero .hero-price b { font-size: 30px; }
+  .s02-hero .hero-cta { left: 24px; top: 645px; width: 152px; height: 44px; }
 }

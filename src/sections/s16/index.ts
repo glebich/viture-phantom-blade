@@ -15,15 +15,13 @@ export const s16: Section = {
   id: "s16",
   html: `
     <div class="s16-plate"></div>
-    <div class="stage stage--d">
-      <div class="s16-patch" style="left:560px;top:140px;width:800px;height:200px"></div>
-      <div class="s16-patch" style="left:640px;top:930px;width:640px;height:90px"></div>
+    <div class="stage">
+      <img class="pb-threads" src="/assets/ui/threads16.png" alt="" aria-hidden="true" />
       <p class="s16-eyebrow">What Else Within The Box</p>
       <h2 class="s16-title">More treasures await within</h2>
       <p class="s16-foot">Starting in October, a new reveal every week.</p>
       ${CARDS.map(
-        (c) => `<img class="s16-card" src="/assets/ui/${c.src}.webp" alt=""
-          style="left:${c.x}px;top:${c.y}px;width:${c.w}px;height:${c.h}px" data-rot="${c.rot}" />`
+        (c, i) => `<img class="s16-card s16-c${i}" src="/assets/ui/${c.src}.webp" alt="" data-rot="${c.rot}" />`
       ).join("")}
     </div>
   `,

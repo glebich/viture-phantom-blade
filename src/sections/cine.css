@@ -37,3 +37,51 @@
   line-height: 1.1;
   width: 1600px;
 }
+
+
+/* ---------- tablet 744×1133 ---------- */
+@media (max-width: 1024px) and (min-width: 641px) {
+  .cine-statement {
+    width: 660px;
+    font-size: 46px;
+  }
+  .cine-statement--xl {
+    font-size: 64px;
+    width: 700px;
+  }
+  .cine-eyebrow {
+    font-size: 18px;
+  }
+  /* chapter copy rides ~78% down the 1133 canvas */
+  #s06 .cine-statement { top: 880px !important; }
+  #s07 .cine-statement { top: 930px !important; }
+  #s10 .cine-eyebrow { top: 860px !important; }
+  #s10 .cine-statement { top: 905px !important; }
+  #s10 .cine-flourish { top: 918px !important; width: 120px !important; }
+  #s10 [data-fl] { margin-left: -330px !important; }
+  #s10 [data-fr] { margin-left: 210px !important; }
+  #s11 .cine-statement--xl { top: 500px !important; }
+}
+
+/* ---------- mobile 375×812 ---------- */
+@media (max-width: 640px) {
+  .cine-statement {
+    width: 340px;
+    font-size: 26px;
+  }
+  .cine-statement--xl {
+    font-size: 38px;
+    width: 350px;
+  }
+  .cine-eyebrow {
+    font-size: 14px;
+  }
+  #s06 .cine-statement { top: 640px !important; }
+  #s07 .cine-statement { top: 680px !important; }
+  #s10 .cine-eyebrow { top: 622px !important; }
+  #s10 .cine-statement { top: 655px !important; }
+  #s10 .cine-flourish { top: 664px !important; width: 64px !important; height: 18px !important; }
+  #s10 [data-fl] { margin-left: -172px !important; }
+  #s10 [data-fr] { margin-left: 108px !important; }
+  #s11 .cine-statement--xl { top: 360px !important; }
+}

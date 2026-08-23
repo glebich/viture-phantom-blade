@@ -15,7 +15,8 @@ export interface Paginator {
   setIds(ids: string[]): void;
 }
 
-const SLOT = 30; // px between slot centres (design: dots ~34px apart, Ø taller)
+const SLOT = 19; // px between dot centres (design rhythm)
+const O_EXTRA = 13; // the Ø cell breathes: +13px above and below
 
 export function mountPaginator(
   sectionIds: string[],
@@ -55,19 +56,17 @@ export function mountPaginator(
   function buildSlots(count: number) {
     el.innerHTML = "";
     slots = [];
-    el.style.height = `${count * SLOT}px`;
     for (let p = 0; p < count; p++) {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "pg-slot";
-      b.style.top = `${p * SLOT}px`;
       b.innerHTML = `<span class="pg-dot"></span>`;
       el.appendChild(b);
       slots.push(b);
     }
   }
 
-  const GLYPH = `<img class="pg-oglyph" src="/assets/ui/pg-o.png" alt="" aria-hidden="true" />`;
+  const GLYPH = `<img class="pg-oglyph" src="/assets/ui/pg-o.svg" alt="" aria-hidden="true" />`;
 
   function render(index: number) {
     if (index === current) return;
@@ -75,6 +74,15 @@ export function mountPaginator(
     const w = Math.min(ids.length, WIN);
     if (slots.length !== w) buildSlots(w);
     const start = Math.max(0, Math.min(index - (w >> 1), ids.length - w));
+    // dynamic rhythm: uniform 19px dots, the Ø cell gets extra air
+    let y = 0;
+    slots.forEach((btn, p) => {
+      const isCur = start + p === index;
+      if (isCur) y += O_EXTRA;
+      btn.style.top = `${y}px`;
+      y += SLOT + (isCur ? O_EXTRA : 0);
+    });
+    el.style.height = `${y}px`;
     const moreTop = start > 0;
     const moreBtm = start + w < ids.length;
     slots.forEach((btn, p) => {

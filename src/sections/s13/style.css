@@ -114,3 +114,32 @@
 .s13-copy {
   opacity: 0;
 }
+
+
+/* ---------- tablet 744×1133 ---------- */
+@media (max-width: 1024px) and (min-width: 641px) {
+  .s13-tab { top: 168px; width: 44px; height: 44px; }
+  .s13-tab img { width: 30px; height: 30px; }
+  .s13-tab:nth-of-type(1) { left: 236px !important; }
+  .s13-tab:nth-of-type(2) { left: 312px !important; }
+  .s13-tab:nth-of-type(3) { left: 388px !important; }
+  .s13-tab:nth-of-type(4) { left: 464px !important; }
+  .s13-title { top: 258px; width: 640px; font-size: 36px; }
+  .s13-sub { top: 330px; width: 540px; font-size: 16px; }
+  .s13-screen { left: 22px !important; top: 440px !important; width: 700px !important; height: 438px !important; }
+  .s13-3d { left: -20px; top: 380px; width: 784px; height: 560px; }
+}
+
+/* ---------- mobile 375×812 ---------- */
+@media (max-width: 640px) {
+  .s13-tab { top: 92px; width: 40px; height: 40px; }
+  .s13-tab img { width: 26px; height: 26px; }
+  .s13-tab:nth-of-type(1) { left: 92px !important; }
+  .s13-tab:nth-of-type(2) { left: 152px !important; }
+  .s13-tab:nth-of-type(3) { left: 212px !important; }
+  .s13-tab:nth-of-type(4) { left: 272px !important; }
+  .s13-title { top: 158px; width: 340px; font-size: 24px; }
+  .s13-sub { top: 205px; width: 330px; font-size: 13.5px; }
+  .s13-screen { left: 0 !important; top: 300px !important; width: 375px !important; height: 240px !important; border-left: none; border-right: none; }
+  .s13-3d { left: -20px; top: 270px; width: 415px; height: 300px; }
+}

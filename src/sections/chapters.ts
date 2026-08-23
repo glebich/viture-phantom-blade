@@ -17,7 +17,7 @@ import { mountCine, cineHtml } from "../lib/cine";
 export const s06: Section = {
   id: "s06",
   html: cineHtml(`
-    <div class="stage stage--d">
+    <div class="stage">
       <h2 class="cine-statement" style="top:815px" data-beat>Forged in shadow.<br/>Sharpened for play.</h2>
     </div>
   `),
@@ -34,7 +34,7 @@ export const s06: Section = {
 export const s07: Section = {
   id: "s07",
   html: cineHtml(`
-    <div class="stage stage--d">
+    <div class="stage">
       <h2 class="cine-statement" style="top:894px" data-beat>A Weapon, Worn.</h2>
     </div>
   `),
@@ -50,7 +50,7 @@ export const s07: Section = {
 // s09 — the sword sheathes into the case (clip4, pure cinematic transition)
 export const s09: Section = {
   id: "s09",
-  html: cineHtml(`<div class="stage stage--d"></div>`),
+  html: cineHtml(`<div class="stage"></div>`),
   init(el, ctx) {
     mountCine({ id: "s09", clip: "clip4", count: 65, lengthVh: 2.2, videoSpan: 0.9, ctx, el });
   },
@@ -61,10 +61,10 @@ export const s09: Section = {
 export const s10: Section = {
   id: "s10",
   html: cineHtml(`
-    <div class="stage stage--d">
+    <div class="stage">
       <p class="cine-eyebrow" style="top:819px" data-eyebrow>Kungfupunk Style</p>
-      <img class="cine-flourish" style="left:528px;top:902px;width:166px;height:36px" src="/assets/ui/flourish-l.png" alt="" data-fl />
-      <img class="cine-flourish" style="left:1238px;top:902px;width:166px;height:36px" src="/assets/ui/flourish-r.png" alt="" data-fr />
+      <img class="cine-flourish" style="left:50%;margin-left:-424px;top:902px;width:148px;height:36px" src="/assets/ui/flourish-l.png" alt="" data-fl />
+      <img class="cine-flourish" style="left:50%;margin-left:276px;top:902px;width:148px;height:36px" src="/assets/ui/flourish-r.png" alt="" data-fr />
       <h2 class="cine-statement" style="top:894px" data-beat>Glasses Case</h2>
     </div>
   `),
@@ -73,14 +73,14 @@ export const s10: Section = {
       id: "s10", clip: "clip5", count: 52, lengthVh: 3.5, videoSpan: 0.78, videoStart: 0.14,
       ctx, el,
       beats: [
-        { sel: "[data-eyebrow]", at: 0.02, out: 0.24, words: false },
-        { sel: "[data-beat]", at: 0.03, out: 0.25, words: true },
+        { sel: "[data-eyebrow]", at: 0.004, out: 0.24, words: false },
+        { sel: "[data-beat]", at: 0.006, out: 0.25, words: true },
       ],
       onTimeline(tl) {
         const fl = el.querySelector("[data-fl]")!;
         const fr = el.querySelector("[data-fr]")!;
-        tl.fromTo(fl, { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.06, immediateRender: true }, 0.05);
-        tl.fromTo(fr, { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.06, immediateRender: true }, 0.05);
+        tl.fromTo(fl, { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.06, immediateRender: true }, 0.012);
+        tl.fromTo(fr, { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.06, immediateRender: true }, 0.012);
         tl.to(fl, { opacity: 0, duration: 0.05 }, 0.24);
         tl.to(fr, { opacity: 0, duration: 0.05 }, 0.24);
       },
@@ -94,7 +94,7 @@ export const s10: Section = {
 export const s11: Section = {
   id: "s11",
   html: cineHtml(`
-    <div class="stage stage--d">
+    <div class="stage">
       <h2 class="cine-statement cine-statement--xl" style="top:486px" data-beat>A 174-inch battlefield</h2>
     </div>
   `),
@@ -102,10 +102,10 @@ export const s11: Section = {
     mountCine({
       id: "s11", clip: "clip6", count: 30, lengthVh: 4, videoSpan: 0.72,
       ctx, el,
-      beats: [{ sel: "[data-beat]", at: 0.42, words: true }],
+      beats: [{ sel: "[data-beat]", at: 0.6, words: true }],
       onTimeline(tl) {
         const st = el.querySelector("[data-beat]")!;
-        tl.to(st, { scale: 0.643, transformOrigin: "50% 50%", duration: 0.18, ease: "sine.inOut" }, 0.72);
+        tl.to(st, { scale: 0.643, transformOrigin: "50% 50%", duration: 0.14, ease: "sine.inOut" }, 0.8);
       },
     });
   },

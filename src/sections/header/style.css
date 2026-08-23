@@ -27,15 +27,17 @@
   height: 48px;
   cursor: pointer;
 }
-.hd-logo .hd-lottie {
-  position: absolute;
-  inset: 0;
-}
+.hd-logo .hd-lottie,
 .hd-logo img {
+  /* the lottie frames draw the V inside ~37% of their 100px box — blow the
+     box up so the visible mark matches the design's ~52px width; keeping
+     the SAME box for the static frame and the lottie means hover playback
+     is pixel-registered (client) */
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  left: -21px;
+  top: -25px;
+  width: 98px;
+  height: 98px;
   object-fit: contain;
 }
 
@@ -257,11 +259,19 @@
 }
 
 @media (max-width: 640px) {
+  /* design: the paper CTA rides centered in the phone header */
   .hd-buy {
-    display: none;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 88px;
+  }
+  .cta-paper {
+    width: 150px;
+    height: 40px;
   }
   #dock {
-    display: flex;
+    display: none;
   }
   .hd-logo {
     width: 42px;

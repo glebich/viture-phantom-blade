@@ -8,9 +8,8 @@ export const s17: Section = {
   id: "s17",
   html: `
     <div class="s17-plate"></div>
-    <div class="stage stage--d">
-      <div class="s17-patch" style="left:150px;top:140px;width:560px;height:110px"></div>
-      <div class="s17-patch" style="left:150px;top:360px;width:620px;height:640px"></div>
+    <div class="stage">
+      <img class="pb-threads" src="/assets/ui/threads17.png" alt="" aria-hidden="true" />
       <img class="s17-lockup" src="/assets/ui/lockup.png" alt="VITURE × Phantom Blade Ø" />
       <h2 class="s17-title">Pre-order<br/>Exclusive</h2>
       <p class="s17-body t-caps">A hand-drawn map of the world shrouded in darkness. Meticulously crafted, richly detailed—made for those who explore every shadow.</p>

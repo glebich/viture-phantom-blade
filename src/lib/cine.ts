@@ -105,6 +105,22 @@ export function mountCine(opts: CineOptions) {
     }
   }
 
+  // departure fade — as the released section slides up past the header,
+  // its copy dissolves instead of colliding with the fixed chrome
+  const stage = el.querySelector<HTMLElement>(".stage");
+  if (stage) {
+    gsap.to(stage, {
+      opacity: 0,
+      ease: "none",
+      scrollTrigger: {
+        trigger: el,
+        start: "bottom 92%",
+        end: "bottom 45%",
+        scrub: true,
+      },
+    });
+  }
+
   opts.onTimeline?.(tl);
   return { tl, rail };
 }

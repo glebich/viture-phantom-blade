@@ -1,0 +1,8 @@
+assets-src
+harvest
+qa
+node_modules
+scripts
+src
+.claude
+*.log

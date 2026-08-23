@@ -11,7 +11,7 @@ const PREORDER_URL = "https://www.viture.com/";
 export const s02: Section = {
   id: "s02",
   html: cineHtml(`
-    <div class="stage stage--d">
+    <div class="stage">
       <button class="s02-skip" type="button">Skip</button>
       <div class="s02-logo"><img src="/assets/ui/logo-pbz.png" alt="VITURE × Phantom Blade Ø" /></div>
       <div class="s02-hero">
@@ -25,7 +25,7 @@ export const s02: Section = {
     </div>
     <div class="s02-loader">
       <div class="ld-veil"></div>
-      <div class="stage stage--d">
+      <div class="stage">
         <img class="ld-wordmark" src="/assets/ui/wordmark.png" alt="VITURE" />
         <img class="ld-thread" src="/assets/ui/loader-thread.png" alt="" aria-hidden="true" />
         <div class="ld-count"><span class="ld-num">0</span><sup>%</sup></div>
