@@ -42,10 +42,10 @@ const ANCHORS: [string, [number, number][]][] = [
 
 /** how far past each edge the cord swings — the turnarounds stay off-screen,
  *  so what you see in frame is only the shallow part of the crossing */
-const SERP_A = 1.0;
+const SERP_A = 1.7;
 const LUT_STEP = 8; // px of document per lookup-table entry
 const FADE = 420; // px of scroll over which the cord enters / leaves
-const CORE_W = 2.4;
+const CORE_W = 2.0;
 
 const phone = () => window.matchMedia("(max-width: 640px)").matches;
 
@@ -114,11 +114,13 @@ export function mountThread(ctx: SectionCtx): void {
     // Amplitude and period are set together: their RATIO fixes the rake (a
     // crossing traverses the full width in ~0.45 of a screen height, ≈14°,
     // which is what the frames read at) while their absolute size sets how
-    // far apart the crossings sit. Spaced so consecutive crossings can't both
-    // land in one viewport — you see one cord passing through, not a lattice.
+    // far apart the crossings sit. Spaced generously — consecutive crossings
+    // are more than a viewport apart, so the cord passes through now and
+    // then rather than laying a lattice over every screen (client: "too many
+    // threads now and hard to scroll").
     // A phone is a quarter the width, so it needs a far longer period to stay
     // anywhere near as shallow.
-    const period = (narrow ? 7.2 : 2.55) * Math.max(560, h);
+    const period = (narrow ? 11 : 4.34) * Math.max(560, h);
     let phase = narrow ? 1.9 : 0.6;
     for (let i = 0; i < n; i++) {
       const y = y0 + i * LUT_STEP;
@@ -186,8 +188,8 @@ export function mountThread(ctx: SectionCtx): void {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     w = window.innerWidth;
     h = window.innerHeight;
-    coreW = phone() ? 1.5 : CORE_W;
-    glowA = phone() ? 0.34 : 0.5;
+    coreW = phone() ? 1.3 : CORE_W;
+    glowA = phone() ? 0.26 : 0.38;
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
     canvas.style.width = `${w}px`;
