@@ -2,7 +2,7 @@ import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { splitWords, scrubTurn, scrubFlare } from "../../lib/textfx";
 import { tierUrl } from "../../lib/cine";
-import { setRest } from "../../lib/rests";
+import { setRest, setStops } from "../../lib/rests";
 
 /* s13 — display modes. Pinned: scroll advances Anchor → Ultra-Wide →
  * Immersive 3D → Side; the icon tabs are clickable (they glide the scroll
@@ -150,8 +150,6 @@ export const s13: Section = {
     }
     backSync();
 
-    // the dots land on the first mode, read and settled (see rests.ts)
-    setRest("s13", tl, 0.17);
 
     // ---- the film hands its last frame to the TV (client: "no transition
     // between A 174-INCH BATTLEFIELD and the next one; it should be a smooth
@@ -192,19 +190,43 @@ export const s13: Section = {
         onUpdate: () => { morph = mp.v; applyBack(); } }, 0);
 
     // copy in/out per beat
+    //
+    // The stagger is normalised to a fixed REVEAL span instead of a fixed
+    // per-word step. The four copies run 19, 17, 23 and 26 words, so a flat
+    // 0.0035 per word made every reveal a different length and all of them
+    // longer than the beat that held them: the scroll came to rest with the
+    // sentence still arriving, and mode 0 was worse than that — its last
+    // words landed at 0.228 while its own fade-out began at 0.205, so the
+    // full line could never be seen at all (client: "scroll stops on the page
+    // before whole text show up").
+    //
+    // The stop for each mode is now DERIVED from these same numbers rather
+    // than guessed alongside them, so the two cannot drift apart again.
+    const REVEAL = 0.045; // progress over which a whole copy arrives
+    const WORD_IN = 0.03; // how long one word takes
+    const modeStops: number[] = [];
     MODES.forEach((_, i) => {
       // mode 0 waits for the morph above to seat the screen
-      const at = i === 0 ? 0.125 : i * SEG + 0.02;
-      const out = (i + 1) * SEG - 0.045;
-      scrubTurn(tl, copies[i], wordSets[i], at, 0.0035, { tilt: 0.05 });
-      scrubFlare(tl, wordSets[i], at, 0.0035, { cool: 0.045 });
+      const at = i === 0 ? 0.115 : i * SEG + 0.02;
+      const out = (i + 1) * SEG - 0.02;
+      const stepK = REVEAL / Math.max(1, wordSets[i].length - 1);
+      scrubTurn(tl, copies[i], wordSets[i], at, stepK, { tilt: 0.05 });
+      scrubFlare(tl, wordSets[i], at, stepK, { cool: 0.045 });
       wordSets[i].forEach((w, k) => {
         tl.fromTo(w, { opacity: 0 },
-          { opacity: 1, duration: 0.04, ease: "power2.out", immediateRender: true },
-          at + k * 0.0035);
+          { opacity: 1, duration: WORD_IN, ease: "power2.out", immediateRender: true },
+          at + k * stepK);
         if (i < 3) tl.to(w, { opacity: 0, duration: 0.03, ease: "sine.in" }, out + k * 0.001);
       });
+      // a beat past the last word landing — the page is READ here, not still
+      // assembling, and comfortably before this mode starts to leave
+      modeStops.push(Math.min(out - 0.02, at + REVEAL + WORD_IN + 0.015));
     });
+
+    // This chapter is FOUR of the client's pages, not one: each mode is a
+    // stop of its own. The dots land on the first (see rests.ts).
+    setRest("s13", tl, modeStops[0]);
+    setStops("s13", tl, modeStops);
 
     // screen geometry morphs between beats
     for (let i = 1; i < MODES.length; i++) {

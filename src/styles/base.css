@@ -275,12 +275,6 @@ html.cinema #scrollhint {
 }
 
 /* touch rests: proximity snap (minidock round 23) */
-@media (max-width: 640px) {
-  html {
-    scroll-snap-type: y proximity;
-  }
-  section.screen,
-  .pin-spacer {
-    scroll-snap-align: start;
-  }
-}
+/* No CSS scroll-snap: lib/chapternav.ts drives touch to the same thirteen
+   pages as the wheel (client: "same for mobile"), and a proximity snap
+   underneath it would pull against the journey mid-flight. */

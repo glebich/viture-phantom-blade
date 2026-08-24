@@ -8,11 +8,11 @@ import type { Section, SectionCtx } from "./lib/section";
 import { sections } from "./sections";
 import { header } from "./sections/header";
 import { mountPaginator } from "./lib/paginator";
-import { restY } from "./lib/rests";
+import { restY, stopYs } from "./lib/rests";
 import { mountScrollHint } from "./lib/scrollhint";
 import { mountIdleCue } from "./lib/idlecue";
 import { mountThread } from "./lib/thread";
-import { mountSnap } from "./lib/snap";
+import { mountChapterNav } from "./lib/chapternav";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -63,6 +63,7 @@ if (import.meta.env.DEV) {
     lenis,
     gsap,
     ScrollTrigger,
+    stopYs,
   };
 }
 
@@ -186,7 +187,8 @@ if (!qaOnly) {
 
   mountScrollHint();
   mountIdleCue(lenis);
-  mountSnap(lenis, gsap);
+  // the pages are the only scroll stops (see lib/chapternav.ts)
+  mountChapterNav(lenis, gsap);
   // the one continuous cord — it fades up once the loader (which draws its
   // own thread as the progress bar) has handed the screen over
   mountThread(ctx);
