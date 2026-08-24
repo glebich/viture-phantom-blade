@@ -123,25 +123,9 @@
   text-transform: uppercase;
   position: relative;
 }
-.s17-again-label::before,
-.s17-again-label::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 120px;
-  height: 3px;
-  background: url("/assets/ui/flourish-line.png") center / contain no-repeat;
-  opacity: 0.75;
-}
-.s17-again-label::before {
-  right: 100%;
-  margin-right: 22px;
-}
-.s17-again-label::after {
-  left: 100%;
-  margin-left: 22px;
-  transform: scaleX(-1);
-}
+/* No flanking rules on this control (client) — the chevron above the label
+   is the whole affordance. The map label above keeps its rules because the
+   design draws them there. */
 
 /* ---------- tablet 744×1133 ---------- */
 @media (max-width: 1024px) and (min-width: 641px) {

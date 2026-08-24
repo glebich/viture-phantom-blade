@@ -36,27 +36,10 @@
   font-size: 20px;
   color: #cfc4bb;
 }
-/* the same ink rules that flank the map label on the finale (s17) — the
-   motif is already the site's, this heading was just missing it (client) */
-.s16-eyebrow::before,
-.s16-eyebrow::after {
-  content: "";
-  position: absolute;
-  top: 9px;
-  width: 190px;
-  height: 5px;
-  background: url("/assets/ui/flourish-line.png") center / contain no-repeat;
-  opacity: 0.8;
-}
-.s16-eyebrow::before {
-  right: 60%;
-  margin-right: 30px;
-}
-.s16-eyebrow::after {
-  left: 60%;
-  margin-left: 30px;
-  transform: scaleX(-1);
-}
+/* NO ink rules on this heading. They were added here by analogy with the
+   finale's map label, but the client's own Desktop / Section - 16 frame has
+   the eyebrow bare — flourishes belong only where the design draws them
+   (s09's case title, s17's map label). */
 .s16-title {
   position: absolute;
   left: 0;

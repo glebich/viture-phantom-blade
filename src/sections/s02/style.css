@@ -94,11 +94,16 @@
   opacity: 0.9;
 }
 /* the red thread IS the progress bar — it draws in left → right.
-   The drawn thread's TIP sits at 69.3% of the artwork's width (the rest of
-   the PNG is a stray fragment from the desktop plate), so each breakpoint
-   scales the image until that tip clears the right screen edge — the thread
-   must run all the way off-screen at 100%, never stop mid-canvas (client).
-   src/sections/s02/index.ts reveals to TIP_PCT, hiding the fragment. */
+   The drawn thread's TIP sits at 69.3% of the artwork's width (the rest is
+   empty), so each breakpoint scales the image until that tip clears the
+   right screen edge — the thread must run all the way off-screen at 100%,
+   never stop mid-canvas (client). index.ts reveals to TIP_PCT.
+   The artwork is keyed from the Figma plate, so it is cleaned to its single
+   largest connected blob: every other speck is plate residue, including a
+   ghost "Loading…" that showed beside the live label. The filename carries a
+   version because /assets/ is served immutable for a year — re-cutting an
+   asset under the same name leaves visitors on the stale copy (client saw
+   the ghost days after it was fixed). Bump the suffix on every re-cut. */
 .ld-thread {
   position: absolute;
   left: 0;

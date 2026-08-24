@@ -28,7 +28,7 @@ export const s02: Section = {
     <div class="s02-loader">
       <div class="stage">
         <img class="ld-wordmark" src="/assets/ui/wordmark.png" alt="VITURE" />
-        <img class="ld-thread" src="/assets/ui/loader-thread.png" alt="" aria-hidden="true" />
+        <img class="ld-thread" src="/assets/ui/loader-thread-2.png" alt="" aria-hidden="true" />
         <div class="ld-count"><span class="ld-num">0</span><sup>%</sup></div>
         <div class="ld-label">Loading...</div>
       </div>
