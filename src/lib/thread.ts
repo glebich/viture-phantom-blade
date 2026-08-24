@@ -218,7 +218,19 @@ export function mountThread(ctx: SectionCtx): void {
   };
   const contentAlpha = (): number => {
     let best = 0;
-    for (const b of windows) {
+    for (let i = 0; i < windows.length; i++) {
+      const b = windows[i];
+      // The FINAL chapter is never scrolled through — the page bottom lands
+      // you at its top, so its own progress reads 0 forever and the cord
+      // vanished exactly where it should be resting (client). Measure that
+      // one by how far it has RISEN into the viewport instead, and give it
+      // no departure ramp: there is nothing after it to hand off to.
+      if (i === windows.length - 1) {
+        const risen = (scroll - (b.top - h)) / Math.max(1, h);
+        const a = smoothstep(0.45, 0.85, risen);
+        if (a > best) best = a;
+        continue;
+      }
       const u = (scroll - b.top) / Math.max(1, b.height);
       if (u < 0 || u > 1) continue;
       const a = smoothstep(0, IN, u) * (1 - smoothstep(OUT, 1, u));

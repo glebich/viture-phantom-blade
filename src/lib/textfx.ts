@@ -368,6 +368,9 @@ export interface ArrivalOpts {
   tilt?: number;
   /** timeline units the flare takes to cool once a word has landed */
   cool?: number;
+  /** how long the flare stays hot before cooling — must outlast the word's
+   *  own opacity fade-in, or the glow peaks while the word is still invisible */
+  hold?: number;
   /** starting angle in degrees */
   angle?: number;
 }
@@ -421,15 +424,21 @@ export function scrubFlare(
   step: number,
   opts?: ArrivalOpts
 ): void {
-  const cool = opts?.cool ?? 0.09;
+  const cool = opts?.cool ?? 0.11;
+  // The word fades in over its own window; if the flare starts cooling before
+  // that finishes, the glow burns while the word is still invisible and has
+  // already died by the time you can read it (measured on the 174-inch
+  // statement: glow 0.95 at opacity 0, glow 0.055 at opacity 1). So it holds
+  // hot until the word has fully landed, THEN cools.
+  const hold = opts?.hold ?? 0.075;
   words.forEach((w, i) => {
     const t = at + i * step;
     tl.fromTo(
       w,
       { textShadow: FLARE_ON },
-      { textShadow: FLARE_ON, duration: 0.001, immediateRender: true },
+      { textShadow: FLARE_ON, duration: hold, immediateRender: true },
       t
     );
-    tl.to(w, { textShadow: FLARE_OFF, duration: cool, ease: "power2.out" }, t + cool * 0.5);
+    tl.to(w, { textShadow: FLARE_OFF, duration: cool, ease: "power2.out" }, t + hold);
   });
 }

@@ -140,12 +140,18 @@ export const s13: Section = {
       }, i * SEG - 0.02);
     }
 
-    // per-mode layers
+    // Per-mode layers, CROSS-FADED. The anchor clip used to stay on until the
+    // 3D beat, which worked on desktop only because the screen box reshapes to
+    // 21:9 and the ultra-wide clip covers it exactly. On a phone the box keeps
+    // one fixed rect, so the contained ultra-wide clip letterboxed and the
+    // anchor showed through above and below it — three clips stacked on screen
+    // at once instead of one (client). The anchor now hands over as ultra-wide
+    // arrives, so exactly one clip is ever lit.
+    tl.to(vAnchor, { opacity: 0, duration: 0.05 }, SEG - 0.02);
     tl.to(vUwide, { opacity: 1, duration: 0.05 }, SEG - 0.02);      // ultra-wide letterbox
     tl.to(vUwide, { opacity: 0, duration: 0.05 }, 2 * SEG - 0.02);
     tl.to(v3d, { opacity: 1, duration: 0.06 }, 2 * SEG + 0.01);      // 3d breakout
     tl.to(v3d, { opacity: 0, duration: 0.05 }, 3 * SEG - 0.04);
-    tl.to(vAnchor, { opacity: 0, duration: 0.05 }, 2 * SEG - 0.01);  // anchor clip off during 3d/side
     // side mode: full-bleed clip; screen + border dissolve
     tl.to(vSide, { opacity: 1, duration: 0.05 }, 3 * SEG - 0.01);
     tl.to(sideVeil, { opacity: 1, duration: 0.05 }, 3 * SEG - 0.01);
