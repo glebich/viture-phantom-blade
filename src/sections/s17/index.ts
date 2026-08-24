@@ -18,6 +18,10 @@ export const s17: Section = {
       <p class="s17-maplabel">Limited Collector's Edition Game Map</p>
       <img class="s17-map" src="/assets/ui/map.png" alt="Collector's edition hand-drawn game map" />
       <p class="s17-foot t-caps">Limited To Pre-Order Customers Only.</p>
+      <button class="s17-again" type="button" aria-label="Watch again from the top">
+        <span class="s17-again-arrow" aria-hidden="true"></span>
+        <span class="s17-again-label">Watch Again</span>
+      </button>
     </div>
   `,
   init(el, ctx: SectionCtx) {
@@ -26,10 +30,15 @@ export const s17: Section = {
     const title = el.querySelector<HTMLElement>(".s17-title")!;
     const words = splitWords(title);
     gsap.set(words, { opacity: 0 });
-    const rest = [".s17-lockup", ".s17-body", ".s17-cta", ".s17-maplabel", ".s17-foot"]
+    const rest = [".s17-lockup", ".s17-body", ".s17-cta", ".s17-maplabel", ".s17-foot", ".s17-again"]
       .map((s) => el.querySelector<HTMLElement>(s)!)
       .filter(Boolean);
     const map = el.querySelector<HTMLElement>(".s17-map")!;
+
+    // the end of the film should offer the way back rather than a dead stop
+    el.querySelector<HTMLButtonElement>(".s17-again")!.addEventListener("click", () => {
+      ctx.lenis.scrollTo(0, { duration: 2.6, easing: (t) => 1 - Math.pow(1 - t, 3) });
+    });
 
     const tl = gsap.timeline({
       defaults: { ease: "none" },

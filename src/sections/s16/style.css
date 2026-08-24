@@ -36,6 +36,27 @@
   font-size: 20px;
   color: #cfc4bb;
 }
+/* the same ink rules that flank the map label on the finale (s17) — the
+   motif is already the site's, this heading was just missing it (client) */
+.s16-eyebrow::before,
+.s16-eyebrow::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  width: 190px;
+  height: 3px;
+  background: url("/assets/ui/flourish-l.png") center / contain no-repeat;
+  opacity: 0.75;
+}
+.s16-eyebrow::before {
+  right: 60%;
+  margin-right: 30px;
+}
+.s16-eyebrow::after {
+  left: 60%;
+  margin-left: 30px;
+  transform: scaleX(-1);
+}
 .s16-title {
   position: absolute;
   left: 0;
@@ -63,14 +84,23 @@
 }
 
 
-.s16-c0 { left: 57px; top: 226px; width: 560px; height: 627px; }
-.s16-c1 { left: 439px; top: 302px; width: 523px; height: 571px; }
-.s16-c2 { left: 782px; top: 277px; width: 483px; height: 531px; }
-.s16-c3 { left: 1155px; top: 230px; width: 522px; height: 563px; }
+/* Boxes solved against the client's frame rather than eyeballed: each PNG
+   carries wide transparent margins, so the element box is not the card. The
+   VISIBLE art (alpha bbox, mapped through object-fit: contain) used to span
+   x144–1582 — centre 863 against the canvas centre 960, which is the leftward
+   lean — and measured 1438 wide against the design's 1517. Scaled 1.055 about
+   the group centre and re-centred on 960. */
+.s16-c0 { left: 110px; top: 209px; width: 591px; height: 662px; }
+.s16-c1 { left: 513px; top: 289px; width: 552px; height: 602px; }
+.s16-c2 { left: 875px; top: 262px; width: 510px; height: 560px; }
+.s16-c3 { left: 1268px; top: 213px; width: 551px; height: 594px; }
 
 /* ---------- tablet 744×1133 ---------- */
 @media (max-width: 1024px) and (min-width: 641px) {
   .s16-eyebrow { top: 170px; font-size: 16px; }
+  .s16-eyebrow::before, .s16-eyebrow::after { width: 120px; top: 11px; }
+  .s16-eyebrow::before { margin-right: 18px; }
+  .s16-eyebrow::after { margin-left: 18px; }
   .s16-title { top: 205px; font-size: 36px; }
   .s16-foot { top: 1030px; font-size: 16px; }
   .s16-c0 { left: 8px; top: 255px; width: 390px; height: 430px; }
@@ -84,6 +114,9 @@
   /* the copy starts BELOW the fixed header (logo/CTA/burger occupy the top
      ~78px) — the eyebrow used to sit under the paper CTA (client) */
   .s16-eyebrow { top: 130px; font-size: 13px; }
+  .s16-eyebrow::before, .s16-eyebrow::after { width: 58px; top: 9px; }
+  .s16-eyebrow::before { margin-right: 10px; }
+  .s16-eyebrow::after { margin-left: 10px; }
   .s16-title { top: 160px; font-size: 24px; padding: 0 20px; }
   /* the cards carry their own labels — they have to be readable at arm's
      length, so the grid runs nearly edge to edge (client). The PNGs have

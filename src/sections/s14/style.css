@@ -92,11 +92,13 @@
 
 /* ---------- tablet 744×1133 ---------- */
 @media (max-width: 1024px) and (min-width: 641px) {
+  /* the title column must STOP before the note's hairline rule (x429) —
+     at 560 wide its first line ran straight under the note copy */
   .lr-title {
-    left: 52px;
-    top: 190px;
-    width: 560px;
-    font-size: 36px;
+    left: 40px;
+    top: 152px;
+    width: 372px;
+    font-size: 32px;
   }
   /* Tablet / Section - 14 keeps the desktop TWO-COLUMN head: note on the
      right of a hairline rule, not stacked under the title. */

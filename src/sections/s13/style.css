@@ -70,19 +70,22 @@
 .s13-tab:hover {
   opacity: 0.95;
 }
+/* Selected state, as authored: the icon itself goes bright white with a
+   soft bloom — NOT a filled plate. (A cream rounded rect behind an
+   inverted icon was drawn UI chrome, which this system never uses, and it
+   read nothing like the client's frame.) */
 .s13-tab.on {
   opacity: 1;
-  background: #f2ede4;
 }
 .s13-tab.on img {
-  filter: invert(1) brightness(0.15);
+  filter: brightness(2.1) drop-shadow(0 0 9px rgba(255, 245, 240, 0.55));
 }
 
 .s13-title {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 272px;
+  top: 276px;
   width: 900px;
   text-align: center;
   font-size: 40px;
@@ -95,7 +98,9 @@
   left: 50%;
   transform: translateX(-50%);
   top: 349px;
-  width: 560px;
+  /* the design's copy measure is 469px — a wider box re-wraps the line
+     ("— Every Strike, Every" crept up to line 1) */
+  width: 470px;
   text-align: center;
   font-size: 20px;
   line-height: 1.45;
@@ -108,7 +113,9 @@
   top: 471px;
   width: 1158px;
   height: 724px;
-  border: 1px solid #c22a20;
+  /* 2px in design px, with the frame's own bloom (Figma edge crop) */
+  border: 2px solid #c22a20;
+  box-shadow: 0 0 42px rgba(194, 42, 32, 0.42), 0 0 120px rgba(150, 20, 14, 0.22);
   overflow: hidden;
   background: #000;
 }
