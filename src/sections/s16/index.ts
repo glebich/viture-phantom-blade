@@ -69,9 +69,24 @@ export const s16: Section = {
     });
     setRest("s16", tl, 0.8);
     tl.to({}, { duration: 1 }, 0);
-    tl.fromTo(eyebrow, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "sine.out", immediateRender: true }, 0.05);
-    scrubFlare(tl, [title], 0.08, 0, { cool: 0.11 });
-    tl.fromTo(title, { opacity: 0 }, { opacity: 1, duration: 0.14, ease: "sine.out", immediateRender: true }, 0.08);
+
+    // The heading arrives on the APPROACH, not once the pin has landed. A
+    // pinned section only starts its timeline after it has fully scrolled into
+    // place, so the hand-off out of the OSD chapter — a whole viewport of
+    // scroll — had the outgoing copy already faded and nothing incoming yet:
+    // an empty screen you had to scroll through (client). Riding the entry
+    // instead means the eyebrow and title are already condensing in as the
+    // section rises.
+    const intro = gsap.timeline({
+      defaults: { ease: "none" },
+      scrollTrigger: { trigger: el, start: "top 92%", end: "top 12%", scrub: true },
+    });
+    intro.to({}, { duration: 1 }, 0);
+    intro.fromTo(eyebrow, { opacity: 0 },
+      { opacity: 1, duration: 0.34, ease: "sine.out", immediateRender: true }, 0.1);
+    scrubFlare(intro, [title], 0.24, 0, { hold: 0.3, cool: 0.34 });
+    intro.fromTo(title, { opacity: 0 },
+      { opacity: 1, duration: 0.36, ease: "sine.out", immediateRender: true }, 0.24);
     // the relic cards drift up and resolve out of blur, one after another —
     // slow enough to read as a reveal rather than a switch (client)
     cards.forEach((c, i) => {

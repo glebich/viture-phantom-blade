@@ -162,7 +162,7 @@ function livingRoom(opts: { id: string; title: string; note: string }): Section 
       // tail fade inside the pin — nothing of the stage can ever slice
       // across the header during the release scroll
       const stage = el.querySelector<HTMLElement>(".stage")!;
-      tl.to(stage, { opacity: 0, duration: 0.06, ease: "sine.in" }, 0.94);
+      tl.to(stage, { opacity: 0, duration: 0.02, ease: "sine.in" }, 0.975);
     },
   };
 }
