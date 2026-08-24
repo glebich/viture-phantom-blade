@@ -4,7 +4,6 @@
   "outputDirectory": "dist",
   "headers": [
     {
-      "//": "Hand-cut UI crops get re-cut under the SAME filename, so they must never be immutable — a client kept seeing a ghost baked into an old loader-thread.png for days because it was cached for a year. Revalidate these; the frame sequences below never change content and stay immutable.",
       "source": "/assets/ui/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=600, stale-while-revalidate=86400" }
