@@ -1,6 +1,6 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
-import { splitWords, scrubTurn, scrubFlare } from "../../lib/textfx";
+import { splitWords, scrubTurn, scrubFlare, scrubWordExit } from "../../lib/textfx";
 import { tierUrl } from "../../lib/cine";
 import { setRest, setStops } from "../../lib/rests";
 
@@ -216,8 +216,13 @@ export const s13: Section = {
         tl.fromTo(w, { opacity: 0 },
           { opacity: 1, duration: WORD_IN, ease: "power2.out", immediateRender: true },
           at + k * stepK);
-        if (i < 3) tl.to(w, { opacity: 0, duration: 0.03, ease: "sine.in" }, out + k * 0.001);
       });
+      // the copy leaves as a wave across the line, not a blink; it overlaps
+      // the next mode's arrival slightly, which reads as a cross-dissolve
+      if (i < 3) {
+        scrubWordExit(tl, copies[i], wordSets[i], out,
+          0.03 / Math.max(1, wordSets[i].length - 1), { dur: 0.04, blur: 4 });
+      }
       // a beat past the last word landing — the page is READ here, not still
       // assembling, and comfortably before this mode starts to leave
       modeStops.push(Math.min(out - 0.02, at + REVEAL + WORD_IN + 0.015));

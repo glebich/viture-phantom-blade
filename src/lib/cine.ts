@@ -1,5 +1,5 @@
 import type { SectionCtx } from "./section";
-import { splitWords, scrubTurn, scrubFlare } from "./textfx";
+import { splitWords, scrubTurn, scrubFlare, scrubWordExit } from "./textfx";
 import { getRail } from "./cinerail";
 import { setRest } from "./rests";
 import { frameTier } from "./net";
@@ -113,10 +113,8 @@ export function mountCine(opts: CineOptions) {
           { opacity: 1, duration: IN, ease: "power2.out", immediateRender: true },
           at
         );
-        if (b.out !== undefined) {
-          tl.to(w, { opacity: 0, duration: 0.05, ease: "sine.in" }, b.out + i * 0.004);
-        }
       });
+      if (b.out !== undefined) scrubWordExit(tl, box, words, b.out, 0.012);
     } else {
       scrubFlare(tl, [box], b.at, 0);
       tl.fromTo(

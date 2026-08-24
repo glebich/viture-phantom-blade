@@ -442,3 +442,66 @@ export function scrubFlare(
     tl.to(w, { textShadow: FLARE_OFF, duration: cool, ease: "power2.out" }, t + hold);
   });
 }
+
+/* ---------------------------------------------------------------------------
+ * scrubWordExit — how a line LEAVES.
+ *
+ * Client: "the animation of how text disappears is not looking too great, can
+ * be much more elegant and with taste." It wasn't an animation at all: the
+ * words dropped their opacity over a flat 0.03–0.05 with a 1ms stagger, so a
+ * line that had condensed in word by word, tipping up out of the dark with a
+ * flare that cooled — just blinked out all at once.
+ *
+ * This is its counterpart rather than its reverse (playing an arrival
+ * backwards reads as a rewind). The line settles AWAY: each word tips a little
+ * further from the viewer than the one before, recedes, softens out of focus
+ * and dissolves, carried on a stagger long enough to read as a wave crossing
+ * the line. Where the arrival eases out — decisive, landing — this eases in,
+ * so the line drifts before it goes.
+ * ------------------------------------------------------------------------- */
+export interface ExitOpts {
+  /** how long one word takes to leave (progress units) */
+  dur?: number;
+  /** degrees each word tips away */
+  tip?: number;
+  /** how far the words recede */
+  depth?: number;
+  /** blur at the end, px */
+  blur?: number;
+}
+
+export function scrubWordExit(
+  tl: gsap.core.Timeline,
+  box: HTMLElement,
+  words: HTMLElement[],
+  at: number,
+  step: number,
+  opts?: ExitOpts
+): void {
+  const dur = opts?.dur ?? 0.055;
+  const tip = opts?.tip ?? 24;
+  const depth = opts?.depth ?? -130;
+  const blur = opts?.blur ?? 5;
+  // the same stage the arrival builds, so the tip reads as depth and not as
+  // a squash; harmless to set twice
+  box.style.perspective = "620px";
+  box.style.transformStyle = "preserve-3d";
+  for (const w of words) w.style.display = "inline-block";
+  words.forEach((w, i) => {
+    tl.to(
+      w,
+      {
+        rotationX: tip,
+        z: depth,
+        y: -7,
+        filter: `blur(${blur}px)`,
+        opacity: 0,
+        transformOrigin: "50% 0% -10px",
+        duration: dur,
+        ease: "power2.in",
+        immediateRender: false,
+      },
+      at + i * step
+    );
+  });
+}

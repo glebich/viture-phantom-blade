@@ -46,15 +46,31 @@ const GAP_MS = 110; // a pause this long means the next event starts a new turn
 const SETTLE_MS = 60; // brief guard after landing, against one gesture double-firing
 const WHEEL_TRIGGER = 18; // px of wheel delta that counts as a deliberate turn
 const TOUCH_TRIGGER = 44; // px of finger travel that counts as a swipe
-// The journey between two pages is the film playing, so its length sets the
-// playback rate. One kept frame is ~43px of scroll and the clips are 30fps
-// halved, so ~700px/s is close to real-time playback — at 1200px/s the
-// transitions rushed (client: "it handles transitions very quickly now").
-// The ceiling keeps the longest journey — the one that runs a whole
-// transition chapter as well as its own — from becoming a wait.
-const DUR_PER_PX = 1 / 700; // seconds of travel per px between pages
-const DUR_MIN = 0.9;
-const DUR_MAX = 3.5;
+// A journey's length and the film's playback rate are the same number — the
+// film is scrubbed off scroll position — so "quicker transitions" and "don't
+// speed up the background" pull against each other. The EASING is what
+// separates them: what the eye reads as film speed is the PEAK rate, not the
+// average, and an ease that ramps briefly and then holds a steady speed has a
+// far lower peak than one that spends its whole middle accelerating.
+//
+// Against the quad curve this replaces, at these numbers, the journeys are
+// ~10% shorter in wall-clock AND their peak rate is ~30% lower: snappier to
+// sit through, and the film runs calmer through it rather than surging in the
+// middle (client: "transitions too slow… but don't speed up the animation of
+// the assets in the background, especially the first 4 pages").
+const DUR_PER_PX = 1 / 850; // seconds of travel per px between pages
+const DUR_MIN = 0.7;
+const DUR_MAX = 3.2;
+// fraction of the journey spent ramping up, and again slowing down
+const RAMP = 0.2;
+const travelEase = (t: number): number => {
+  if (t <= 0) return 0;
+  if (t >= 1) return 1;
+  const area = 1 - RAMP; // total under the trapezoid velocity profile
+  if (t < RAMP) return t * t / (2 * RAMP) / area;
+  if (t > 1 - RAMP) return (area - (1 - t) * (1 - t) / (2 * RAMP)) / area;
+  return (RAMP / 2 + (t - RAMP)) / area;
+};
 
 export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -105,11 +121,7 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
       force: true,
       lock: true,
       immediate: reduced,
-      // quad in-out: eased at both ends but nearly linear through the middle,
-      // so the film runs at a steady rate instead of surging (a cubic curve
-      // spends its whole middle accelerating, which is what "acceleration"
-      // reads as on a scrubbed clip)
-      easing: (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2),
+      easing: travelEase,
       onComplete: () => {
         animating = false;
         blockedUntil = performance.now() + SETTLE_MS;
