@@ -28,7 +28,7 @@ page.on("console", (m) => {
 });
 page.on("pageerror", (e) => errors.push("PAGEERROR " + String(e).slice(0, 200)));
 
-await page.goto("http://localhost:5174/", { waitUntil: "networkidle" });
+await page.goto("http://localhost:5175/", { waitUntil: "networkidle" });
 await page.waitForTimeout(3000);
 
 const limit = await page.evaluate(() => document.body.scrollHeight - innerHeight);

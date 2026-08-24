@@ -26,7 +26,7 @@ export const header: Section = {
       <div class="hd-buy" data-buy style="opacity:0">
         <span class="hd-price">
           <img src="/assets/ui/glasses.png" alt="" aria-hidden="true" />
-          <span class="hd-from">FROM</span>&nbsp;<b>$599</b>
+          <span class="hd-amt"><span class="hd-from">FROM</span><b>$599</b></span>
         </span>
         <a class="cta-paper" href="${PREORDER_URL}" target="_blank" rel="noopener" aria-label="Pre-Order Now"></a>
       </div>

@@ -95,6 +95,14 @@
   height: 22px;
   object-fit: contain;
 }
+/* FROM and the price read as one unit — the flex gap plus the &nbsp; that
+   used to sit between them made an anonymous third flex item, so the pair
+   drifted ~24px apart against the design's ~6px (client). */
+.hd-amt {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
 .hd-price .hd-from {
   color: #b3a9a0;
 }
