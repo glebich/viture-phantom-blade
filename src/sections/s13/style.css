@@ -44,8 +44,14 @@
    a click could land on the video instead of a tab and the row went dead
    (client: "sometimes when you click there's no way to click another one").
    The row also carries its own hit padding so the targets are finger-sized. */
+/* Placed by CENTRE, not by left edge: the four lefts had to be re-derived per
+   breakpoint and had drifted — the mobile row sat 17.5 design px right of
+   centre, which is what the client saw. Centres are written symmetrically
+   about the canvas middle (960 / 372 / 187.5), so a row cannot be off-centre
+   without the numbers themselves being visibly asymmetric. */
 .s13-tab {
   position: absolute;
+  transform: translateX(-50%);
   width: 56px;
   height: 56px;
   top: 160px;
@@ -149,10 +155,10 @@
 @media (max-width: 1024px) and (min-width: 641px) {
   .s13-tab { top: 164px; width: 51px; height: 51px; }
   .s13-tab img { width: 35px; height: 35px; }
-  .s13-tab:nth-of-type(1) { left: 236px !important; }
-  .s13-tab:nth-of-type(2) { left: 312px !important; }
-  .s13-tab:nth-of-type(3) { left: 388px !important; }
-  .s13-tab:nth-of-type(4) { left: 464px !important; }
+  .s13-tab:nth-of-type(1) { left: 258px !important; }
+  .s13-tab:nth-of-type(2) { left: 334px !important; }
+  .s13-tab:nth-of-type(3) { left: 410px !important; }
+  .s13-tab:nth-of-type(4) { left: 486px !important; }
   .s13-title { top: 258px; width: 640px; font-size: 36px; }
   .s13-sub { top: 330px; width: 540px; font-size: 16px; }
   .s13-screen { left: 22px !important; top: 440px !important; width: 700px !important; height: 438px !important; }
@@ -166,10 +172,10 @@
      band with half the screen left empty) */
   .s13-tab { top: 110px; width: 46px; height: 46px; }
   .s13-tab img { width: 30px; height: 30px; }
-  .s13-tab:nth-of-type(1) { left: 92px !important; }
-  .s13-tab:nth-of-type(2) { left: 152px !important; }
-  .s13-tab:nth-of-type(3) { left: 212px !important; }
-  .s13-tab:nth-of-type(4) { left: 272px !important; }
+  .s13-tab:nth-of-type(1) { left: 97.5px !important; }
+  .s13-tab:nth-of-type(2) { left: 157.5px !important; }
+  .s13-tab:nth-of-type(3) { left: 217.5px !important; }
+  .s13-tab:nth-of-type(4) { left: 277.5px !important; }
   .s13-title { top: 180px; width: 340px; font-size: 24px; }
   .s13-sub { top: 228px; width: 330px; font-size: 13.5px; }
   .s13-screen { left: 0 !important; top: 330px !important; width: 375px !important; height: 482px !important; border-left: none; border-right: none; border-bottom: none; }

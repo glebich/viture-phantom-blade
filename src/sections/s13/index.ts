@@ -52,7 +52,7 @@ export const s13: Section = {
       <video class="s13-3d" muted loop playsinline preload="none" data-src="/video/3dmode.mp4"></video>
       ${MODES.map((m, i) => `
         <button class="s13-tab${i === 0 ? " on" : ""}" role="tab" data-i="${i}" aria-label="${m.title}"
-          style="left:${[759, 877, 995, 1114][i]}px">
+          style="left:${[782, 901, 1019, 1138][i]}px">
           <img src="/assets/ui/ic-${m.key}.png" alt="" />
         </button>`).join("")}
       ${MODES.map((m, i) => `
