@@ -153,7 +153,25 @@ export const s02: Section = {
     // download — and a frugal connection is on the 1.16MB SD cut instead.
     const VIDEO_LEAD_S = 2;
     const HARD_CAP_MS = 12000;  // never trap a visitor behind a bad network
+    // iOS Safari ignores preload="auto" — a video downloads nothing until it
+    // is played — so the video half of this bar never moved on a phone: it sat
+    // at 60% (the frames' full weight) until the failsafe fired and then ran
+    // to 100 in a blink (client: "on iphone loader stock on 60% and than do
+    // 100% in 1 sec"). If nothing has buffered by the time the frames are
+    // well underway, the platform is not going to preload it at all, so the
+    // loop drops out of the gate and buffers when it plays instead.
+    let videoGated = true;
+    const PRELOAD_GRACE_MS = 2600;
     const videoReady = () => {
+      if (!videoGated) return 1;
+      if (
+        performance.now() - t0 > PRELOAD_GRACE_MS &&
+        gp.readyState < 2 &&
+        (!gp.buffered || gp.buffered.length === 0)
+      ) {
+        videoGated = false;
+        return 1;
+      }
       if (!gp.duration || !Number.isFinite(gp.duration)) return 0;
       let end = 0;
       try { if (gp.buffered.length) end = gp.buffered.end(gp.buffered.length - 1); } catch { /* empty */ }

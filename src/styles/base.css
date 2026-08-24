@@ -278,3 +278,37 @@ html.cinema #scrollhint {
 /* No CSS scroll-snap: lib/chapternav.ts drives touch to the same thirteen
    pages as the wheel (client: "same for mobile"), and a proximity snap
    underneath it would pull against the journey mid-flight. */
+
+/* ---------------------------------------------------------------------------
+ * iOS: the backdrops are sized to the TOOLBAR-HIDDEN viewport.
+ *
+ * Every full-screen ground here is `position: fixed`, and on iOS Safari that
+ * lays out against the layout viewport while the visual viewport slides under
+ * it as the toolbar shows and hides. Through that transition, and across the
+ * home-indicator inset, the bottom of the screen falls outside the backdrop
+ * and the section's near-black ground shows as a band with a hairline along
+ * its top. A desktop browser has no such transition, which is why it only
+ * ever appeared on the client's phone ("in browser all good but in iphone
+ * different story").
+ *
+ * Anchoring them at the top and giving them the LARGE viewport height means
+ * they always reach past the bottom of the screen, whatever the toolbar is
+ * doing. It fixes a second thing at the same time: `inset: 0` made the film
+ * canvas resize whenever the toolbar moved, and since it is cover-fit, the
+ * framing jumped with it. At a fixed height the film holds its framing.
+ *
+ * Only the vertical is touched — bleeding sideways would change that same
+ * cover fit.
+ * ------------------------------------------------------------------------- */
+#cine-rail,
+#room-rail,
+#room-tint,
+#wash-rail,
+#wash-glow,
+#s13-back,
+.s02-loader {
+  top: 0 !important;
+  bottom: auto !important;
+  height: 100vh !important; /* fallback for browsers without the unit */
+  height: 100lvh !important; /* the toolbar-hidden height */
+}
