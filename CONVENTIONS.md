@@ -44,3 +44,14 @@ positions/sizes in absolute design pixels inside the stage.
 Pinned sections capture at a fixed representative progress (see PROGRESS in
 scripts/qa-captures.mjs); you may add temporary entries for other beats,
 e.g. `PROGRESS.s06 = 0.15`.
+
+## Caching hand-cut assets
+
+`/assets/(.*)` is served `immutable, max-age=31536000` for the frame
+sequences, whose content never changes. The hand-cut UI crops in
+`/assets/ui/` DO get re-cut under the same filename, so vercel.json gives
+that path a revalidating policy instead (`max-age=600,
+stale-while-revalidate=86400`). Even so, **bump a version suffix in the
+filename when you re-cut one** (`loader-thread-2.png`): a client sat on a
+stale, artefact-ridden `loader-thread.png` for days because the fix shipped
+under the same name and their browser had it pinned for a year.
