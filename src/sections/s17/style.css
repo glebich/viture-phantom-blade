@@ -59,11 +59,11 @@
 .s17-maplabel::after {
   content: "";
   position: absolute;
-  top: 24px;
+  top: 22px;
   width: 150px;
-  height: 2px;
-  background: url("/assets/ui/flourish-l.png") center / contain no-repeat;
-  opacity: 0.8;
+  height: 4px;
+  background: url("/assets/ui/flourish-line.png") center / contain no-repeat;
+  opacity: 0.85;
 }
 .s17-maplabel::before {
   left: -170px;
@@ -130,8 +130,8 @@
   top: 50%;
   width: 120px;
   height: 3px;
-  background: url("/assets/ui/flourish-l.png") center / contain no-repeat;
-  opacity: 0.7;
+  background: url("/assets/ui/flourish-line.png") center / contain no-repeat;
+  opacity: 0.75;
 }
 .s17-again-label::before {
   right: 100%;
@@ -167,7 +167,7 @@
   .s17-title { left: 0; right: 0; width: auto; top: 176px; text-align: center; font-size: 30px; }
   .s17-body { left: 28px; top: 264px; width: 320px; text-align: center; font-size: 13.5px; }
   .s17-maplabel { left: 82px; top: 348px; width: 210px; font-size: 13px; }
-  .s17-maplabel::before, .s17-maplabel::after { width: 60px; top: 18px; }
+  .s17-maplabel::before, .s17-maplabel::after { width: 60px; height: 2px; top: 17px; }
   .s17-maplabel::before { left: -70px; }
   .s17-maplabel::after { right: -70px; }
   .s17-map { left: 88px; top: 398px; width: 200px; height: 265px; }

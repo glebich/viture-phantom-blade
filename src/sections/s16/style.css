@@ -42,11 +42,11 @@
 .s16-eyebrow::after {
   content: "";
   position: absolute;
-  top: 14px;
+  top: 9px;
   width: 190px;
-  height: 3px;
-  background: url("/assets/ui/flourish-l.png") center / contain no-repeat;
-  opacity: 0.75;
+  height: 5px;
+  background: url("/assets/ui/flourish-line.png") center / contain no-repeat;
+  opacity: 0.8;
 }
 .s16-eyebrow::before {
   right: 60%;
@@ -82,6 +82,24 @@
   position: absolute;
   object-fit: contain;
 }
+/* the cards answer the cursor — they lift out of the dark and the red in
+   their frame catches (client) */
+@media (hover: hover) and (pointer: fine) {
+  .s16-card {
+    transition:
+      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.55s ease;
+    will-change: transform;
+  }
+  /* the reveal tween leaves `transform: translate(0px,0px)` and
+     `filter: blur(0px)` inline on every card, and inline beats a stylesheet —
+     so the hover state has to say so explicitly. GSAP never animates these
+     two on the cards afterwards, so nothing is being fought over. */
+  .s16-card:hover {
+    transform: translateY(-15px) scale(1.035) !important;
+    filter: brightness(1.16) drop-shadow(0 14px 46px rgba(226, 60, 45, 0.34)) !important;
+  }
+}
 
 
 /* Boxes solved against the client's frame rather than eyeballed: each PNG
@@ -98,7 +116,7 @@
 /* ---------- tablet 744×1133 ---------- */
 @media (max-width: 1024px) and (min-width: 641px) {
   .s16-eyebrow { top: 170px; font-size: 16px; }
-  .s16-eyebrow::before, .s16-eyebrow::after { width: 120px; top: 11px; }
+  .s16-eyebrow::before, .s16-eyebrow::after { width: 120px; height: 3px; top: 8px; }
   .s16-eyebrow::before { margin-right: 18px; }
   .s16-eyebrow::after { margin-left: 18px; }
   .s16-title { top: 205px; font-size: 36px; }
@@ -114,7 +132,7 @@
   /* the copy starts BELOW the fixed header (logo/CTA/burger occupy the top
      ~78px) — the eyebrow used to sit under the paper CTA (client) */
   .s16-eyebrow { top: 130px; font-size: 13px; }
-  .s16-eyebrow::before, .s16-eyebrow::after { width: 58px; top: 9px; }
+  .s16-eyebrow::before, .s16-eyebrow::after { width: 58px; height: 2px; top: 7px; }
   .s16-eyebrow::before { margin-right: 10px; }
   .s16-eyebrow::after { margin-left: 10px; }
   .s16-title { top: 160px; font-size: 24px; padding: 0 20px; }
