@@ -25,15 +25,20 @@ history.scrollRestoration = "manual";
 window.scrollTo(0, 0);
 
 // Heavy-but-controlled smoothing (matches the shipped minidock feel).
-// Client: on a MacBook trackpad it took far too many swipes to reach the next
-// chapter. The chapters pin for several viewports each by design, so the fix
-// is throw per gesture rather than shorter pins — a higher wheel multiplier
-// covers more ground per swipe, with a slightly quicker lerp so it still
-// feels attached to the finger.
+//
+// These numbers set how fast the FILM plays, not just how fast the page
+// moves: the chapters scrub their clips off scroll position, and at the
+// intro's geometry one kept frame is 42.9px of scroll, so ~648px/s of scroll
+// is real-time playback. Round 9 raised the multiplier to 1.75 to cut the
+// number of swipes per chapter, and that multiplied the scrub rate with it —
+// the film visibly raced and surged (client: "playing too fast… before was
+// smooth 30fps, without this acceleration"). Back to the values that read as
+// natural playback. If chapters ever feel too long again, lengthen or
+// shorten the PINS (lengthVh), which changes px-per-frame — never this gain,
+// which changes the speed of the film itself.
 const lenis = new Lenis({
-  lerp: 0.11,
-  wheelMultiplier: 1.75,
-  touchMultiplier: 1.6,
+  lerp: 0.095,
+  wheelMultiplier: 0.95,
   smoothWheel: true,
 });
 
