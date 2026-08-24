@@ -55,3 +55,14 @@ stale-while-revalidate=86400`). Even so, **bump a version suffix in the
 filename when you re-cut one** (`loader-thread-2.png`): a client sat on a
 stale, artefact-ridden `loader-thread.png` for days because the fix shipped
 under the same name and their browser had it pinned for a year.
+
+Header rules are emitted with `continue: true`, so EVERY matching rule runs
+and the last one to set a key wins. `/assets/(.*)` therefore also matched
+`/assets/ui/…` and put `immutable` back on it; the general rule excludes the
+folder explicitly (`/assets/((?!ui/).*)`). Check `.vercel/output/config.json`
+after `vercel build` when changing these — it shows the compiled routes.
+
+`vercel --prod` builds remotely; when that queue stalls (deployments sit in
+`UNKNOWN` with no logs), `vercel build --prod` then
+`vercel deploy --prebuilt --prod` ships the same output without the remote
+build step.
