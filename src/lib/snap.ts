@@ -72,19 +72,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 // once the scroll has come to REST after real input, so scrubbing a film by
 // hand is never interrupted.
 const CATCH_VH = 3.0;
-// ---- gesture clamp ----
-// Landing tidily was not enough: the magnet parked on a read every time, but
-// a hard trackpad flick still carried THROUGH two chapters first, and a very
-// hard one through five (client, twice: "I scroll thru pages without the
-// ability to stop on pages with text and content"). So a single throw is now
-// capped at ONE chapter: whatever momentum it carries, the scroll is caught
-// at the next read in the direction of travel. Flick again to go on — pages
-// can no longer be lost, and repeated flicks still move quickly.
-const GESTURE_GAP_MS = 160; // wheel quiet for this long = a new throw
-const GESTURE_LIVE_MS = 500; // how long after the last event a throw can clamp
-const EDGE_PX = 24; // ignore the read you are already sitting on
-const CLAMP_S = 0.85; // glide onto the caught read
-
 const REST_MS = 120; // scroll must be still this long to count as resting
 const SETTLED_PX = 2; // closer than this to a boundary = already there
 const MOVE_EPS = 0.08; // px/frame under which the scroll counts as still
@@ -163,30 +150,11 @@ export function mountSnap(lenis: Lenis, gsap: typeof Gsap): void {
   let restMs = 0;
   let lastY = window.scrollY;
 
-  // ---- gesture bookkeeping for the clamp ----
-  let gestureFrom = window.scrollY; // where this throw began
-  let gestureT = 0; // timestamp of the last wheel event
-  let caught: number | null = null; // read this throw was caught on
-
   const arm = () => {
     armed = true;
     lastInputT = performance.now();
   };
-  window.addEventListener(
-    "wheel",
-    () => {
-      const now = performance.now();
-      // a trackpad emits a continuous stream (fingers plus momentum), so a
-      // throw is delimited by a gap in that stream rather than by one event
-      if (now - gestureT > GESTURE_GAP_MS) {
-        gestureFrom = lenis.animatedScroll ?? window.scrollY;
-        caught = null; // a new throw may advance again
-      }
-      gestureT = now;
-      arm();
-    },
-    { passive: true }
-  );
+  window.addEventListener("wheel", arm, { passive: true });
   const SCROLL_KEYS = new Set([
     "ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " ",
   ]);
@@ -313,57 +281,7 @@ export function mountSnap(lenis: Lenis, gsap: typeof Gsap): void {
     glide(best);
   };
 
-  const holdAt = (to: number, duration: number) => {
-    lenis.scrollTo(to, {
-      duration,
-      lock: true,
-      force: true,
-      immediate: reduced,
-      easing: (t: number) => 1 - Math.pow(1 - t, 3),
-    });
-  };
-
-  // catch a throw the moment its target overshoots the next read
-  const clampGesture = (): boolean => {
-    if (programmatic && caught === null) return false;
-    if (pointerHeld) return false;
-    const now = performance.now();
-
-    // Already caught this throw: HOLD the read until the input stream stops.
-    // Catching once was not enough — a trackpad keeps firing for hundreds of
-    // milliseconds after the fingers lift, and that tail simply resumed the
-    // scroll and sailed on through three more chapters. Re-asserting the
-    // caught position for as long as the same throw is still arriving is what
-    // actually makes one flick equal one chapter.
-    if (caught !== null) {
-      if (now - gestureT > GESTURE_GAP_MS) {
-        caught = null; // the throw is spent; the next one may advance
-        return false;
-      }
-      const t = lenis.targetScroll ?? window.scrollY;
-      if (Math.abs(t - caught) > 2) holdAt(caught, 0.22);
-      return true;
-    }
-
-    if (now - gestureT > GESTURE_LIVE_MS) return false;
-    const target = lenis.targetScroll ?? window.scrollY;
-    const travel = target - gestureFrom;
-    if (Math.abs(travel) < 4 || !targets.length) return false;
-    const limit =
-      travel > 0
-        ? targets.find((t) => t > gestureFrom + EDGE_PX)
-        : [...targets].reverse().find((t) => t < gestureFrom - EDGE_PX);
-    if (limit === undefined) return false;
-    const overshoots = travel > 0 ? target > limit + 2 : target < limit - 2;
-    if (!overshoots) return false;
-    caught = limit;
-    armed = false;
-    holdAt(limit, CLAMP_S);
-    return true;
-  };
-
   gsap.ticker.add((_time, deltaTime) => {
-    if (clampGesture()) return;
     const y = lenis.scroll ?? window.scrollY;
     const dy = y - lastY;
     lastY = y;
