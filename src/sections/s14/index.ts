@@ -20,6 +20,8 @@ const ROOM_FRAMES = 61;
 
 interface RoomRail {
   register(host: HTMLElement): void;
+  /** 0 = the room at full brightness, 1 = the design's dark grade */
+  setDim(v: number): void;
 }
 let roomRail: RoomRail | null = null;
 
@@ -68,6 +70,10 @@ function getRoomRail(ctx: SectionCtx): RoomRail {
   window.addEventListener("pointermove", (e) => {
     target = Math.min(1, Math.max(0, e.clientX / window.innerWidth));
   }, { passive: true });
+  // Client: the room should arrive at FULL brightness and only dim once the
+  // content appears — the grade used to be on from the first frame, so you
+  // never saw the room itself. Each chapter drives this from its own scrub.
+  let dim = 0;
   let visible = false;
   gsap.ticker.add(() => {
     if (!hosts.length) return;
@@ -79,14 +85,17 @@ function getRoomRail(ctx: SectionCtx): RoomRail {
     if (on !== visible) {
       visible = on;
       canvas.style.opacity = on ? "1" : "0";
-      tint.style.opacity = on ? "1" : "0";
     }
+    tint.style.opacity = on ? String(dim) : "0";
     if (!on) return;
     cur += (target - cur) * 0.035;
     draw();
   });
 
   roomRail = {
+    setDim(v: number) {
+      dim = Math.min(1, Math.max(0, v));
+    },
     register(host: HTMLElement) {
       hosts.push(host);
       if (!store) {
@@ -110,7 +119,8 @@ function livingRoom(opts: { id: string; title: string; note: string }): Section 
     `,
     init(el, ctx: SectionCtx) {
       const { gsap } = ctx;
-      getRoomRail(ctx).register(el);
+      const room = getRoomRail(ctx);
+      room.register(el);
 
       const title = el.querySelector<HTMLElement>(".lr-title")!;
       const note = el.querySelector<HTMLElement>(".lr-note")!;
@@ -130,6 +140,11 @@ function livingRoom(opts: { id: string; title: string; note: string }): Section 
         },
       });
       tl.to({}, { duration: 1 }, 0);
+      // the room lands bright, then the grade comes up under the copy
+      const grade = { v: 0 };
+      tl.fromTo(grade, { v: 0 },
+        { v: 1, duration: 0.2, ease: "sine.inOut", immediateRender: true,
+          onUpdate: () => room.setDim(grade.v) }, 0.06);
       scrubTurn(tl, title, words, 0.1, 0.012, { tilt: 0.09 });
       scrubFlare(tl, words, 0.1, 0.012, { cool: 0.07 });
       words.forEach((w, i) => {
