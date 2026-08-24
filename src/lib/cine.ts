@@ -2,6 +2,7 @@ import type { SectionCtx } from "./section";
 import { splitWords, scrubTurn, scrubFlare } from "./textfx";
 import { getRail } from "./cinerail";
 import { setRest } from "./rests";
+import { frameTier } from "./net";
 
 /* ---------------------------------------------------------------------------
  * cine.ts — the Phantom Blade chapter engine.
@@ -39,8 +40,7 @@ export interface CineOptions {
 }
 
 export function tierUrl(clip: string): (i: number) => string {
-  const small = window.matchMedia("(max-width: 1024px)").matches;
-  const size = small && (window.devicePixelRatio || 1) < 2.5 ? 960 : 1920;
+  const size = frameTier();
   return (i) => `/assets/${clip}-${size}/f_${String(i).padStart(3, "0")}.webp`;
 }
 

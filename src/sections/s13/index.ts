@@ -41,15 +41,15 @@ const MODES = [
 export const s13: Section = {
   id: "s13",
   html: `
-    <video class="s13-side" muted loop playsinline preload="metadata" src="/video/sidemode.mp4"></video>
+    <video class="s13-side" muted loop playsinline preload="none" data-src="/video/sidemode.mp4"></video>
     <div class="s13-side-veil"></div>
     <div class="stage">
       <div class="s13-screen">
-        <video class="s13-v s13-v-anchor" muted loop playsinline preload="metadata" src="/video/ultrawide.mp4"></video>
-        <video class="s13-v s13-v-uwide" muted loop playsinline preload="metadata" src="/video/ultrawide.mp4" style="object-fit:contain;opacity:0"></video>
+        <video class="s13-v s13-v-anchor" muted loop playsinline preload="none" data-src="/video/ultrawide.mp4"></video>
+        <video class="s13-v s13-v-uwide" muted loop playsinline preload="none" data-src="/video/ultrawide.mp4" style="object-fit:contain;opacity:0"></video>
         <img class="s13-handoff" alt="" aria-hidden="true" loading="eager" decoding="async" />
       </div>
-      <video class="s13-3d" muted loop playsinline preload="metadata" src="/video/3dmode.mp4"></video>
+      <video class="s13-3d" muted loop playsinline preload="none" data-src="/video/3dmode.mp4"></video>
       ${MODES.map((m, i) => `
         <button class="s13-tab${i === 0 ? " on" : ""}" role="tab" data-i="${i}" aria-label="${m.title}"
           style="left:${[759, 877, 995, 1114][i]}px">
@@ -263,12 +263,27 @@ export const s13: Section = {
     );
 
     // play/pause loops on proximity (battery + decode sanity)
+    //
+    // The four clips are 5.2MB between them and this chapter is most of the
+    // way down the page, but with a `src` in the markup the browser pulled
+    // them DURING the loader — on a 4 Mbit line they were taking the
+    // bandwidth the opening needed, and the intro was still buffering while
+    // the mode clips downloaded (client: "make it smooth on low band").
+    // preload="none" + a deferred src means nothing here touches the network
+    // until the chapter is within a viewport.
     const vids = [vSide, v3d, vAnchor, vUwide];
+    const attach = (v: HTMLVideoElement) => {
+      const src = v.dataset.src;
+      if (!src || v.src) return;
+      v.preload = "auto";
+      v.src = src;
+    };
     const near = () => {
       const r = el.getBoundingClientRect();
       const vh = window.innerHeight;
       const on = r.bottom > -vh && r.top < vh * 2;
       vids.forEach((v) => {
+        if (on) attach(v);
         if (on && v.paused) v.play().catch(() => {});
         else if (!on && !v.paused) v.pause();
       });

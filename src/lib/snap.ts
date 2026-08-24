@@ -47,6 +47,7 @@
 // ---------------------------------------------------------------------------
 import type Lenis from "lenis";
 import type { ScrollToOptions } from "lenis";
+import { allRestYs } from "./rests";
 import type { gsap as Gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -55,7 +56,22 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 // inside some boundary's catch window, so the scroll always parks a page
 // full-frame — nothing can rest half-folded anymore. Pin interiors are
 // untouched (their plateaus + registered anchors own the feel there).
-const CATCH_VH = 0.5;
+// Client: "I scroll and I miss pages and scroll thru them — add a magnet so
+// it feels like the site is helping me stop at the next page." Nearly every
+// chapter here is a LONG pinned scrub, and the old rule was "never snap
+// inside a pin", so the magnet effectively never fired: a flick sailed past
+// whole chapters. The targets are now the chapters' registered reading
+// positions (rests.ts) — copy in, film settled — which is exactly where a
+// reader wants to be parked, and they live inside the pins.
+//
+// The reads sit 1.4k-5k px apart, so a one-viewport catch left most of them
+// stranded: the magnet fell through to the pin STARTS instead, which is the
+// transition rather than the page. Three viewports covers even the widest
+// gap from either side, so wherever a flick happens to stop, some chapter's
+// read is pulling — the scroll always ends up ON a page. It only ever fires
+// once the scroll has come to REST after real input, so scrubbing a film by
+// hand is never interrupted.
+const CATCH_VH = 3.0;
 const REST_MS = 120; // scroll must be still this long to count as resting
 const SETTLED_PX = 2; // closer than this to a boundary = already there
 const MOVE_EPS = 0.08; // px/frame under which the scroll counts as still
@@ -85,6 +101,7 @@ export function mountSnap(lenis: Lenis, gsap: typeof Gsap): void {
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // ---- geometry, re-measured on every ScrollTrigger refresh ----
+  let targets: number[] = [];
   let boundaries: number[] = [];
   let pinRanges: { start: number; end: number; anchors: number[] }[] = [];
   const measure = () => {
@@ -101,6 +118,9 @@ export function mountSnap(lenis: Lenis, gsap: typeof Gsap): void {
           : el;
         return y + box.getBoundingClientRect().top;
       });
+    // chapter reads first; section tops are the fallback for anything that
+    // never registered one (an unpinned screen, or a chapter mid-build)
+    targets = allRestYs();
     pinRanges = ScrollTrigger.getAll()
       .filter(
         (st) =>
@@ -197,6 +217,29 @@ export function mountSnap(lenis: Lenis, gsap: typeof Gsap): void {
 
   const evaluate = (y: number) => {
     const catchPx = window.innerHeight * CATCH_VH;
+
+    // 1. the chapter reads — the stops the visitor actually wants. These sit
+    //    INSIDE the pins, so they are tried before the pin-interior rule
+    //    below (which exists for pins that never registered a rest).
+    {
+      let best = NaN;
+      let bestD = Infinity;
+      for (const t of targets) {
+        const d = Math.abs(y - t);
+        if (d < bestD) {
+          bestD = d;
+          best = t;
+        }
+      }
+      if (Number.isFinite(best) && bestD > SETTLED_PX && bestD <= catchPx) {
+        glide(best);
+        return;
+      }
+      // already parked on a read: nothing to do, and re-gliding on jitter
+      // would fight the visitor
+      if (Number.isFinite(best) && bestD <= SETTLED_PX) return;
+    }
+
     for (const p of pinRanges) {
       if (y > p.start + SETTLED_PX && y < p.end - SETTLED_PX) {
         // resting inside an active pin range: the first ~35%vh pulls back

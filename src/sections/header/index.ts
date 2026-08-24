@@ -1,6 +1,5 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
-import lottie from "lottie-web";
 
 /* Fixed header — VITURE mark (lottie plays logo_in on hover, logo_out on
  * leave), nav links, glasses-glyph price readout and THE paper CTA. The
@@ -91,13 +90,27 @@ export const header: Section = {
     // logo hover lottie (in/out image-sequence pair)
     const holder = el.querySelector<HTMLElement>(".hd-lottie")!;
     const still = el.querySelector<HTMLImageElement>(".hd-logo img")!;
-    let anim: ReturnType<typeof lottie.loadAnimation> | null = null;
+    // lottie-web is ~90kB gzipped for one hover flourish, so it is fetched
+    // on the first hover instead of riding the critical path. The still mark
+    // is the rest state, so nothing is missing before it lands.
+    type Lottie = typeof import("lottie-web").default;
+    let lottie: Lottie | null = null;
+    let loading: Promise<Lottie> | null = null;
+    const getLottie = () => {
+      if (lottie) return Promise.resolve(lottie);
+      if (!loading) loading = import("lottie-web").then((m) => (lottie = m.default));
+      return loading;
+    };
+    let anim: ReturnType<Lottie["loadAnimation"]> | null = null;
     let mode: "in" | "out" | null = null;
-    const play = (which: "in" | "out") => {
+    const play = async (which: "in" | "out") => {
       if (mode === which) return;
       mode = which;
+      const lot = await getLottie();
+      // the pointer may have left again while the chunk was in flight
+      if (mode !== which) return;
       anim?.destroy();
-      anim = lottie.loadAnimation({
+      anim = lot.loadAnimation({
         container: holder,
         renderer: "canvas",
         loop: false,

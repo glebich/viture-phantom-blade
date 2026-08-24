@@ -1,6 +1,7 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { mountCine, cineHtml } from "../../lib/cine";
+import { videoTier } from "../../lib/net";
 
 /* s02 — Loader → intro cinematic scrub → Ø logo beat → hero rest.
  * The intro clip plays on the shared rail, forward with scroll and in
@@ -11,7 +12,7 @@ const PREORDER_URL = "https://www.viture.com/";
 export const s02: Section = {
   id: "s02",
   html: cineHtml(`
-    <video class="s02-gameplay" src="/video/gameplay.mp4" muted loop playsinline preload="auto"></video>
+    <video class="s02-gameplay" muted loop playsinline preload="auto"></video>
     <div class="s02-logoveil"></div>
     <div class="stage">
       <button class="s02-skip" type="button">Skip</button>
@@ -101,6 +102,12 @@ export const s02: Section = {
       });
     });
 
+    // the loop the loader hands over to — SD on a frugal connection (see
+    // lib/net.ts). Set here rather than in the markup so the tier is decided
+    // at runtime, and set BEFORE the loader starts counting so it is part of
+    // the progress the visitor is waiting on.
+    gp.src = `/video/gameplay${videoTier()}.mp4`;
+
     // ---- Loader (chapter 01): the red thread draws in as progress ----
     const loader = el.querySelector<HTMLElement>(".s02-loader")!;
     const num = el.querySelector<HTMLElement>(".ld-num")!;
@@ -120,6 +127,39 @@ export const s02: Section = {
     const store = rail.store("intro")!;
     const t0 = performance.now();
     const MIN_MS = 2400;
+    // Client: "make sure the assets load together with the site on the
+    // preloader — at least the first 2 assets — and the rest in the
+    // background, so it's smooth even on a low-band network."
+    //
+    // The two things a visitor meets first are the gameplay loop (it plays
+    // the moment the loader lifts) and the intro frame sequence (the film the
+    // first scroll scrubs). The loader now holds for BOTH, and the percentage
+    // is their real combined progress rather than a timer: on a slow link the
+    // number genuinely crawls, and when it reaches 100 the opening is
+    // actually smooth. Everything after these two — every later chapter's
+    // frames, the mode clips — streams in the background through the
+    // frameseq scheduler, which always spends bandwidth on whatever is
+    // nearest the viewport.
+    // What each asset has to reach before the screen is handed over. The
+    // loop plays IMMEDIATELY, so it needs a real buffer; the intro frames are
+    // not touched until the visitor scrolls, and the scheduler keeps filling
+    // them in order behind the scenes, so a majority is enough to guarantee a
+    // stutter-free first scrub. Demanding all 62 up front cost an extra ~7s
+    // on a 4 Mbit line for frames nobody had reached yet.
+    const WEIGHT_FRAMES = 0.6;  // how the two split the percentage
+    const FRAMES_ENOUGH = 0.55; // of the intro sequence
+    // 2s is enough head start: the loop's bitrate (~2.6 Mbit) is below any
+    // link that gets the HD file at all, so playback never catches the
+    // download — and a frugal connection is on the 1.16MB SD cut instead.
+    const VIDEO_LEAD_S = 2;
+    const HARD_CAP_MS = 12000;  // never trap a visitor behind a bad network
+    const videoReady = () => {
+      if (!gp.duration || !Number.isFinite(gp.duration)) return 0;
+      let end = 0;
+      try { if (gp.buffered.length) end = gp.buffered.end(gp.buffered.length - 1); } catch { /* empty */ }
+      const need = Math.min(gp.duration, VIDEO_LEAD_S);
+      return Math.min(1, end / need);
+    };
     let done = false;
     let shown = 0; // eased displayed progress
     const finish = () => {
@@ -159,17 +199,28 @@ export const s02: Section = {
     };
     const tick = () => {
       if (done) return;
-      const real = store.loaded.filter(Boolean).length / 62;
-      const timed = Math.min(1, (performance.now() - t0) / MIN_MS);
-      const target = Math.min(timed, real === 1 ? 1 : Math.max(real * 0.92, timed * 0.66));
+      const frames = store.loaded.filter(Boolean).length / 62;
+      const vid = videoReady();
+      // the bar tracks the two assets against what they actually need, so it
+      // reads 100 exactly when the opening is ready — not before, not after
+      const real =
+        Math.min(1, frames / FRAMES_ENOUGH) * WEIGHT_FRAMES +
+        vid * (1 - WEIGHT_FRAMES);
+      const elapsed = performance.now() - t0;
+      const timed = Math.min(1, elapsed / MIN_MS);
+      // the bar is the slower of "the assets are in" and "the ceremony has
+      // played", so a warm cache still gets the beat and a cold one tells
+      // the truth
+      const target = Math.min(timed, real);
       shown += (target - shown) * 0.12; // soft ease toward target
       if (target >= 1) shown = Math.min(1, shown + 0.012);
       num.textContent = String(Math.round(shown * 100));
       drawThread(shown);
-      if (shown > 0.995 && real >= 0.35) finish();
+      const ready = frames >= FRAMES_ENOUGH && vid >= 1;
+      if (shown > 0.995 && (ready || elapsed > HARD_CAP_MS)) finish();
       else requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
-    setTimeout(finish, 10000); // never trap the visitor
+    setTimeout(finish, HARD_CAP_MS + 1000); // never trap the visitor
   },
 };

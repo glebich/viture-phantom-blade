@@ -4,6 +4,7 @@ import { splitWords, scrubTurn, scrubFlare } from "../../lib/textfx";
 import { scrubAssetArrival } from "../../lib/assetfx";
 import { setRest } from "../../lib/rests";
 import { mountFrameStore } from "../../lib/frameseq";
+import { frameTier } from "../../lib/net";
 import type { FrameStore } from "../../lib/frameseq";
 
 /* s14 (duel-world dimming) & s15 (exclusive OSD) — the living-room chapters.
@@ -12,9 +13,7 @@ import type { FrameStore } from "../../lib/frameseq";
  * forward, left = backwards, under the design's dark tint. */
 
 function roomUrl(i: number): string {
-  const small = window.matchMedia("(max-width: 1024px)").matches;
-  const size = small && (window.devicePixelRatio || 1) < 2.5 ? 960 : 1920;
-  return `/assets/room-${size}/f_${String(i).padStart(3, "0")}.webp`;
+  return `/assets/room-${frameTier()}/f_${String(i).padStart(3, "0")}.webp`;
 }
 const ROOM_FRAMES = 61;
 
