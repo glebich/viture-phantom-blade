@@ -32,17 +32,3 @@ export function restY(id: string): number | null {
   const y = st.start + (st.end - st.start) * r.p;
   return Number.isFinite(y) ? y : null;
 }
-
-/** every chapter's reading position, ascending — the magnet's targets
- *  (see lib/snap.ts). Recomputed from the live triggers on each call, so it
- *  survives refreshes, resizes and late-built pins. */
-export function allRestYs(): number[] {
-  const ys: number[] = [];
-  for (const [, r] of rests) {
-    const st = r.tl.scrollTrigger;
-    if (!st) continue;
-    const y = st.start + (st.end - st.start) * r.p;
-    if (Number.isFinite(y)) ys.push(y);
-  }
-  return ys.sort((a, b) => a - b);
-}
