@@ -16,7 +16,7 @@
   z-index: 0;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  /* no transition: the opacity is scroll-proportional (see index.ts) */
   background:
     radial-gradient(120% 90% at 50% 118%, #6e0e12 0%, #35090b 42%, #0a0405 78%, #060303 100%),
     #070304;
@@ -175,4 +175,16 @@
   .s13-screen { left: 0 !important; top: 330px !important; width: 375px !important; height: 482px !important; border-left: none; border-right: none; border-bottom: none; }
   /* clears the sub copy — the screen-blended clip used to wash it out */
   .s13-3d { left: -30px; top: 318px; width: 435px; height: 494px; }
+}
+
+/* the still handed over from the previous chapter's film — it sits above the
+   loops inside the screen mask and dissolves once the frame has landed */
+.s13-handoff {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+  pointer-events: none;
 }

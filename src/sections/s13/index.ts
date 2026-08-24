@@ -1,7 +1,7 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { splitWords, scrubTurn, scrubFlare } from "../../lib/textfx";
-import { scrubAssetArrival } from "../../lib/assetfx";
+import { tierUrl } from "../../lib/cine";
 import { setRest } from "../../lib/rests";
 
 /* s13 — display modes. Pinned: scroll advances Anchor → Ultra-Wide →
@@ -47,6 +47,7 @@ export const s13: Section = {
       <div class="s13-screen">
         <video class="s13-v s13-v-anchor" muted loop playsinline preload="metadata" src="/video/ultrawide.mp4"></video>
         <video class="s13-v s13-v-uwide" muted loop playsinline preload="metadata" src="/video/ultrawide.mp4" style="object-fit:contain;opacity:0"></video>
+        <img class="s13-handoff" alt="" aria-hidden="true" loading="eager" decoding="async" />
       </div>
       <video class="s13-3d" muted loop playsinline preload="metadata" src="/video/3dmode.mp4"></video>
       ${MODES.map((m, i) => `
@@ -70,13 +71,34 @@ export const s13: Section = {
     back.setAttribute("aria-hidden", "true");
     const mainEl = document.getElementById("sections")!;
     document.body.insertBefore(back, mainEl);
+    // The backdrop is FIXED and full-viewport, so switching it on the moment
+    // the section peeked into view painted right over the still-visible
+    // previous chapter: a black band with the film cut in half across it
+    // (client: "no transition between A 174-INCH BATTLEFIELD and the next
+    // one"). It now tracks how much of the viewport this section actually
+    // covers, so the rail's last frame stays lit until this chapter owns the
+    // screen. No CSS transition on it either — it has to follow the scroll
+    // exactly, or the lag reopens the band.
+    let coverage = 0;
+    let morph = 0; // 0 = the film still owns the whole screen, 1 = TV landed
+    const applyBack = () => {
+      // Only as the picture MINIMISES does the ground appear around it. Ramping
+      // this with coverage instead buried the rail's last frame under the
+      // gradient and then the section's own copy re-revealed it, so the same
+      // background read twice with a hard join in between (client: "should
+      // never have 2 bg's… one on A 174-inch battlefield page minimized inside
+      // tv screen mask").
+      back.style.opacity = coverage === 0 ? "0" : String(morph);
+    };
     const backSync = () => {
       const r = el.getBoundingClientRect();
-      back.style.opacity = r.bottom > 0 && r.top < innerHeight ? "1" : "0";
+      const vis = Math.max(0, Math.min(innerHeight, r.bottom) - Math.max(0, r.top));
+      coverage = Math.min(1, vis / Math.max(1, innerHeight));
+      applyBack();
+      gateScreen();
     };
     ctx.lenis.on("scroll", backSync);
     ctx.ScrollTrigger.addEventListener("refresh", backSync);
-    backSync();
 
     const screen = el.querySelector<HTMLElement>(".s13-screen")!;
     const tabs = Array.from(el.querySelectorAll<HTMLButtonElement>(".s13-tab"));
@@ -111,15 +133,68 @@ export const s13: Section = {
       },
     });
 
-    // the dots land on the first mode, read and settled (see rests.ts)
-    setRest("s13", tl, 0.11);
+    // Sliding in, the rail is still carrying clip6's last frame across the
+    // fold while this section's own copy of that frame rides up with the
+    // section — the same picture at two different offsets, which would
+    // double-expose the temple. So the screen stays dark until the section
+    // covers the viewport, at which point the two are pixel-identical and the
+    // handover is invisible. Only gated on the way IN (progress still 0);
+    // afterwards the scrub owns the screen's opacity.
+    // visibility, NOT opacity: the scrub owns the screen's opacity (it
+    // dissolves the frame for side mode), and writing "" to it here wiped
+    // that value on any scroll event — the empty black box with its red
+    // border reappeared over the full-bleed side clip.
+    function gateScreen() {
+      const hide = tl && tl.progress() <= 0.001 && coverage <= 0.995;
+      screen.style.visibility = hide ? "hidden" : "";
+    }
+    backSync();
 
-    // the virtual screen resolves into focus as the chapter opens
-    scrubAssetArrival(tl, screen, 0, { duration: 0.13, drift: 26, blur: 12 });
+    // the dots land on the first mode, read and settled (see rests.ts)
+    setRest("s13", tl, 0.17);
+
+    // ---- the film hands its last frame to the TV (client: "no transition
+    // between A 174-INCH BATTLEFIELD and the next one; it should be a smooth
+    // transition of the final frame of the video into the Anchor mode TV, and
+    // then to the playing loop in this tv mask") ----
+    // s11 rests holding clip6's final frame full-bleed, so THAT frame is the
+    // still inside this screen: the chapter opens with the screen covering the
+    // viewport — the same picture, no cut — then contracts into the anchor box
+    // with its red frame materialising, and only once it lands does the still
+    // dissolve into the looping clip underneath.
+    const handoff = el.querySelector<HTMLImageElement>(".s13-handoff")!;
+    handoff.src = tierUrl("clip6")(29);
+    const cs = getComputedStyle(document.documentElement);
+    const SW = parseFloat(cs.getPropertyValue("--stage-w")) || 1920;
+    const SH = parseFloat(cs.getPropertyValue("--stage-h")) || 1080;
+    // offset* are layout values in the stage's own coordinate system, so they
+    // are design px whatever the stage's cover transform is doing
+    const bw = screen.offsetWidth || 1158;
+    const bh = screen.offsetHeight || 724;
+    const cover = Math.max(SW / bw, SH / bh);
+    const dx = SW / 2 - (screen.offsetLeft + bw / 2);
+    const dy = SH / 2 - (screen.offsetTop + bh / 2);
+    tl.fromTo(
+      screen,
+      { x: dx, y: dy, scale: cover, borderColor: "rgba(194,42,32,0)" },
+      {
+        x: 0, y: 0, scale: 1, borderColor: "rgba(194,42,32,1)",
+        duration: 0.11, ease: "power2.inOut", immediateRender: true,
+      },
+      0
+    );
+    tl.fromTo(handoff, { opacity: 1 },
+      { opacity: 0, duration: 0.06, ease: "sine.inOut", immediateRender: true }, 0.115);
+    // the ground arrives with the contraction, never before it
+    const mp = { v: 0 };
+    tl.fromTo(mp, { v: 0 },
+      { v: 1, duration: 0.11, ease: "sine.out", immediateRender: true,
+        onUpdate: () => { morph = mp.v; applyBack(); } }, 0);
 
     // copy in/out per beat
     MODES.forEach((_, i) => {
-      const at = i * SEG + 0.02;
+      // mode 0 waits for the morph above to seat the screen
+      const at = i === 0 ? 0.125 : i * SEG + 0.02;
       const out = (i + 1) * SEG - 0.045;
       scrubTurn(tl, copies[i], wordSets[i], at, 0.0035, { tilt: 0.05 });
       scrubFlare(tl, wordSets[i], at, 0.0035, { cool: 0.045 });
@@ -151,11 +226,16 @@ export const s13: Section = {
     tl.to(vUwide, { opacity: 1, duration: 0.05 }, SEG - 0.02);      // ultra-wide letterbox
     tl.to(vUwide, { opacity: 0, duration: 0.05 }, 2 * SEG - 0.02);
     tl.to(v3d, { opacity: 1, duration: 0.06 }, 2 * SEG + 0.01);      // 3d breakout
-    tl.to(v3d, { opacity: 0, duration: 0.05 }, 3 * SEG - 0.04);
-    // side mode: full-bleed clip; screen + border dissolve
-    tl.to(vSide, { opacity: 1, duration: 0.05 }, 3 * SEG - 0.01);
-    tl.to(sideVeil, { opacity: 1, duration: 0.05 }, 3 * SEG - 0.01);
-    tl.to(screen, { opacity: 0, duration: 0.035 }, 3 * SEG - 0.03);
+    // Side mode: the full-bleed clip rises exactly as the frame and the 3D
+    // clip dissolve. They used to be staggered, which left a window where the
+    // frame had no clip inside it and its #000 ground showed as an empty black
+    // plate with a red border over the bamboo (client: "delete mask frame on
+    // this screen"). One cross-fade now — no beat where the frame is empty.
+    const OUT = 3 * SEG - 0.06;
+    tl.to(v3d, { opacity: 0, duration: 0.06 }, OUT);
+    tl.to(screen, { opacity: 0, duration: 0.06 }, OUT);
+    tl.to(vSide, { opacity: 1, duration: 0.07 }, OUT);
+    tl.to(sideVeil, { opacity: 1, duration: 0.07 }, OUT);
 
     // active tab tracking + proximity playback
     let cur = -1;

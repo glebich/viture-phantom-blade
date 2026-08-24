@@ -198,6 +198,19 @@ html.menu-open .hd-sheet {
   visibility: visible;
   transition: opacity 0.45s ease;
 }
+
+/* While the sheet is open it owns the screen (client): the chapter rail and
+   the scroll hint were showing THROUGH it, and the header's own paper CTA
+   sat behind the sheet's — two identical Pre-Order buttons on one screen.
+   Hidden with visibility so the GSAP-driven inline opacity on .hd-buy is
+   not fought over, and the elements come back exactly as they were. */
+html.menu-open #paginator,
+html.menu-open #scrollhint,
+html.menu-open .hd-buy,
+html.menu-open #dock {
+  visibility: hidden;
+  pointer-events: none;
+}
 .hd-sheet a {
   display: flex;
   align-items: baseline;

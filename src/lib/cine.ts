@@ -52,6 +52,22 @@ export function mountCine(opts: CineOptions) {
   rail.register(opts.clip, opts.count, el);
 
   const videoSpan = opts.videoSpan ?? 1;
+  const videoStart0 = opts.videoStart ?? 0;
+
+  // Where this chapter's clip should sit for the timeline's CURRENT position.
+  // The enter callbacks used to hard-set frame 0 (and frame N going back),
+  // which rewound the film whenever the trigger was entered at a position the
+  // timeline had already passed — a jump (paginator, Skip, a deep link) or
+  // simply crossing the fold with the timeline already complete left the rail
+  // on the clip's FIRST frame while the chapter read as finished. That is what
+  // broke the hand-off into the display-modes chapter: the battlefield's last
+  // frame was supposed to be on screen, and the strap shot was.
+  let tlRef: gsap.core.Timeline | null = null;
+  const videoP = () => {
+    const p = tlRef ? tlRef.progress() : 0;
+    const span = Math.max(0.0001, videoSpan - videoStart0);
+    return Math.min(1, Math.max(0, (p - videoStart0) / span));
+  };
 
   const tl = gsap.timeline({
     defaults: { ease: "none" },
@@ -62,13 +78,14 @@ export function mountCine(opts: CineOptions) {
       pin: true,
       scrub: true,
       anticipatePin: 1,
-      onEnter() { rail.show(opts.clip, 0); },
-      onEnterBack() { rail.show(opts.clip, 1); },
+      onEnter() { rail.show(opts.clip, videoP()); },
+      onEnterBack() { rail.show(opts.clip, videoP()); },
     },
   });
+  tlRef = tl;
   // drive the rail from the timeline itself so the QA harness
   // (?progress=…, ScrollTrigger disabled) scrubs it too
-  const videoStart = opts.videoStart ?? 0;
+  const videoStart = videoStart0;
   const drive = { p: 0 };
   tl.to(drive, {
     p: 1,

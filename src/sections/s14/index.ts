@@ -159,8 +159,63 @@ function livingRoom(opts: { id: string; title: string; note: string }): Section 
 
       setRest(opts.id, tl, 0.5);
 
-      // tail fade inside the pin — nothing of the stage can ever slice
-      // across the header during the release scroll
+      // ---- the read drifts, then the room takes the chapter back ----
+      // Client: "nothing happened, no parallax, no animation" on the way out
+      // — the whole stage used to just blink to opacity 0 over 2% of the pin.
+      //
+      // Now the three elements sit on three depth planes and never move
+      // together. Through the READ they drift against each other (copy rises,
+      // the panel settles — real parallax, linear with scroll). On the way OUT
+      // the copy peels away from the viewer word by word while the panel
+      // powers down INTO the room, and the room's grade lifts back to daylight:
+      // the virtual layer leaves and the real world returns, which is this
+      // chapter's whole argument. Everything is fromTo inside the scrub, so
+      // scrolling back re-assembles it exactly.
+      const READ = 0.5;   // drift begins once the chapter is settled
+      const EXIT = 0.72;  // the release begins
+      const D_TITLE = -12, D_NOTE = -7, D_PANEL = 14;
+
+      words.forEach((w) => {
+        tl.fromTo(w, { y: 0 },
+          { y: D_TITLE, duration: EXIT - READ, ease: "none", immediateRender: false }, READ);
+      });
+      tl.fromTo(note, { y: 0 },
+        { y: D_NOTE, duration: EXIT - READ, ease: "none", immediateRender: false }, READ);
+      tl.fromTo(insert, { y: 0, scale: 1 },
+        { y: D_PANEL, scale: 1.012, duration: EXIT - READ, ease: "none", immediateRender: false }, READ);
+
+      // the copy peels: each word tips away, recedes and blurs out
+      words.forEach((w, i) => {
+        tl.fromTo(
+          w,
+          { y: D_TITLE, rotationX: 0, z: 0, filter: "blur(0px)", opacity: 1 },
+          {
+            y: -64, rotationX: 34, z: -160, filter: "blur(10px)", opacity: 0,
+            duration: 0.14, ease: "power2.in", immediateRender: false,
+          },
+          EXIT + i * 0.008
+        );
+      });
+      tl.fromTo(note, { y: D_NOTE, filter: "blur(0px)", opacity: 1 },
+        { y: -34, filter: "blur(7px)", opacity: 0, duration: 0.16, ease: "power2.in", immediateRender: false },
+        EXIT + 0.04);
+      // the panel switches off and sinks back into the room
+      tl.fromTo(
+        insert,
+        { y: D_PANEL, scale: 1.012, filter: "brightness(1) blur(0px)", opacity: 1 },
+        {
+          y: 40, scale: 0.955, filter: "brightness(0.18) blur(4px)", opacity: 0,
+          duration: 0.18, ease: "power2.inOut", immediateRender: false,
+        },
+        EXIT + 0.02
+      );
+      // …and the real world comes back up as it goes
+      tl.fromTo(grade, { v: 1 },
+        { v: 0.15, duration: 0.2, ease: "sine.inOut", immediateRender: false,
+          onUpdate: () => room.setDim(grade.v) }, EXIT + 0.02);
+
+      // belt-and-braces: by here everything above is already invisible, so
+      // nothing of the stage can slice across the header on the release
       const stage = el.querySelector<HTMLElement>(".stage")!;
       tl.to(stage, { opacity: 0, duration: 0.02, ease: "sine.in" }, 0.975);
     },

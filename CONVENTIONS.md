@@ -1,4 +1,4 @@
-# minidock — section fidelity conventions
+# phantom-blade — section fidelity conventions
 
 Goal: every section pixel-matches its Figma render. Design canvas is
 1920×1080 (desktop `.stage--d`) and 375×812 (mobile `.stage--m`), scaled
