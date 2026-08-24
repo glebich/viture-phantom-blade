@@ -41,7 +41,6 @@ export const s16: Section = {
     <div class="stage">
       <p class="s16-eyebrow">What Else Within The Box</p>
       <h2 class="s16-title">More treasures await within</h2>
-      <p class="s16-foot">Starting in October, a new reveal every week.</p>
       ${CARDS.map(
         (c, i) => `<img class="s16-card s16-c${i}" src="/assets/ui/${c}.png" alt="" />`
       ).join("")}
@@ -52,7 +51,6 @@ export const s16: Section = {
     mountWashRail(el);
     const title = el.querySelector<HTMLElement>(".s16-title")!;
     const eyebrow = el.querySelector<HTMLElement>(".s16-eyebrow")!;
-    const foot = el.querySelector<HTMLElement>(".s16-foot")!;
     const cards = Array.from(el.querySelectorAll<HTMLElement>(".s16-card"));
 
     // simple, light: blocks rise and fade in, scrub-linked both ways
@@ -92,6 +90,5 @@ export const s16: Section = {
     cards.forEach((c, i) => {
       scrubAssetArrival(tl, c, 0.16 + i * 0.11, { duration: 0.34, drift: 30, blur: 14 });
     });
-    tl.fromTo(foot, { opacity: 0 }, { opacity: 1, duration: 0.12, immediateRender: true }, 0.72);
   },
 };
