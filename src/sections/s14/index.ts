@@ -107,7 +107,45 @@ function getRoomRail(ctx: SectionCtx): RoomRail {
   return roomRail;
 }
 
-function livingRoom(opts: { id: string; title: string; note: string }): Section {
+/* The framed panel yaws a few degrees toward the cursor — it reads as a
+ * screen hanging in the room rather than a sticker on the page (client: "a
+ * little rotation is enough, like it's turning a bit towards you").
+ *
+ * rotationY/rotationX go through gsap on the SAME element the scrub already
+ * animates: gsap owns the whole transform, so the pointer's rotation and the
+ * scrub's y/scale coexist instead of overwriting each other (a raw
+ * style.transform write would clobber the scrub, and a wrapper element would
+ * break the absolutely-positioned design box). transformPerspective keeps the
+ * 3D local, so the copy's own rotationX peel is untouched.
+ *
+ * Not mounted for coarse pointers (nothing hovers) or reduced motion. */
+function mountPanelTilt(insert: HTMLElement, ctx: SectionCtx): void {
+  if (matchMedia("(pointer: coarse)").matches) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const { gsap } = ctx;
+  gsap.set(insert, { transformPerspective: 1200, transformOrigin: "50% 50%" });
+  // quickTo keeps one reusable tween per property: the panel eases toward the
+  // cursor instead of snapping, and releasing the mouse leaves it where it is
+  const yawTo = gsap.quickTo(insert, "rotationY", { duration: 0.75, ease: "power2.out" });
+  const pitchTo = gsap.quickTo(insert, "rotationX", { duration: 0.75, ease: "power2.out" });
+  const MAX_YAW = 4.5;   // degrees — the face turns toward the pointer
+  const MAX_PITCH = 1.6; // a hint of vertical, so it never reads as a flat swing
+  const onMove = (e: PointerEvent) => {
+    const nx = (e.clientX / window.innerWidth) * 2 - 1;  // -1 … 1
+    const ny = (e.clientY / window.innerHeight) * 2 - 1;
+    yawTo(nx * MAX_YAW);
+    pitchTo(-ny * MAX_PITCH);
+  };
+  window.addEventListener("pointermove", onMove, { passive: true });
+}
+
+function livingRoom(opts: {
+  id: string;
+  title: string;
+  note: string;
+  /** pointer-follow yaw on the framed panel (duel-world chapter) */
+  tilt?: boolean;
+}): Section {
   return {
     id: opts.id,
     html: `
@@ -127,6 +165,7 @@ function livingRoom(opts: { id: string; title: string; note: string }): Section 
       const insert = el.querySelector<HTMLElement>(".lr-insert")!;
       const words = splitWords(title);
       gsap.set(words, { opacity: 0 });
+      if (opts.tilt) mountPanelTilt(insert, ctx);
 
       const tl = gsap.timeline({
         defaults: { ease: "none" },
@@ -226,6 +265,7 @@ export const s14 = livingRoom({
   id: "s14",
   title: "Duel world. Real world.<br/>Seamless switch.",
   note: "Auto-dimming electrochromic lenses dynamically adjust light transmission in real time.",
+  tilt: true,
 });
 
 export const s15 = livingRoom({

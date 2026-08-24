@@ -155,9 +155,13 @@
 }
 .s02-logo {
   position: absolute;
-  left: 680px;
-  top: 320px;
-  width: 640px;
+  /* The artwork is trimmed to its ink, so the element box IS the mark: centre
+     it by geometry (left = (canvas - width) / 2) at every breakpoint. The
+     untrimmed png carried 6.4% of dead margin on its right, which pulled the
+     visible lockup left of centre on every canvas (client, mobile). */
+  left: 696px;
+  top: 333px;
+  width: 528px;
   opacity: 0;
   z-index: 4;
 }
@@ -220,7 +224,7 @@
   .ld-label { top: 1010px; font-size: 18px; }
   .ld-thread { top: 260px; width: 1620px; left: -378px; height: 675px; }
   .s02-skip { top: 1000px; font-size: 18px; }
-  .s02-logo { left: 122px; top: 340px; width: 500px; }
+  .s02-logo { left: 166px; top: 350px; width: 413px; }
   .s02-hero .hero-title { left: 52px; top: 800px; width: 560px; font-size: 46px; }
   .s02-hero .hero-tag { left: 52px; top: 930px; font-size: 16px; }
   .s02-hero .hero-price { left: 52px; top: 975px; gap: 16px; }
@@ -237,7 +241,7 @@
   .ld-label { top: 715px; font-size: 14px; }
   .ld-thread { top: 260px; width: 820px; left: -192px; height: 342px; }
   .s02-skip { top: 720px; font-size: 15px; }
-  .s02-logo { left: 38px; top: 245px; width: 300px; }
+  .s02-logo { left: 64px; top: 251px; width: 248px; }
   /* geometry from the client's own Phone / Section - 05 frame:
      copy column at x40, title y436, tag y530, price y584, CTA 180x44 y646 */
   .s02-hero .hero-title { left: 40px; top: 430px; width: 300px; font-size: 27px; }
