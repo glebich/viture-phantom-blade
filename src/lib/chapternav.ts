@@ -49,27 +49,40 @@ const TOUCH_TRIGGER = 44; // px of finger travel that counts as a swipe
 // A journey's length and the film's playback rate are the same number — the
 // film is scrubbed off scroll position — so "quicker transitions" and "don't
 // speed up the background" pull against each other. The EASING is what
-// separates them: what the eye reads as film speed is the PEAK rate, not the
-// average, and an ease that ramps briefly and then holds a steady speed has a
-// far lower peak than one that spends its whole middle accelerating.
+// separates them, and its SHAPE matters more than its length.
 //
-// Against the quad curve this replaces, at these numbers, the journeys are
-// ~10% shorter in wall-clock AND their peak rate is ~30% lower: snappier to
-// sit through, and the film runs calmer through it rather than surging in the
-// middle (client: "transitions too slow… but don't speed up the animation of
-// the assets in the background, especially the first 4 pages").
-const DUR_PER_PX = 1 / 850; // seconds of travel per px between pages
-const DUR_MIN = 0.7;
-const DUR_MAX = 3.2;
-// fraction of the journey spent ramping up, and again slowing down
-const RAMP = 0.2;
+// The trapezoid this replaces held one steady speed through the middle, which
+// is even-handed but reads as trudging, and it stopped on a constant
+// deceleration — no settle (client: "transition is moving too slow, need to
+// have easing and slowing down at the end").
+//
+// So the journey is front-loaded: a brief ramp, a short push at speed, then
+// more than half the time spent easing down into the page. Ground is covered
+// early, which is what makes a move feel quick, and the arrival drifts to a
+// stop instead of arriving at a fixed rate and halting.
+const DUR_PER_PX = 1 / 900; // seconds of travel per px between pages
+const DUR_MIN = 0.6;
+const DUR_MAX = 3.0;
+const RAMP = 0.1; // getting under way
+const CRUISE_END = 0.45; // where the long deceleration begins
+const DECAY = 1.3; // shape of that deceleration — higher settles later
+const AREA =
+  RAMP / 2 + (CRUISE_END - RAMP) + (1 - CRUISE_END) / (DECAY + 1);
+/** distance covered by fraction t of the journey */
 const travelEase = (t: number): number => {
   if (t <= 0) return 0;
   if (t >= 1) return 1;
-  const area = 1 - RAMP; // total under the trapezoid velocity profile
-  if (t < RAMP) return t * t / (2 * RAMP) / area;
-  if (t > 1 - RAMP) return (area - (1 - t) * (1 - t) / (2 * RAMP)) / area;
-  return (RAMP / 2 + (t - RAMP)) / area;
+  let d: number;
+  if (t < RAMP) d = (t * t) / (2 * RAMP);
+  else if (t < CRUISE_END) d = RAMP / 2 + (t - RAMP);
+  else {
+    const tail = (1 - t) / (1 - CRUISE_END);
+    d =
+      RAMP / 2 +
+      (CRUISE_END - RAMP) +
+      ((1 - CRUISE_END) / (DECAY + 1)) * (1 - Math.pow(tail, DECAY + 1));
+  }
+  return d / AREA;
 };
 
 export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
