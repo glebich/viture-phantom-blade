@@ -35,7 +35,7 @@
   line-height: 1.5;
   color: #d9cfc6;
 }
-.s17-cta {
+#s17 .s17-cta {
   position: absolute;
   left: 194px;
   top: 872px;
@@ -150,9 +150,12 @@
   .s17-body { left: 122px; top: 390px; width: 500px; text-align: center; font-size: 16px; }
   .s17-maplabel { left: 267px; top: 500px; width: 210px; }
   .s17-map { left: 212px; top: 540px; width: 320px; height: 423px; }
-  .s17-foot { left: 122px; top: 990px; width: 500px; font-size: 16px; }
-  .s17-cta { left: 276px; top: 1040px; width: 192px; height: 52px; }
-  .s17-again { top: 1094px; }
+  .s17-foot { left: 122px; top: 976px; width: 500px; font-size: 16px; }
+  /* +16% and nudged 1.9% right: the paper art's ink sits that far left of its
+     own box, so a mathematically centred box reads off-centre against the
+     Watch Again rule below it (client) */
+  #s17 .s17-cta { left: 271px; top: 1018px; width: 210px; height: 56px; }
+  .s17-again { top: 1084px; }
   .s17-again-label { font-size: 15px; }
   .s17-again-label::before, .s17-again-label::after { width: 78px; }
 }
@@ -169,8 +172,8 @@
   .s17-maplabel::after { right: -70px; }
   .s17-map { left: 88px; top: 398px; width: 200px; height: 265px; }
   .s17-foot { left: 28px; top: 684px; width: 320px; font-size: 12.5px; }
-  .s17-cta { left: 95px; top: 706px; width: 185px; height: 48px; }
-  .s17-again { top: 768px; gap: 6px; }
+  #s17 .s17-cta { left: 84px; top: 698px; width: 215px; height: 56px; }
+  .s17-again { top: 770px; gap: 6px; }
   .s17-again-arrow { width: 9px; height: 9px; }
   .s17-again-label { font-size: 12.5px; }
   .s17-again-label::before, .s17-again-label::after { width: 44px; margin-right: 12px; margin-left: 12px; }

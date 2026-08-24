@@ -133,7 +133,7 @@ function livingRoom(opts: { id: string; title: string; note: string }): Section 
         scrollTrigger: {
           trigger: el,
           start: "top top",
-          end: "+=160%",
+          end: "+=115%",
           pin: true,
           scrub: true,
           anticipatePin: 1,

@@ -134,8 +134,11 @@
   transform: scale(0.98);
 }
 
-/* burger (tablet + mobile) */
+/* burger (tablet + mobile) — it BECOMES the close X, so it has to sit above
+   the sheet. Both were auto z-index and the sheet comes later in the DOM, so
+   an open menu covered the burger and there was no way out of it (client). */
 .hd-burger {
+  z-index: 3;
   position: absolute;
   top: var(--hd-y);
   right: 24px;
@@ -163,20 +166,22 @@
   position: absolute;
   top: 7px;
 }
-.menu-open .hd-burger span {
+html.menu-open .hd-burger span {
   background: transparent;
 }
-.menu-open .hd-burger span::before {
+html.menu-open .hd-burger span::before {
   transform: translateY(7px) rotate(45deg);
 }
-.menu-open .hd-burger span::after {
+html.menu-open .hd-burger span::after {
   transform: translateY(-7px) rotate(-45deg);
 }
 
 /* ---------- full-screen menu (tablet/mobile) ---------- */
 .hd-sheet {
+  z-index: 79;
   position: fixed;
   inset: 0;
+  overflow-y: auto;
   background: rgba(8, 4, 5, 0.92);
   -webkit-backdrop-filter: blur(22px);
   backdrop-filter: blur(22px);
@@ -188,7 +193,7 @@
   padding: 0 32px;
   pointer-events: auto;
 }
-.menu-open .hd-sheet {
+html.menu-open .hd-sheet {
   opacity: 1;
   visibility: visible;
   transition: opacity 0.45s ease;

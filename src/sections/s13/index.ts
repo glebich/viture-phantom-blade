@@ -104,7 +104,7 @@ export const s13: Section = {
       scrollTrigger: {
         trigger: el,
         start: "top top",
-        end: "+=450%",
+        end: "+=320%",
         pin: true,
         scrub: true,
         anticipatePin: 1,

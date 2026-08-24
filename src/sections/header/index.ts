@@ -58,17 +58,34 @@ export const header: Section = {
     // burger / sheet
     const burger = el.querySelector<HTMLButtonElement>(".hd-burger")!;
     const sheet = el.querySelector<HTMLElement>(".hd-sheet")!;
-    burger.addEventListener("click", () => {
-      const open = el.classList.toggle("menu-open");
+    // #site-header carries a transform (Safari layer pin), which makes it the
+    // containing block for `position: fixed` descendants — so the full-screen
+    // sheet was sized to the 104px header instead of the viewport: its links
+    // overflowed off the top and its background covered only a strip, leaving
+    // the film showing straight through (client: "menu on mobile is not
+    // working"). It lives on <body> now, like the dock, and the open state is
+    // a class on <html> so the selectors still reach both it and the burger.
+    document.body.appendChild(sheet);
+    const setMenu = (open: boolean) => {
+      document.documentElement.classList.toggle("menu-open", open);
       sheet.setAttribute("aria-hidden", open ? "false" : "true");
+      burger.setAttribute("aria-expanded", open ? "true" : "false");
+      burger.setAttribute("aria-label", open ? "Close menu" : "Menu");
       if (open) ctx.lenis.stop();
       else ctx.lenis.start();
+    };
+    burger.addEventListener("click", () => {
+      setMenu(!document.documentElement.classList.contains("menu-open"));
+    });
+    // every ordinary way out of a full-screen menu: the X, the backdrop, Esc
+    sheet.addEventListener("click", (e) => {
+      if (e.target === sheet) setMenu(false);
+    });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && document.documentElement.classList.contains("menu-open")) setMenu(false);
     });
     sheet.querySelectorAll("a").forEach((a) =>
-      a.addEventListener("click", () => {
-        el.classList.remove("menu-open");
-        ctx.lenis.start();
-      })
+      a.addEventListener("click", () => setMenu(false))
     );
 
     // logo hover lottie (in/out image-sequence pair)

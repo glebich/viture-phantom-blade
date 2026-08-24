@@ -41,7 +41,7 @@ export const s02: Section = {
       id: "s02",
       clip: "intro",
       count: 62,
-      lengthVh: 5,
+      lengthVh: 3.6,
       videoSpan: 0.82,
       ctx,
       el,
