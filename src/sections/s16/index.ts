@@ -1,6 +1,7 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { scrubAssetArrival } from "../../lib/assetfx";
+import { scrubFlare } from "../../lib/textfx";
 import { setRest } from "../../lib/rests";
 
 /* ONE fixed wash behind s16 AND s17 (client: the bg must stay the same
@@ -69,6 +70,7 @@ export const s16: Section = {
     setRest("s16", tl, 0.8);
     tl.to({}, { duration: 1 }, 0);
     tl.fromTo(eyebrow, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "sine.out", immediateRender: true }, 0.05);
+    scrubFlare(tl, [title], 0.08, 0, { cool: 0.11 });
     tl.fromTo(title, { opacity: 0 }, { opacity: 1, duration: 0.14, ease: "sine.out", immediateRender: true }, 0.08);
     // the relic cards drift up and resolve out of blur, one after another —
     // slow enough to read as a reveal rather than a switch (client)

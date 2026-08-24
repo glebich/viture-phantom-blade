@@ -94,6 +94,9 @@ export function mountThread(ctx: SectionCtx): void {
         pts.push({ y, x });
       }
     }
+    windows = ANCHORS.map(([id]) => box(id)).filter(
+      (b): b is { top: number; height: number } => !!b
+    );
     if (pts.length < 2) {
       lut = new Float32Array(0);
       return;
@@ -200,6 +203,30 @@ export function mountThread(ctx: SectionCtx): void {
   let scroll = 0;
   let drawn = NaN;
 
+  // Where each chapter's content is actually ON SCREEN, as a fraction of its
+  // own scroll range. A chapter's range opens and closes on a hand-off — one
+  // section sliding out while the next slides in — and the cord has no business
+  // being there: "no thread when transition, once content shows up you see the
+  // thread on the bg" (client). So it fades in after the arrival and out before
+  // the departure, and the gap between two chapters reads clean.
+  let windows: { top: number; height: number }[] = [];
+  const IN = 0.18;
+  const OUT = 0.82;
+  const smoothstep = (a: number, b: number, x: number) => {
+    const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+    return t * t * (3 - 2 * t);
+  };
+  const contentAlpha = (): number => {
+    let best = 0;
+    for (const b of windows) {
+      const u = (scroll - b.top) / Math.max(1, b.height);
+      if (u < 0 || u > 1) continue;
+      const a = smoothstep(0, IN, u) * (1 - smoothstep(OUT, 1, u));
+      if (a > best) best = a;
+    }
+    return best;
+  };
+
   ctx.lenis.on("scroll", ({ scroll: s }: { scroll: number }) => {
     scroll = s;
   });
@@ -238,11 +265,10 @@ export function mountThread(ctx: SectionCtx): void {
   const draw = () => {
     g.clearRect(0, 0, w, h);
     if (!lut.length) return;
-    // it exists only from Section 12 on, and eases in and out at the ends
-    const a = Math.min(
-      1,
-      Math.max(0, Math.min((scroll + h - y0) / FADE, (y1 - scroll) / FADE))
-    );
+    // it exists only from the modes chapter on, and only while a chapter's
+    // content is on screen — never across a hand-off
+    if (scroll + h < y0 - FADE || scroll > y1 + FADE) return;
+    const a = contentAlpha();
     if (a <= 0.001) return;
     g.globalAlpha = a;
     g.lineCap = "round";

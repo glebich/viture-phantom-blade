@@ -1,5 +1,5 @@
 import type { SectionCtx } from "./section";
-import { splitWords } from "./textfx";
+import { splitWords, scrubTurn, scrubFlare } from "./textfx";
 import { getRail } from "./cinerail";
 import { setRest } from "./rests";
 
@@ -84,6 +84,10 @@ export function mountCine(opts: CineOptions) {
     gsap.set(box, { opacity: 1 });
     if (b.words !== false) {
       const words = splitWords(box);
+      // the line swings in from an angle, and each word lands lit then cools
+      const step = 0.035 / Math.max(1, words.length - 1);
+      scrubTurn(tl, box, words, b.at, step);
+      scrubFlare(tl, words, b.at, step);
       words.forEach((w, i) => {
         const at = b.at + (i / Math.max(1, words.length - 1)) * 0.035;
         tl.fromTo(
@@ -97,6 +101,7 @@ export function mountCine(opts: CineOptions) {
         }
       });
     } else {
+      scrubFlare(tl, [box], b.at, 0);
       tl.fromTo(
         box,
         { opacity: 0 },

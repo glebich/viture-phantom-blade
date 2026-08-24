@@ -61,6 +61,23 @@
   line-height: 1;
   color: #fff;
 }
+/* at 100% the counter blooms — the load is done and the light comes up
+   before the loader hands the screen over (client) */
+.ld-count,
+.ld-label {
+  transition: text-shadow 0.7s ease, color 0.7s ease;
+}
+.s02-loader.full .ld-count {
+  color: #fff;
+  text-shadow:
+    0 0 18px rgba(255, 236, 232, 0.85),
+    0 0 46px rgba(232, 52, 42, 0.75),
+    0 0 110px rgba(232, 52, 42, 0.5);
+}
+.s02-loader.full .ld-label {
+  color: #fff;
+  text-shadow: 0 0 22px rgba(232, 52, 42, 0.6);
+}
 .ld-count sup {
   font-size: 72px;
   vertical-align: 18px;

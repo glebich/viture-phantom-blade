@@ -1,6 +1,6 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
-import { splitWords } from "../../lib/textfx";
+import { splitWords, scrubTurn, scrubFlare } from "../../lib/textfx";
 import { scrubAssetArrival } from "../../lib/assetfx";
 import { setRest } from "../../lib/rests";
 
@@ -121,6 +121,8 @@ export const s13: Section = {
     MODES.forEach((_, i) => {
       const at = i * SEG + 0.02;
       const out = (i + 1) * SEG - 0.045;
+      scrubTurn(tl, copies[i], wordSets[i], at, 0.0035, { tilt: 0.05 });
+      scrubFlare(tl, wordSets[i], at, 0.0035, { cool: 0.045 });
       wordSets[i].forEach((w, k) => {
         tl.fromTo(w, { opacity: 0 },
           { opacity: 1, duration: 0.04, ease: "power2.out", immediateRender: true },

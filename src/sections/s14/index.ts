@@ -1,6 +1,6 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
-import { splitWords } from "../../lib/textfx";
+import { splitWords, scrubTurn, scrubFlare } from "../../lib/textfx";
 import { scrubAssetArrival } from "../../lib/assetfx";
 import { setRest } from "../../lib/rests";
 import { mountFrameStore } from "../../lib/frameseq";
@@ -130,6 +130,8 @@ function livingRoom(opts: { id: string; title: string; note: string }): Section 
         },
       });
       tl.to({}, { duration: 1 }, 0);
+      scrubTurn(tl, title, words, 0.1, 0.012, { tilt: 0.09 });
+      scrubFlare(tl, words, 0.1, 0.012, { cool: 0.07 });
       words.forEach((w, i) => {
         tl.fromTo(w, { opacity: 0 },
           { opacity: 1, duration: 0.1, ease: "power2.out", immediateRender: true },

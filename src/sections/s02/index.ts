@@ -133,12 +133,16 @@ export const s02: Section = {
         duration: Math.max(0.25, (1 - shown) * 0.9),
         ease: "power1.inOut",
         onUpdate: () => {
-          num.textContent = String(Math.round(o.v * 100));
+          const pct = Math.round(o.v * 100);
+          num.textContent = String(pct);
+          if (pct >= 100) loader.classList.add("full");
           drawThread(o.v);
         },
         onComplete: () => {
+          loader.classList.add("full");
           gsap.to(loader, {
             opacity: 0,
+            delay: 0.55,
             duration: 1.0,
             ease: "sine.inOut",
             onComplete: () => {

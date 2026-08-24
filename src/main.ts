@@ -25,9 +25,15 @@ history.scrollRestoration = "manual";
 window.scrollTo(0, 0);
 
 // Heavy-but-controlled smoothing (matches the shipped minidock feel).
+// Client: on a MacBook trackpad it took far too many swipes to reach the next
+// chapter. The chapters pin for several viewports each by design, so the fix
+// is throw per gesture rather than shorter pins — a higher wheel multiplier
+// covers more ground per swipe, with a slightly quicker lerp so it still
+// feels attached to the finger.
 const lenis = new Lenis({
-  lerp: 0.095,
-  wheelMultiplier: 0.95,
+  lerp: 0.11,
+  wheelMultiplier: 1.75,
+  touchMultiplier: 1.6,
   smoothWheel: true,
 });
 

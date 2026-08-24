@@ -1,6 +1,6 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
-import { splitWords } from "../../lib/textfx";
+import { splitWords, scrubTurn, scrubFlare } from "../../lib/textfx";
 import { scrubAssetArrival } from "../../lib/assetfx";
 import { setRest } from "../../lib/rests";
 import { mountWashRail } from "../s16";
@@ -42,6 +42,8 @@ export const s17: Section = {
     });
     setRest("s17", tl, 1);
     tl.to({}, { duration: 1 }, 0);
+    scrubTurn(tl, title, words, 0.22, 0.05, { tilt: 0.2 });
+    scrubFlare(tl, words, 0.22, 0.05, { cool: 0.16 });
     words.forEach((w, i) => {
       tl.fromTo(w, { opacity: 0 },
         { opacity: 1, duration: 0.22, ease: "power2.out", immediateRender: true },

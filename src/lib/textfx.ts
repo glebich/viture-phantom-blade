@@ -338,3 +338,98 @@ export function scrubWordArrival(
   });
   return words;
 }
+
+// ---------------------------------------------------------------------------
+// ARRIVAL FLARE (client: "when text appears it needs a 3D effect transition,
+// like it's coming from an angle, with a glow animation that disappears once
+// it lands" — and "same glow for the other texts").
+//
+// Two parts, because .tfx-w spans are display:inline and transforms do not
+// apply to inline boxes (keeping them inline is deliberate — see the note at
+// the top of textfx.css about line drift):
+//
+//   TILT  — the CONTAINER swings up out of the page on rotationX with its own
+//           transformPerspective, hinged on its baseline, so the line reads as
+//           arriving from an angle and settling flat.
+//   FLARE — each WORD lands lit and cools down: a hot text-shadow at arrival
+//           that decays to nothing a beat later, so the glow belongs to the
+//           motion and never to the rest state.
+//
+// Both are placed inside a SCRUBBED timeline, so scrolling back reverses them.
+// ---------------------------------------------------------------------------
+
+const FLARE_ON =
+  "0 0 18px rgba(255, 242, 238, 0.95), 0 0 52px rgba(232, 52, 42, 0.8), 0 0 120px rgba(232, 52, 42, 0.45)";
+const FLARE_OFF =
+  "0 0 0px rgba(255, 242, 238, 0), 0 0 0px rgba(232, 52, 42, 0), 0 0 0px rgba(232, 52, 42, 0)";
+
+export interface ArrivalOpts {
+  /** timeline units the tilt takes to settle */
+  tilt?: number;
+  /** timeline units the flare takes to cool once a word has landed */
+  cool?: number;
+  /** starting angle in degrees */
+  angle?: number;
+}
+
+/**
+ * A real 3D turn: every WORD swings up out of the page on its own hinge.
+ *
+ * Rotating the whole line instead just squashed it vertically — it read as a
+ * flattening, not a turn (client: "feels strange, not a real 3D turn"). Each
+ * word needs its own transform, which means each word needs to be a block box,
+ * so the spans are switched to inline-block for the duration. That is safe for
+ * display headings (they are absolutely positioned, and the drift the inline
+ * default guards against is a body-copy concern); the perspective lives on the
+ * container so the words share one vanishing point and turn together.
+ */
+export function scrubTurn(
+  tl: gsap.core.Timeline,
+  box: HTMLElement,
+  words: HTMLElement[],
+  at: number,
+  step: number,
+  opts?: ArrivalOpts
+): void {
+  const dur = opts?.tilt ?? 0.1;
+  const angle = opts?.angle ?? -82;
+  box.style.perspective = "620px";
+  box.style.transformStyle = "preserve-3d";
+  for (const w of words) w.style.display = "inline-block";
+  words.forEach((w, i) => {
+    tl.fromTo(
+      w,
+      { rotationX: angle, z: -90, y: 14, transformOrigin: "50% 100% -12px" },
+      {
+        rotationX: 0,
+        z: 0,
+        y: 0,
+        duration: dur,
+        ease: "power3.out",
+        immediateRender: true,
+      },
+      at + i * step
+    );
+  });
+}
+
+/** the per-word flare — lands hot, cools to nothing */
+export function scrubFlare(
+  tl: gsap.core.Timeline,
+  words: HTMLElement[],
+  at: number,
+  step: number,
+  opts?: ArrivalOpts
+): void {
+  const cool = opts?.cool ?? 0.09;
+  words.forEach((w, i) => {
+    const t = at + i * step;
+    tl.fromTo(
+      w,
+      { textShadow: FLARE_ON },
+      { textShadow: FLARE_ON, duration: 0.001, immediateRender: true },
+      t
+    );
+    tl.to(w, { textShadow: FLARE_OFF, duration: cool, ease: "power2.out" }, t + cool * 0.5);
+  });
+}
