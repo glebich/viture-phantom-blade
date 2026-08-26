@@ -89,3 +89,51 @@ export function stopYs(): number[] {
   }
   return ys.sort((a, b) => a - b);
 }
+
+/* ---------------------------------------------------------------------------
+ * Film registry — how much FILM lies between two scroll positions.
+ *
+ * Journeys used to be paced by distance, but the film is not spread evenly:
+ * the opening chapters are film-dense (their journeys hit the duration cap
+ * and the footage compresses), while the back half is mostly rest plateaus —
+ * long distances with nothing changing, which then crawl (client: "first 5
+ * sections playing too fast and rest of the web site is actually too slow").
+ * Each cinematic chapter registers its clip's mapping here so the navigator
+ * can pace a journey by the frames it will actually play.
+ * ------------------------------------------------------------------------- */
+interface Film {
+  tl: gsap.core.Timeline;
+  videoStart: number;
+  videoSpan: number;
+  count: number;
+}
+const films: Film[] = [];
+
+export function registerFilm(
+  tl: gsap.core.Timeline,
+  videoStart: number,
+  videoSpan: number,
+  count: number
+): void {
+  films.push({ tl, videoStart, videoSpan, count });
+}
+
+/** total film frames that play while scrolling from y0 to y1 */
+export function filmFramesBetween(y0: number, y1: number): number {
+  const a = Math.min(y0, y1);
+  const b = Math.max(y0, y1);
+  let frames = 0;
+  for (const f of films) {
+    const st = f.tl.scrollTrigger;
+    if (!st) continue;
+    const len = st.end - st.start;
+    if (len <= 0) continue;
+    const clip = (y: number) => {
+      const p = Math.min(1, Math.max(0, (y - st.start) / len));
+      const span = Math.max(0.0001, f.videoSpan - f.videoStart);
+      return Math.min(1, Math.max(0, (p - f.videoStart) / span));
+    };
+    frames += Math.abs(clip(b) - clip(a)) * f.count;
+  }
+  return frames;
+}

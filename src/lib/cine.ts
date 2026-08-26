@@ -2,7 +2,7 @@ import type { SectionCtx } from "./section";
 import { splitWords, scrubTurn, scrubFlare, scrubWordExit } from "./textfx";
 import { scrubMaskReveal } from "./assetfx";
 import { getRail } from "./cinerail";
-import { setRest } from "./rests";
+import { setRest, registerFilm } from "./rests";
 import { frameTier } from "./net";
 
 /* ---------------------------------------------------------------------------
@@ -98,6 +98,7 @@ export function mountCine(opts: CineOptions) {
     onUpdate: () => rail.show(opts.clip, drive.p),
   }, videoStart);
   tl.to({}, { duration: Math.max(0.001, 1 - videoSpan) }, videoSpan);
+  registerFilm(tl, videoStart0, videoSpan, opts.count);
 
   const IN = 0.06;
   for (const b of opts.beats ?? []) {

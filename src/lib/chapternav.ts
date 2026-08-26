@@ -1,7 +1,7 @@
 import type Lenis from "lenis";
 import type { gsap as Gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { stopYs } from "./rests";
+import { stopYs, filmFramesBetween } from "./rests";
 
 /* ---------------------------------------------------------------------------
  * chapternav.ts — the scroll stops on this site are the PAGES, nothing else.
@@ -60,17 +60,23 @@ const TOUCH_TRIGGER = 44; // px of finger travel that counts as a swipe
 // more than half the time spent easing down into the page. Ground is covered
 // early, which is what makes a move feel quick, and the arrival drifts to a
 // stop instead of arriving at a fixed rate and halting.
-// Re-paced for the 60fps re-master (client: "asset playing a little too
-// much fast while transition"). The film's speed-per-scroll never changed —
-// but at 15 kept-fps the fast passages read as a jumpy slideshow the eye
-// couldn't track, and at 60fps the same rate is suddenly VISIBLE as speed.
-// Smoothness exposed it. So the journeys themselves slow: peak playback on a
-// typical page-to-page move drops from ~2.5x real time to ~1.8x, and the
-// ease keeps its early push + long settle (the "trudging" complaint was
-// about the SHAPE, which stays fixed).
-const DUR_PER_PX = 1 / 700; // seconds of travel per px between pages
-const DUR_MIN = 0.6;
-const DUR_MAX = 3.4;
+// Paced by FILM, not by distance (client: "first 5 sections playing too
+// fast and rest of the web site is actually too slow" — one cause: the film
+// is not spread evenly across the page). A journey that plays footage takes
+// the time that footage needs at just over natural speed; a journey across
+// rest plateaus has nothing to show and shouldn't dawdle.
+//
+//   film journeys   0.5s + frames/30  (30 kept-frames/s = the clip's natural
+//                   rate; the intro's 122 frames get ~4.6s instead of being
+//                   crushed into a distance-capped 3.4)
+//   empty journeys  0.5s + px/1500 — brisk, since nothing changes mid-way
+const FILM_BASE = 0.5;
+const FILM_FPS = 30; // natural playback of the 30-kept-fps sequences
+const FILM_MIN = 0.9;
+const FILM_MAX = 5.0;
+const EMPTY_PER_PX = 1 / 1500;
+const EMPTY_MIN = 0.6;
+const EMPTY_MAX = 2.2;
 const RAMP = 0.1; // getting under way
 const CRUISE_END = 0.45; // where the long deceleration begins
 const DECAY = 1.3; // shape of that deceleration — higher settles later
@@ -134,9 +140,13 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
     }
     index = clamped;
     animating = true;
-    // the journey between two pages IS the film's playback, so its length
-    // follows the distance rather than being a fixed beat
-    const dur = Math.min(DUR_MAX, Math.max(DUR_MIN, Math.abs(to - from) * DUR_PER_PX));
+    // the journey's length follows the FILM it plays; plateau-only moves are
+    // paced by distance instead, briskly (see the constants above)
+    const frames = filmFramesBetween(from, to);
+    const dur =
+      frames > 8
+        ? Math.min(FILM_MAX, Math.max(FILM_MIN, FILM_BASE + frames / FILM_FPS))
+        : Math.min(EMPTY_MAX, Math.max(EMPTY_MIN, FILM_BASE + Math.abs(to - from) * EMPTY_PER_PX));
     lenis.scrollTo(to, {
       duration: dur,
       force: true,
