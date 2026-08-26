@@ -35,6 +35,12 @@ export interface CineOptions {
   videoSpan?: number;
   /** progress at which the clip starts playing (leading hold) */
   videoStart?: number;
+  /** freeze the film at clip-progress `clip` across the pin window
+   *  [from, to] — the page's STOP lives inside this window, so the film is
+   *  provably still while the copy is read, and resumes only on scroll
+   *  (client, glasses case: "can it stop playing at the end of the asset
+   *  without playing forward untill you scroll?") */
+  hold?: { clip: number; from: number; to: number };
   beats?: CineBeat[];
   /** progress where the chapter READS — copy in, film settled (see rests.ts).
    *  Defaults to just after the last beat has landed. */
@@ -90,11 +96,20 @@ export function mountCine(opts: CineOptions) {
   // broke the hand-off into the display-modes chapter: the battlefield's last
   // frame was supposed to be on screen, and the strap shot was.
   let tlRef: gsap.core.Timeline | null = null;
-  const videoP = () => {
-    const p = tlRef ? tlRef.progress() : 0;
-    const span = Math.max(0.0001, videoSpan - videoStart0);
-    return Math.min(1, Math.max(0, (p - videoStart0) / span));
+  // pin progress → clip progress, honouring an optional hold plateau
+  const clipAt = (p: number): number => {
+    const h = opts.hold;
+    if (!h) {
+      const span = Math.max(0.0001, videoSpan - videoStart0);
+      return Math.min(1, Math.max(0, (p - videoStart0) / span));
+    }
+    if (p <= videoStart0) return 0;
+    if (p < h.from)
+      return (Math.min(1, (p - videoStart0) / Math.max(0.0001, h.from - videoStart0))) * h.clip;
+    if (p < h.to) return h.clip;
+    return Math.min(1, h.clip + ((p - h.to) / Math.max(0.0001, videoSpan - h.to)) * (1 - h.clip));
   };
+  const videoP = () => clipAt(tlRef ? tlRef.progress() : 0);
 
   const tl = gsap.timeline({
     defaults: { ease: "none" },
@@ -114,11 +129,18 @@ export function mountCine(opts: CineOptions) {
   // (?progress=…, ScrollTrigger disabled) scrubs it too
   const videoStart = videoStart0;
   const drive = { p: 0 };
-  tl.to(drive, {
-    p: 1,
-    duration: Math.max(0.001, videoSpan - videoStart),
-    onUpdate: () => rail.show(opts.clip, drive.p),
-  }, videoStart);
+  const showDrive = () => rail.show(opts.clip, drive.p);
+  if (opts.hold) {
+    const h = opts.hold;
+    tl.to(drive, { p: h.clip, duration: Math.max(0.001, h.from - videoStart), onUpdate: showDrive }, videoStart);
+    tl.to(drive, { p: 1, duration: Math.max(0.001, videoSpan - h.to), onUpdate: showDrive }, h.to);
+  } else {
+    tl.to(drive, {
+      p: 1,
+      duration: Math.max(0.001, videoSpan - videoStart),
+      onUpdate: showDrive,
+    }, videoStart);
+  }
   tl.to({}, { duration: Math.max(0.001, 1 - videoSpan) }, videoSpan);
   registerFilm(tl, videoStart0, videoSpan, count);
 

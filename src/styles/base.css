@@ -312,3 +312,28 @@ html.cinema #scrollhint {
   height: 100vh !important; /* fallback for browsers without the unit */
   height: 100lvh !important; /* the toolbar-hidden height */
 }
+
+/* On the actual device the band still appeared (client, twice): during the
+   toolbar's show/hide transition iOS can offset the LAYOUT viewport — which
+   `position: fixed` and lvh answer to — against the VISUAL one by more than
+   the lvh delta, so a ground sized exactly to the large viewport still comes
+   up short at the bottom for a beat. Desktop engines have no such offset,
+   which is why every headless check passes while the phone does not. So on
+   phones the grounds BLEED 12lvh past both edges: whatever the two viewports
+   do to each other, there is no edge left to expose. Symmetric on purpose —
+   the centre stays the centre, so cover-fit framing and the loader's centred
+   stage do not shift. */
+@media (max-width: 640px) {
+  #cine-rail,
+  #room-rail,
+  #room-tint,
+  #wash-rail,
+  #wash-glow,
+  #s13-back,
+  .s02-loader {
+    top: -12vh !important;
+    height: 124vh !important;
+    top: -12lvh !important;
+    height: 124lvh !important;
+  }
+}

@@ -71,18 +71,24 @@ export const s10: Section = {
   init(el, ctx) {
     mountCine({
       id: "s10", clip: "clip560", count: 105, lengthVh: 2.4, videoSpan: 0.78, videoStart: 0.14,
+      // The film plays to the case-open pose (f_010, the design's frame),
+      // FREEZES there through the whole read — the copy lands over a still
+      // frame and the stop sits mid-plateau — and resumes only when the
+      // visitor scrolls on. Nothing plays after the text arrives (client).
+      hold: { clip: 0.095, from: 0.24, to: 0.42 },
+      rest: 0.36,
       ctx, el,
       beats: [
-        { sel: "[data-eyebrow]", at: 0.004, out: 0.24, words: false },
-        { sel: "[data-beat]", at: 0.006, out: 0.25, words: true },
+        { sel: "[data-eyebrow]", at: 0.26, out: 0.40, words: false },
+        { sel: "[data-beat]", at: 0.27, out: 0.405, words: true },
       ],
       onTimeline(tl) {
         const fl = el.querySelector("[data-fl]")!;
         const fr = el.querySelector("[data-fr]")!;
-        tl.fromTo(fl, { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.06, immediateRender: true }, 0.012);
-        tl.fromTo(fr, { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.06, immediateRender: true }, 0.012);
-        tl.to(fl, { opacity: 0, duration: 0.05 }, 0.24);
-        tl.to(fr, { opacity: 0, duration: 0.05 }, 0.24);
+        tl.fromTo(fl, { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.06, immediateRender: true }, 0.285);
+        tl.fromTo(fr, { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.06, immediateRender: true }, 0.285);
+        tl.to(fl, { opacity: 0, duration: 0.05 }, 0.40);
+        tl.to(fr, { opacity: 0, duration: 0.05 }, 0.40);
       },
     });
   },
