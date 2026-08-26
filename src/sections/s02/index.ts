@@ -1,6 +1,7 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { mountCine, cineHtml } from "../../lib/cine";
+import { reportMeasuredRate } from "../../lib/net";
 import { videoTier } from "../../lib/net";
 
 /* s02 — Loader → intro cinematic scrub → Ø logo beat → hero rest.
@@ -125,6 +126,53 @@ export const s02: Section = {
     };
 
     const store = rail.store("intro60")!;
+    // The client's spec, verbatim: assets load "together with website on
+    // pre loader, at least first 2 asset and than rest is loading on
+    // background". The second clip's store used to sit dormant until its
+    // section scrolled near — on a phone the visitor left the loader with
+    // none of it and watched it trickle in mid-scroll. Prime it NOW; the
+    // shared scheduler still finishes the intro first (nearest wins).
+    // (s06 mounts after s02, so the second clip's store appears a beat
+    // later — look it up until it does, then prime it once)
+    let store2 = rail.store("clip260");
+    let primed = false;
+    const prime2 = () => {
+      if (!store2) store2 = rail.store("clip260");
+      if (store2 && !primed) { primed = true; store2.activate?.(); }
+    };
+    prime2();
+    // measure the real download rate off the opening frames (~30KB each);
+    // a clearly slow line drops every un-fetched frame a tier (net.ts)
+    // The gameplay loop is 6.1MB and the browser preloads it IN PARALLEL
+    // with the opening frames — on a thin line it ate most of the bandwidth
+    // and the frames starved behind it. Phones get the 1.4MB SD encode, and
+    // the moment the line measures slow the video leaves the loading gate
+    // entirely (preload off; it buffers later, behind the frames).
+    if (window.matchMedia("(max-width: 640px)").matches) {
+      gp.src = "/video/gameplay-sd.mp4";
+    }
+    let measured = false;
+    let slowLine = false;
+    const mT0 = performance.now();
+    const MEASURE_N = 6;
+    const AVG_FRAME_BYTES = 30_000;
+    store.onLoad.add(() => {
+      if (measured) return;
+      const got = store.loaded.filter(Boolean).length;
+      if (got >= MEASURE_N) {
+        measured = true;
+        const secs = (performance.now() - mT0) / 1000;
+        const rate = (got * AVG_FRAME_BYTES) / Math.max(0.1, secs);
+        reportMeasuredRate(rate);
+        if (rate < 250_000) {
+          slowLine = true;
+          // slow line: the frames own the pipe; the loop streams when played
+          videoGated = false;
+          gp.preload = "none";
+          try { gp.removeAttribute("preload"); gp.preload = "none"; } catch {}
+        }
+      }
+    });
     const t0 = performance.now();
     const MIN_MS = 2400;
     // Client: "make sure the assets load together with the site on the
@@ -147,12 +195,17 @@ export const s02: Section = {
     // stutter-free first scrub. Demanding the full set up front cost ~7s
     // on a 4 Mbit line for frames nobody had reached yet.
     const WEIGHT_FRAMES = 0.6;  // how the two split the percentage
-    const FRAMES_ENOUGH = 0.55; // of the intro sequence
+    const FRAMES_ENOUGH = 1.0; // BOTH opening clips, complete (client)
     // 2s is enough head start: the loop's bitrate (~2.6 Mbit) is below any
     // link that gets the HD file at all, so playback never catches the
     // download — and a frugal connection is on the 1.16MB SD cut instead.
     const VIDEO_LEAD_S = 2;
-    const HARD_CAP_MS = 12000;  // never trap a visitor behind a bad network
+    // Two caps: a fast line that stalls oddly still exits at 20s, but a line
+// the measurement has CONFIRMED slow gets the long cap — the client's
+// priority is "smooth even on low band", and a visitor watching an honest
+// counter climb is better served than one released into a stuttering film.
+const HARD_CAP_MS = 20000;
+const HARD_CAP_SLOW_MS = 38000;
     // iOS Safari ignores preload="auto" — a video downloads nothing until it
     // is played — so the video half of this bar never moved on a phone: it sat
     // at 60% (the frames' full weight) until the failsafe fired and then ran
@@ -217,7 +270,12 @@ export const s02: Section = {
     };
     const tick = () => {
       if (done) return;
-      const frames = store.loaded.filter(Boolean).length / store.loaded.length;
+      prime2();
+      const got1 = store.loaded.filter(Boolean).length;
+      const got2 = store2 ? store2.loaded.filter(Boolean).length : 0;
+      const n1 = store.loaded.length;
+      const n2 = store2 ? store2.loaded.length : 0;
+      const frames = (got1 + got2) / Math.max(1, n1 + n2);
       const vid = videoReady();
       // the bar tracks the two assets against what they actually need, so it
       // reads 100 exactly when the opening is ready — not before, not after
@@ -235,10 +293,18 @@ export const s02: Section = {
       num.textContent = String(Math.round(shown * 100));
       drawThread(shown);
       const ready = frames >= FRAMES_ENOUGH && vid >= 1;
-      if (shown > 0.995 && (ready || elapsed > HARD_CAP_MS)) finish();
+      const cap = slowLine ? HARD_CAP_SLOW_MS : HARD_CAP_MS;
+      if (import.meta.env.DEV) {
+        loader.dataset.dbg = JSON.stringify({
+          v: 3, got1, got2, n1, n2, vid: +vid.toFixed(2),
+          slow: slowLine, shown: +shown.toFixed(3), real: +real.toFixed(3),
+          el: Math.round(elapsed / 100) / 10,
+        });
+      }
+      if (shown > 0.995 && (ready || elapsed > cap)) finish();
       else requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
-    setTimeout(finish, HARD_CAP_MS + 1000); // never trap the visitor
+    setTimeout(finish, HARD_CAP_SLOW_MS + 2000); // never trap the visitor
   },
 };

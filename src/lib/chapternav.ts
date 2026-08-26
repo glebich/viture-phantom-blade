@@ -45,7 +45,7 @@ import { stopYs, filmFramesBetween } from "./rests";
 const GAP_MS = 110; // a pause this long means the next event starts a new turn
 const SETTLE_MS = 60; // brief guard after landing, against one gesture double-firing
 const WHEEL_TRIGGER = 18; // px of wheel delta that counts as a deliberate turn
-const TOUCH_TRIGGER = 44; // px of finger travel that counts as a swipe
+const TOUCH_TRIGGER = 32; // px of finger travel that counts as a swipe
 // A journey's length and the film's playback rate are the same number — the
 // film is scrubbed off scroll position — so "quicker transitions" and "don't
 // speed up the background" pull against each other. The EASING is what
@@ -190,6 +190,14 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
   // below the first page, the very first swipe jumped past the hero.
   const step = (dir: number) => {
     const y = lenis.animatedScroll ?? window.scrollY;
+    // mid-journey, `index` is already the in-flight target: a same-direction
+    // swipe means "skip ahead", an opposite one means "go back" — searching
+    // from the current y would just re-pick the stop we are already flying
+    // to, which is a swallow wearing a different hat
+    if (animating) {
+      goTo(index + dir);
+      return;
+    }
     if (Math.abs((stops[index] ?? Infinity) - y) < 4) {
       goTo(index + dir);
       return;
@@ -281,8 +289,11 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
       const y = e.touches[0]?.clientY ?? 0;
       touchAcc += touchY - y; // finger up = positive = forward
       touchY = y;
-      const now = performance.now();
-      if (blocked(now)) return;
+      // Touch is NEVER swallowed. The swallow exists for trackpads, whose
+      // momentum tail keeps firing after the fingers lift; a finger on the
+      // glass is unambiguous intent. A swipe DURING a journey retargets to
+      // the next page immediately — ignoring it for the length of a 4-second
+      // journey is what read as "hard to scroll, not responsive" (client).
       if (Math.abs(touchAcc) < TOUCH_TRIGGER) return;
       const dir = touchAcc > 0 ? 1 : -1;
       touchAcc = 0;

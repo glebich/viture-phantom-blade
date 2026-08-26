@@ -26,17 +26,20 @@ import type { SectionCtx } from "./section";
  *     bandwidth instead of queueing behind it.
  * ------------------------------------------------------------------------- */
 
-const MAX_IN_FLIGHT = 6;
+const MAX_IN_FLIGHT = 10;
 
 export interface FrameStore {
   frames: HTMLImageElement[];
   loaded: boolean[];
   /** Called with the index of each frame as it finishes loading. */
   onLoad: Set<(i: number) => void>;
+  /** force this store active now (the loader primes the opening assets) */
+  activate?: () => void;
 }
 
 interface Entry extends FrameStore {
-  urls: string[];
+  urlAt: (i: number) => string;
+  count: number;
   host: HTMLElement;
   next: number;
   active: boolean;
@@ -58,7 +61,7 @@ function pump(): void {
     let best: Entry | null = null;
     let bestD = Infinity;
     for (const e of entries) {
-      if (!e.active || e.next >= e.urls.length) continue;
+      if (!e.active || e.next >= e.count) continue;
       const d = distance(e.host);
       if (d < bestD) {
         bestD = d;
@@ -94,7 +97,7 @@ function pump(): void {
     );
     // a dead frame must not wedge the queue
     img.addEventListener("error", done, { once: true });
-    img.src = e.urls[i];
+    img.src = e.urlAt(i);
     e.frames[i] = img;
   }
 }
@@ -102,18 +105,28 @@ function pump(): void {
 export function mountFrameStore(
   host: HTMLElement,
   ctx: SectionCtx,
-  urls: string[],
+  urls: string[] | ((i: number) => string),
+  count?: number,
 ): FrameStore {
+  // URLs resolve at FETCH time, not mount time: the network tier can change
+  // mid-session (see net.ts measured bandwidth) and every frame not yet
+  // requested should follow it
+  const n = typeof urls === "function" ? (count ?? 0) : urls.length;
+  const urlAt = typeof urls === "function" ? urls : (i: number) => urls[i];
   const entry: Entry = {
     frames: [],
-    loaded: new Array(urls.length).fill(false),
+    loaded: new Array(n).fill(false),
     onLoad: new Set(),
-    urls,
+    urlAt,
+    count: n,
     host,
     next: 0,
     active: false,
   };
   entries.push(entry);
+  (entry as unknown as FrameStore & { activate: () => void }).activate = () => {
+    if (!entry.active) { entry.active = true; pump(); }
+  };
 
   const near = () => {
     if (entry.active) return;

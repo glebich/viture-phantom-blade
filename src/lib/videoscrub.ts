@@ -53,8 +53,7 @@ export function mountVideoScrub(
   const { ctx } = opts;
   const g = canvas.getContext("2d")!;
   const fit = opts.fit ?? "contain";
-  const urls = Array.from({ length: opts.count }, (_, i) => opts.url(i));
-  const store = mountFrameStore(opts.host, ctx, urls);
+  const store = mountFrameStore(opts.host, ctx, opts.url, opts.count);
 
   let base = 0; // scroll-driven playhead
   let dragDelta = 0; // transient drag offset

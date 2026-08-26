@@ -99,7 +99,7 @@ function getRoomRail(ctx: SectionCtx): RoomRail {
     register(host: HTMLElement) {
       hosts.push(host);
       if (!store) {
-        store = mountFrameStore(host, ctx, Array.from({ length: ROOM_FRAMES }, (_, i) => roomUrl(i)));
+        store = mountFrameStore(host, ctx, (i) => roomUrl(i), ROOM_FRAMES);
         store.onLoad.add(() => { shown = -1; draw(); });
       }
     },

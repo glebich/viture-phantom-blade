@@ -39,13 +39,23 @@ export function isFrugal(): boolean {
 
 /** phones get the client's VERTICAL film (1080x1920 renders framed for
  *  portrait) instead of a hard centre-crop of the 16:9 one */
+/* iOS Safari exposes no Network Information API, so slow phones were
+ * indistinguishable from fast ones and always fetched the 1080 tier. The
+ * loader MEASURES instead: s02 reports the observed download rate of the
+ * opening frames, and once it reads clearly slow every frame not yet
+ * requested drops a tier (URLs resolve at fetch time — see frameseq.ts). */
+let measuredSlow = false;
+export function reportMeasuredRate(bytesPerSec: number): void {
+  if (bytesPerSec > 0 && bytesPerSec < 250_000) measuredSlow = true;
+}
+
 export function isPhone(): boolean {
   return window.matchMedia("(max-width: 640px)").matches;
 }
 
 /** 1920 or 960 — the frame tier this visit should download */
 export function frameTier(): 1920 | 960 {
-  if (isFrugal()) return 960;
+  if (isFrugal() || measuredSlow) return 960;
   const small = window.matchMedia("(max-width: 1024px)").matches;
   // high-DPR phones upscale the 960 tier visibly, so they keep the big one
   return small && (window.devicePixelRatio || 1) < 2.5 ? 960 : 1920;
@@ -53,7 +63,7 @@ export function frameTier(): 1920 | 960 {
 
 /** the portrait sequences' own tiers */
 export function phoneFrameTier(): 1080 | 540 {
-  return isFrugal() ? 540 : 1080;
+  return isFrugal() || measuredSlow ? 540 : 1080;
 }
 
 /** filename suffix for the video loops: "" (HD) or "-sd" */

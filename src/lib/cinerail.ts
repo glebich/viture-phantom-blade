@@ -53,7 +53,7 @@ class CineRail {
 
   register(name: string, count: number, host: HTMLElement): void {
     const clip: Clip = { name, count };
-    clip.store = mountFrameStore(host, this.ctx, Array.from({ length: count }, (_, i) => tierUrl(name)(i)));
+    clip.store = mountFrameStore(host, this.ctx, (i) => tierUrl(name)(i), count);
     clip.store.onLoad.add(() => this.requestDraw());
     this.clips.set(name, clip);
   }
