@@ -82,3 +82,16 @@
     animation: none;
   }
 }
+
+/* Phones: the cue is retired. Its screen-space bottom anchor resolves
+   against the LAYOUT viewport on iOS, which slides against the visible one
+   as the toolbar moves — in practice it landed on the dock's CTA on the
+   hero and straight across the GLASSES CASE title (simulator, live build).
+   The dock already owns the bottom of the phone screen and touch carries
+   its own scroll affordance; a prompt that can sit on top of the copy is
+   worse than none. */
+@media (max-width: 640px) {
+  #idlecue {
+    display: none;
+  }
+}

@@ -331,9 +331,9 @@ html.cinema #scrollhint {
   #wash-glow,
   #s13-back,
   .s02-loader {
-    top: -12vh !important;
-    height: 124vh !important;
-    top: -12lvh !important;
-    height: 124lvh !important;
+    top: -16vh !important;
+    height: 132vh !important;
+    top: -16lvh !important;
+    height: 132lvh !important;
   }
 }
