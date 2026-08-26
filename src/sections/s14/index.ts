@@ -13,9 +13,9 @@ import type { FrameStore } from "../../lib/frameseq";
  * forward, left = backwards, under the design's dark tint. */
 
 function roomUrl(i: number): string {
-  return `/assets/room-${frameTier()}/f_${String(i).padStart(3, "0")}.webp`;
+  return `/assets/room60-${frameTier()}/f_${String(i).padStart(3, "0")}.webp`;
 }
-const ROOM_FRAMES = 61;
+const ROOM_FRAMES = 121;
 
 interface RoomRail {
   register(host: HTMLElement): void;

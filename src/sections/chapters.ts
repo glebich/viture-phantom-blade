@@ -23,7 +23,7 @@ export const s06: Section = {
   `),
   init(el, ctx) {
     mountCine({
-      id: "s06", clip: "clip2", count: 53, lengthVh: 2.2, videoSpan: 0.74,
+      id: "s06", clip: "clip260", count: 106, lengthVh: 2.2, videoSpan: 0.74,
       ctx, el,
       beats: [{ sel: "[data-beat]", at: 0.78, words: true }],
     });
@@ -40,7 +40,7 @@ export const s07: Section = {
   `),
   init(el, ctx) {
     mountCine({
-      id: "s07", clip: "clip3", count: 32, lengthVh: 2.2, videoSpan: 0.8,
+      id: "s07", clip: "clip360", count: 66, lengthVh: 2.2, videoSpan: 0.8,
       ctx, el,
       beats: [{ sel: "[data-beat]", at: 0.12 }],
     });
@@ -52,7 +52,7 @@ export const s09: Section = {
   id: "s09",
   html: cineHtml(`<div class="stage"></div>`),
   init(el, ctx) {
-    mountCine({ id: "s09", clip: "clip4", count: 65, lengthVh: 1.5, videoSpan: 0.9, ctx, el });
+    mountCine({ id: "s09", clip: "clip460", count: 127, lengthVh: 1.5, videoSpan: 0.9, ctx, el });
   },
 };
 
@@ -70,7 +70,7 @@ export const s10: Section = {
   `),
   init(el, ctx) {
     mountCine({
-      id: "s10", clip: "clip5", count: 52, lengthVh: 2.4, videoSpan: 0.78, videoStart: 0.14,
+      id: "s10", clip: "clip560", count: 105, lengthVh: 2.4, videoSpan: 0.78, videoStart: 0.14,
       ctx, el,
       beats: [
         { sel: "[data-eyebrow]", at: 0.004, out: 0.24, words: false },
@@ -100,7 +100,7 @@ export const s11: Section = {
   `),
   init(el, ctx) {
     mountCine({
-      id: "s11", clip: "clip6", count: 30, lengthVh: 2.8, videoSpan: 0.72, rest: 0.9,
+      id: "s11", clip: "clip660", count: 61, lengthVh: 2.8, videoSpan: 0.72, rest: 0.9,
       ctx, el,
       beats: [{ sel: "[data-beat]", at: 0.6, words: true }],
       onTimeline(tl) {

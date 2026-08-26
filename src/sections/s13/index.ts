@@ -161,7 +161,7 @@ export const s13: Section = {
     // with its red frame materialising, and only once it lands does the still
     // dissolve into the looping clip underneath.
     const handoff = el.querySelector<HTMLImageElement>(".s13-handoff")!;
-    handoff.src = tierUrl("clip6")(29);
+    handoff.src = tierUrl("clip660")(60);
     const cs = getComputedStyle(document.documentElement);
     const SW = parseFloat(cs.getPropertyValue("--stage-w")) || 1920;
     const SH = parseFloat(cs.getPropertyValue("--stage-h")) || 1080;

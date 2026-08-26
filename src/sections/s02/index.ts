@@ -40,8 +40,8 @@ export const s02: Section = {
 
     const { tl, rail } = mountCine({
       id: "s02",
-      clip: "intro",
-      count: 62,
+      clip: "intro60",
+      count: 122,
       lengthVh: 3.6,
       videoSpan: 0.82,
       ctx,
@@ -89,7 +89,7 @@ export const s02: Section = {
     tl.eventCallback("onUpdate", phase);
 
     // ---- Skip ----
-    // Play the intro through at the clip's natural speed (62 kept frames =
+    // Play the intro through at the clip's natural speed (121 kept frames =
     // every 2nd source frame ≈ 4s of footage) instead of a fast scrub —
     // linear easing so the film advances like a normal player.
     el.querySelector<HTMLButtonElement>(".s02-skip")!.addEventListener("click", () => {
@@ -124,7 +124,7 @@ export const s02: Section = {
       thread.style.clipPath = `inset(0 ${Math.max(0, 100 - v * TIP_PCT)}% 0 0)`;
     };
 
-    const store = rail.store("intro")!;
+    const store = rail.store("intro60")!;
     const t0 = performance.now();
     const MIN_MS = 2400;
     // Client: "make sure the assets load together with the site on the
@@ -144,7 +144,7 @@ export const s02: Section = {
     // loop plays IMMEDIATELY, so it needs a real buffer; the intro frames are
     // not touched until the visitor scrolls, and the scheduler keeps filling
     // them in order behind the scenes, so a majority is enough to guarantee a
-    // stutter-free first scrub. Demanding all 62 up front cost an extra ~7s
+    // stutter-free first scrub. Demanding the full set up front cost ~7s
     // on a 4 Mbit line for frames nobody had reached yet.
     const WEIGHT_FRAMES = 0.6;  // how the two split the percentage
     const FRAMES_ENOUGH = 0.55; // of the intro sequence
@@ -210,14 +210,14 @@ export const s02: Section = {
           });
           ctx.lenis.start();
           // show whatever frame the scrub owns right now (harness sets progress)
-          rail.show("intro", Math.min(1, tl.progress() / 0.82));
+          rail.show("intro60", Math.min(1, tl.progress() / 0.82));
           if (tl.progress() < 0.08) gp.play().catch(() => {});
         },
       });
     };
     const tick = () => {
       if (done) return;
-      const frames = store.loaded.filter(Boolean).length / 62;
+      const frames = store.loaded.filter(Boolean).length / store.loaded.length;
       const vid = videoReady();
       // the bar tracks the two assets against what they actually need, so it
       // reads 100 exactly when the opening is ready — not before, not after
