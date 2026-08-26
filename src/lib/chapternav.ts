@@ -82,8 +82,21 @@ const CRUISE_END = 0.45; // where the long deceleration begins
 const DECAY = 1.3; // shape of that deceleration — higher settles later
 const AREA =
   RAMP / 2 + (CRUISE_END - RAMP) + (1 - CRUISE_END) / (DECAY + 1);
+// The decay tail approaches zero velocity but never REACHES it, so the last
+// stretch of every journey crept at ~100px/s — imperceptible as scroll, but
+// the film maps px to frames far more densely than the eye maps them to
+// motion, and in a film-dense pin that creep still plays several frames a
+// second AFTER the page has visibly stopped (client, on the glasses case:
+// "it stop and than it's play for 0.4 sec again"). At 15fps the judder
+// passed for stillness; 60fps made it legible. So the journey now covers
+// ALL of its ground by TRAVEL_END and holds perfectly still through the
+// remainder — the film freezes in the same instant the page does, and
+// nothing moves again until the visitor scrolls.
+const TRAVEL_END = 0.92;
+
 /** distance covered by fraction t of the journey */
-const travelEase = (t: number): number => {
+const travelEase = (raw: number): number => {
+  const t = Math.min(1, raw / TRAVEL_END);
   if (t <= 0) return 0;
   if (t >= 1) return 1;
   let d: number;

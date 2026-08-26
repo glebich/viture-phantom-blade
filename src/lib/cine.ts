@@ -3,7 +3,7 @@ import { splitWords, scrubTurn, scrubFlare, scrubWordExit } from "./textfx";
 import { scrubMaskReveal } from "./assetfx";
 import { getRail } from "./cinerail";
 import { setRest, registerFilm } from "./rests";
-import { frameTier } from "./net";
+import { frameTier, isPhone, phoneFrameTier } from "./net";
 
 /* ---------------------------------------------------------------------------
  * cine.ts — the Phantom Blade chapter engine.
@@ -44,9 +44,30 @@ export interface CineOptions {
   onTimeline?: (tl: gsap.core.Timeline) => void;
 }
 
+/* The mobile film is its own set of renders (portrait 1080x1920), not a
+ * crop: <clip>m dirs, tiers 1080/540. A couple of the vertical clips carry a
+ * different frame count than their landscape twins, so the count resolves
+ * through effectiveCount() wherever a clip is mounted. */
+const PHONE_COUNTS: Record<string, number> = {
+  intro60: 122,
+  clip260: 100,
+  clip360: 66,
+  clip460: 127,
+  clip560: 105,
+  clip660: 61,
+};
+
 export function tierUrl(clip: string): (i: number) => string {
+  if (isPhone() && PHONE_COUNTS[clip] !== undefined) {
+    const size = phoneFrameTier();
+    return (i) => `/assets/${clip}m-${size}/f_${String(i).padStart(3, "0")}.webp`;
+  }
   const size = frameTier();
   return (i) => `/assets/${clip}-${size}/f_${String(i).padStart(3, "0")}.webp`;
+}
+
+export function effectiveCount(clip: string, desktopCount: number): number {
+  return isPhone() && PHONE_COUNTS[clip] !== undefined ? PHONE_COUNTS[clip] : desktopCount;
 }
 
 export function mountCine(opts: CineOptions) {
@@ -54,7 +75,8 @@ export function mountCine(opts: CineOptions) {
   const { gsap } = ctx;
 
   const rail = getRail(ctx);
-  rail.register(opts.clip, opts.count, el);
+  const count = effectiveCount(opts.clip, opts.count);
+  rail.register(opts.clip, count, el);
 
   const videoSpan = opts.videoSpan ?? 1;
   const videoStart0 = opts.videoStart ?? 0;
@@ -98,7 +120,7 @@ export function mountCine(opts: CineOptions) {
     onUpdate: () => rail.show(opts.clip, drive.p),
   }, videoStart);
   tl.to({}, { duration: Math.max(0.001, 1 - videoSpan) }, videoSpan);
-  registerFilm(tl, videoStart0, videoSpan, opts.count);
+  registerFilm(tl, videoStart0, videoSpan, count);
 
   const IN = 0.06;
   for (const b of opts.beats ?? []) {
