@@ -60,9 +60,17 @@ const TOUCH_TRIGGER = 44; // px of finger travel that counts as a swipe
 // more than half the time spent easing down into the page. Ground is covered
 // early, which is what makes a move feel quick, and the arrival drifts to a
 // stop instead of arriving at a fixed rate and halting.
-const DUR_PER_PX = 1 / 900; // seconds of travel per px between pages
+// Re-paced for the 60fps re-master (client: "asset playing a little too
+// much fast while transition"). The film's speed-per-scroll never changed —
+// but at 15 kept-fps the fast passages read as a jumpy slideshow the eye
+// couldn't track, and at 60fps the same rate is suddenly VISIBLE as speed.
+// Smoothness exposed it. So the journeys themselves slow: peak playback on a
+// typical page-to-page move drops from ~2.5x real time to ~1.8x, and the
+// ease keeps its early push + long settle (the "trudging" complaint was
+// about the SHAPE, which stays fixed).
+const DUR_PER_PX = 1 / 700; // seconds of travel per px between pages
 const DUR_MIN = 0.6;
-const DUR_MAX = 3.0;
+const DUR_MAX = 3.4;
 const RAMP = 0.1; // getting under way
 const CRUISE_END = 0.45; // where the long deceleration begins
 const DECAY = 1.3; // shape of that deceleration — higher settles later
