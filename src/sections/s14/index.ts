@@ -144,6 +144,8 @@ function livingRoom(opts: {
   note: string;
   /** pointer-follow yaw on the framed panel (duel-world chapter) */
   tilt?: boolean;
+  /** the insert plays a looping clip instead of a still (the OSD demo) */
+  video?: string;
 }): Section {
   return {
     id: opts.id,
@@ -151,7 +153,11 @@ function livingRoom(opts: {
       <div class="stage">
         <h2 class="lr-title">${opts.title}</h2>
         <p class="lr-note t-caps">${opts.note}</p>
-        <div class="lr-insert"></div>
+        <div class="lr-insert${opts.video ? " lr-insert--video" : ""}">${
+          opts.video
+            ? `<video class="lr-video" src="${opts.video}" muted loop playsinline preload="metadata"></video>`
+            : ""
+        }</div>
       </div>
     `,
     init(el, ctx: SectionCtx) {
@@ -162,6 +168,20 @@ function livingRoom(opts: {
       const title = el.querySelector<HTMLElement>(".lr-title")!;
       const note = el.querySelector<HTMLElement>(".lr-note")!;
       const insert = el.querySelector<HTMLElement>(".lr-insert")!;
+      // the OSD demo loop: runs while its chapter is anywhere near the
+      // screen, sits still otherwise — a UI in use, not a still of one
+      const vid = insert.querySelector<HTMLVideoElement>(".lr-video");
+      if (vid) {
+        const near = () => {
+          const r = el.getBoundingClientRect();
+          const on = r.bottom > -innerHeight && r.top < innerHeight * 2;
+          if (on && vid.paused) vid.play().catch(() => {});
+          else if (!on && !vid.paused) vid.pause();
+        };
+        ctx.lenis.on("scroll", near);
+        ctx.ScrollTrigger.addEventListener("refresh", near);
+        requestAnimationFrame(near);
+      }
       const words = splitWords(title);
       gsap.set(words, { opacity: 0 });
       if (opts.tilt) mountPanelTilt(insert, ctx);
@@ -272,4 +292,5 @@ export const s15 = livingRoom({
   id: "s15",
   title: "Exclusive OSD<br/>menu",
   note: "A custom UI inspired by the world of Phantom Blade Zero, built for immersion.",
+  video: "/video/osd.mp4",
 });
