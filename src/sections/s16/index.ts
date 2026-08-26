@@ -1,6 +1,6 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
-import { scrubAssetArrival } from "../../lib/assetfx";
+import { scrubMaskReveal } from "../../lib/assetfx";
 import { scrubFlare } from "../../lib/textfx";
 import { setRest } from "../../lib/rests";
 
@@ -85,10 +85,10 @@ export const s16: Section = {
     scrubFlare(intro, [title], 0.24, 0, { hold: 0.3, cool: 0.34 });
     intro.fromTo(title, { opacity: 0 },
       { opacity: 1, duration: 0.36, ease: "sine.out", immediateRender: true }, 0.24);
-    // the relic cards drift up and resolve out of blur, one after another —
-    // slow enough to read as a reveal rather than a switch (client)
+    // each relic card is unveiled — the mask sweeps up its tilted face while
+    // the card eases back into place, one after another (fantasy.co grammar)
     cards.forEach((c, i) => {
-      scrubAssetArrival(tl, c, 0.16 + i * 0.11, { duration: 0.34, drift: 30, blur: 14 });
+      scrubMaskReveal(tl, c, 0.16 + i * 0.11, { duration: 0.36, dir: "rise", scaleFrom: 1.05, drift: 30 });
     });
   },
 };

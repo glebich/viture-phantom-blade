@@ -1,5 +1,6 @@
 import type { SectionCtx } from "./section";
 import { splitWords, scrubTurn, scrubFlare, scrubWordExit } from "./textfx";
+import { scrubMaskReveal } from "./assetfx";
 import { getRail } from "./cinerail";
 import { setRest } from "./rests";
 import { frameTier } from "./net";
@@ -20,6 +21,10 @@ export interface CineBeat {
   out?: number;
   words?: boolean;
   drift?: number;
+  /** block beats only: reveal through a mask wipe instead of a fade
+   *  (assetfx.scrubMaskReveal); "bg" also counter-zooms a background-image */
+  mask?: "rise" | "unroll";
+  maskBg?: number;
 }
 
 export interface CineOptions {
@@ -115,6 +120,16 @@ export function mountCine(opts: CineOptions) {
         );
       });
       if (b.out !== undefined) scrubWordExit(tl, box, words, b.out, 0.012);
+    } else if (b.mask) {
+      scrubMaskReveal(tl, box, b.at, {
+        duration: IN * 1.6,
+        dir: b.mask,
+        bgFrom: b.maskBg,
+        drift: b.drift ?? 16,
+      });
+      if (b.out !== undefined) {
+        tl.to(box, { opacity: 0, duration: 0.05, ease: "sine.in" }, b.out);
+      }
     } else {
       scrubFlare(tl, [box], b.at, 0);
       tl.fromTo(

@@ -1,7 +1,7 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { splitWords, scrubTurn, scrubFlare } from "../../lib/textfx";
-import { scrubAssetArrival } from "../../lib/assetfx";
+import { scrubMaskReveal } from "../../lib/assetfx";
 import { setRest } from "../../lib/rests";
 import { mountWashRail } from "../s16";
 
@@ -62,8 +62,9 @@ export const s17: Section = {
       tl.fromTo(r, { opacity: 0 },
         { opacity: 1, duration: 0.3, ease: "sine.out", immediateRender: true }, 0.28 + i * 0.06);
     });
-    // the map scroll unrolls out of the dark — the slowest asset on the page
-    scrubAssetArrival(tl, map, 0.26, { duration: 0.52, drift: 34, blur: 16, scale: 0.955 });
+    // the map UNROLLS — the mask sweeps downward like the scroll being let
+    // out, the artwork settling inside it (fantasy.co grammar)
+    scrubMaskReveal(tl, map, 0.26, { duration: 0.52, dir: "unroll", scaleFrom: 1.06, drift: -20 });
     // the light behind the papyrus breathes in with the page
     tl.fromTo("#wash-glow", { opacity: 0 },
       { opacity: 1, duration: 0.55, ease: "sine.inOut", immediateRender: true }, 0.25);

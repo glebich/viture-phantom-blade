@@ -1,7 +1,7 @@
 import "./style.css";
 import type { Section, SectionCtx } from "../../lib/section";
 import { splitWords, scrubTurn, scrubFlare } from "../../lib/textfx";
-import { scrubAssetArrival } from "../../lib/assetfx";
+import { scrubMaskReveal } from "../../lib/assetfx";
 import { setRest } from "../../lib/rests";
 import { mountFrameStore } from "../../lib/frameseq";
 import { frameTier } from "../../lib/net";
@@ -192,8 +192,9 @@ function livingRoom(opts: {
       });
       tl.fromTo(note, { opacity: 0 },
         { opacity: 1, duration: 0.12, ease: "sine.out", immediateRender: true }, 0.18);
-      // the framed panel resolves out of the air like the copy does
-      scrubAssetArrival(tl, insert, 0.14, { duration: 0.34, drift: 30, blur: 14 });
+      // the framed panel is DISCOVERED — a mask wipes up while the picture
+      // settles against it (fantasy.co grammar; see assetfx.ts)
+      scrubMaskReveal(tl, insert, 0.14, { duration: 0.36, dir: "rise", bgFrom: 112, drift: 26 });
 
       setRest(opts.id, tl, 0.5);
 

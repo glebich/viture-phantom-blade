@@ -49,8 +49,8 @@ export const s02: Section = {
       beats: [
         { sel: ".hero-title", at: 0.855, words: true },
         { sel: ".hero-tag", at: 0.895, words: false },
-        { sel: ".hero-price", at: 0.9, words: false, drift: 14 },
-        { sel: ".hero-cta", at: 0.925, words: false, drift: 14 },
+        { sel: ".hero-price", at: 0.9, words: false, mask: "rise", drift: 14 },
+        { sel: ".hero-cta", at: 0.925, words: false, mask: "rise", maskBg: 116, drift: 12 },
       ],
       onTimeline(tl) {
         // gameplay loop (chapter 02 rest): plays after the loader; the first
