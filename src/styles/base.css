@@ -323,9 +323,11 @@ html.cinema #scrollhint {
    do to each other, there is no edge left to expose. Symmetric on purpose —
    the centre stays the centre, so cover-fit framing and the loader's centred
    stage do not shift. */
+/* Phones: only the PAINT-CHEAP grounds bleed (gradients and the wash
+   plate). The film canvases stay at exactly 100lvh — bleeding them zoomed
+   the film's cover framing and grew every drawn frame by a third, which is
+   what the client felt as stretched assets and sluggish scroll. */
 @media (max-width: 640px) {
-  #cine-rail,
-  #room-rail,
   #room-tint,
   #wash-rail,
   #wash-glow,

@@ -202,4 +202,38 @@ if (!qaOnly) {
   threadOn();
 }
 
+
+// ---------------------------------------------------------------------------
+// ?probe — on-device geometry readout. The bottom-line reports come from one
+// real phone that has served stale builds for days before; this puts the
+// numbers on the screen so a photograph of the failing state carries the
+// diagnosis with it: which build, which viewport, where each ground's box
+// actually ends.
+// ---------------------------------------------------------------------------
+if (location.search.includes("probe")) {
+  const box = document.createElement("div");
+  box.style.cssText =
+    "position:fixed;left:8px;top:80px;z-index:9999;background:rgba(0,0,0,.82);color:#7dff9a;" +
+    "font:11px/1.5 monospace;padding:8px 10px;pointer-events:none;white-space:pre;border:1px solid #333";
+  document.body.appendChild(box);
+  const lvhProbe = document.createElement("div");
+  lvhProbe.style.cssText = "position:fixed;top:0;left:0;width:0;height:100lvh;visibility:hidden;pointer-events:none;";
+  document.body.appendChild(lvhProbe);
+  const upd = () => {
+    const vv = window.visualViewport;
+    const rail = document.getElementById("cine-rail")?.getBoundingClientRect();
+    const wash = document.getElementById("wash-rail")?.getBoundingClientRect();
+    const loader = document.querySelector(".s02-loader")?.getBoundingClientRect();
+    const f = (r?: DOMRect | null) => (r ? `${Math.round(r.top)}..${Math.round(r.bottom)}` : "-");
+    box.textContent =
+      `build 3a604ba+\n` +
+      `innerH ${innerHeight}  lvh ${lvhProbe.offsetHeight}\n` +
+      `vv.h ${vv ? Math.round(vv.height) : "-"}  vv.top ${vv ? Math.round(vv.offsetTop) : "-"}\n` +
+      `cine ${f(rail)}\nwash ${f(wash)}\nloader ${f(loader)}\n` +
+      `y ${Math.round(scrollY)}  dpr ${devicePixelRatio}`;
+  };
+  setInterval(upd, 300);
+  upd();
+}
+
 requestAnimationFrame(() => ScrollTrigger.refresh());

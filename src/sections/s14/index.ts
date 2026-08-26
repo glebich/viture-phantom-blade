@@ -45,8 +45,9 @@ function getRoomRail(ctx: SectionCtx): RoomRail {
   let shown = -1;
   const size = () => {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(innerWidth * dpr) || 2;
-    canvas.height = Math.round(innerHeight * dpr) || 2;
+    const cr = canvas.getBoundingClientRect();
+    canvas.width = Math.round((cr.width || innerWidth) * dpr) || 2;
+    canvas.height = Math.round((cr.height || innerHeight) * dpr) || 2;
     shown = -1;
   };
   size();

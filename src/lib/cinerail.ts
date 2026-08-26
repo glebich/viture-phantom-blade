@@ -34,8 +34,12 @@ class CineRail {
     this.g = this.canvas.getContext("2d")!;
     const size = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = Math.round(innerWidth * dpr);
-      const h = Math.round(innerHeight * dpr);
+      // size from the element's OWN box, never the viewport: any styling that
+      // grows the canvas (the iOS ground bleed did) otherwise stretches the
+      // bitmap to fill it — the client watched the film distort on a phone
+      const r = this.canvas.getBoundingClientRect();
+      const w = Math.round((r.width || innerWidth) * dpr);
+      const h = Math.round((r.height || innerHeight) * dpr);
       if (this.canvas.width !== w || this.canvas.height !== h) {
         this.canvas.width = w;
         this.canvas.height = h;
