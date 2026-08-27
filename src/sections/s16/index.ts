@@ -33,7 +33,7 @@ export function mountWashRail(host: HTMLElement): void {
 }
 
 /* Official card PNGs from the client — tilt, border, label and glow baked. */
-const CARDS = ["face1", "face2", "face3", "face4"];
+const CARDS = ["facein1", "facein2", "facein3", "facein4"];
 
 export const s16: Section = {
   id: "s16",
@@ -43,7 +43,7 @@ export const s16: Section = {
       <p class="s16-eyebrow">What Else Within The Box</p>
       <h2 class="s16-title">More treasures await within</h2>
       ${CARDS.map(
-        (c, i) => `<img class="s16-card s16-c${i}" src="/assets/ui/${c}.webp" alt="" />`
+        (c, i) => `<div class="s16-card s16-c${i}"><img src="/assets/ui/${c}.webp" alt="" /></div>`
       ).join("")}
     </div>
   `,

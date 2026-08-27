@@ -85,11 +85,36 @@
    x144–1582 — centre 863 against the canvas centre 960, which is the leftward
    lean — and measured 1438 wide against the design's 1517. Scaled 1.055 about
    the group centre and re-centred on 960. */
-/* The client's re-drawn cards (Figma 19938-312): every card is the SAME
-   378x545 plate — index, title, art and numeral seal baked in the face crop
-   — placed by its measured top-left corner and tilt. transform-origin is
-   the top-left because that is the corner the measurement anchored. */
-.s16-card { transform-origin: top left; }
+/* The client's re-drawn cards (Figma 19938-312), assembled instead of cut
+   whole: rotated whole-card crops left EMPTY CORNER WEDGES wherever the
+   measured tilt was half a degree off, and each face carried its
+   NEIGHBOUR'S baked border, doubling against the live one (client, with
+   corner close-ups). Now CSS draws the frame — border, radius, glow are
+   geometric, so they cannot be cut or misaligned — and the crop supplies
+   only the INTERIOR (13px inside the measured rect: title, art, index,
+   seal, texture), sitting inside the frame with the card ground behind it.
+   Stacking mirrors the design (2 and 4 lie over their neighbours), so what
+   overlap residue remains in an interior hides under the live upper card. */
+.s16-card {
+  transform-origin: top left;
+  border: 1.5px solid #d92b20;
+  border-radius: 14px;
+  background: #0b0506;
+  box-shadow: 0 0 26px rgba(200, 36, 24, 0.38), 0 0 70px rgba(140, 18, 12, 0.18);
+  overflow: hidden;
+}
+.s16-card img {
+  position: absolute;
+  left: 13px;
+  top: 13px;
+  width: calc(100% - 26px);
+  height: calc(100% - 26px);
+}
+/* stacking as the frame draws it: 2 lies over 1 and 3; 4 lies over 3 */
+.s16-c0 { z-index: 1; }
+.s16-c1 { z-index: 3; }
+.s16-c2 { z-index: 2; }
+.s16-c3 { z-index: 3; }
 .s16-c0 { left: 203px; top: 411px; width: 378px; height: 545px; transform: rotate(-3.4deg); }
 .s16-c1 { left: 635px; top: 418px; width: 378px; height: 545px; transform: rotate(2.9deg); }
 .s16-c2 { left: 959px; top: 389px; width: 378px; height: 545px; transform: rotate(-2.3deg); }

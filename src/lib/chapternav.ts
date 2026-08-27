@@ -122,6 +122,7 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
   let wheelAcc = 0;
   let prevAbs = Infinity; // |delta| of the previous wheel event
   let lastEventT = 0;
+  let journeyT0 = 0; // when the in-flight journey started
 
   const measure = () => {
     stops = stopYs();
@@ -153,6 +154,7 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
     }
     index = clamped;
     animating = true;
+    journeyT0 = performance.now();
     // the journey's length follows the FILM it plays; plateau-only moves are
     // paced by distance instead, briskly (see the constants above)
     const frames = filmFramesBetween(from, to);
@@ -173,12 +175,24 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
     });
   };
 
-  /** true when this input should be swallowed (journey in flight, or the
-   *  brief guard just after landing) */
+  /** true when this input should be swallowed. A journey in flight no
+   *  longer blanket-blocks the wheel — that forced the visitor to sit
+   *  through the whole arrival, copy included, before the next notch
+   *  counted (client: "you need to wait all the way untill text appear
+   *  before you scroll forward"). Only two things still swallow input:
+   *  the brief settle after landing, and the opening beat of a journey
+   *  (the same physical flick that launched it is still streaming). The
+   *  fresh-turn detector in the wheel handler separates a deliberate new
+   *  push from that flick's decaying tail. */
   const blocked = (now: number) => {
-    if (animating || now < blockedUntil) {
+    if (now < blockedUntil) {
       wheelAcc = 0;
-      prevAbs = Infinity; // whatever is still arriving is a tail, not a turn
+      prevAbs = Infinity;
+      return true;
+    }
+    if (animating && now - journeyT0 < 180) {
+      wheelAcc = 0;
+      prevAbs = Infinity; // the launching gesture itself, not a new turn
       return true;
     }
     return false;
@@ -229,8 +243,10 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
       lastEventT = now;
       if (blocked(now)) return;
       // a decaying stream is the last turn finishing; only a gap or a rising
-      // edge means the visitor is asking for the next page
-      const fresh = gap || a > prevAbs;
+      // edge means the visitor is asking for the next page. Mid-journey the
+      // rise must be UNAMBIGUOUS (a tail jitters a few percent up and down),
+      // so it clears the previous event by a margin.
+      const fresh = gap || a > prevAbs * (animating ? 1.35 : 1);
       prevAbs = a;
       if (!fresh && wheelAcc === 0) return;
       wheelAcc += e.deltaY;
@@ -261,7 +277,7 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
     }
     if (!dir) return;
     e.preventDefault();
-    if (blocked(now)) return;
+    if (now < blockedUntil) return; // keys are never momentum — retarget freely
     step(dir);
   });
 
