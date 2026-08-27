@@ -36,6 +36,57 @@ export const s17: Section = {
       .filter(Boolean);
     const map = el.querySelector<HTMLElement>(".s17-map")!;
 
+    // ---------------------------------------------------------------------
+    // Idle life (client: "add some micro animation with assets and text").
+    // Time-based, not scrubbed: these run while the finale is on screen and
+    // sleep the moment it leaves, so they never fight the arrival tweens —
+    // every one animates a property the scrub never touches on that element
+    // (the map floats on x-rotation-free y/rotation, the arrival owns
+    // opacity/clip). Reduced motion skips the lot.
+    // ---------------------------------------------------------------------
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const idle: gsap.core.Tween[] = [];
+    if (!reduced) {
+      // the scroll HANGS — it sways as if on its cords
+      idle.push(gsap.to(map, {
+        y: 9, rotation: 0.55, transformOrigin: "50% 8%",
+        duration: 3.4, ease: "sine.inOut", yoyo: true, repeat: -1, paused: true,
+      }));
+      // the paper CTA breathes, the way it would in a hand
+      const cta = el.querySelector<HTMLElement>(".s17-cta");
+      if (cta) idle.push(gsap.to(cta, {
+        scale: 1.016, duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: -1, paused: true,
+      }));
+      // a hot shimmer walks the title every few breaths, then cools — the
+      // same flare language as the arrivals, idling
+      const shimmer = gsap.timeline({ repeat: -1, repeatDelay: 6.5, paused: true });
+      words.forEach((w, i) => {
+        shimmer.to(w, {
+          textShadow: "0 0 14px rgba(255,238,230,0.85), 0 0 34px rgba(232,52,42,0.5)",
+          duration: 0.34, ease: "sine.in",
+        }, i * 0.09).to(w, {
+          textShadow: "0 0 0px rgba(255,238,230,0), 0 0 0px rgba(232,52,42,0)",
+          duration: 0.8, ease: "sine.out",
+        }, i * 0.09 + 0.34);
+      });
+      idle.push(shimmer as unknown as gsap.core.Tween);
+      // the WATCH AGAIN arrow lifts, inviting
+      const arrow = el.querySelector<HTMLElement>(".s17-again-arrow");
+      if (arrow) idle.push(gsap.to(arrow, {
+        y: -5, duration: 1.5, ease: "sine.inOut", yoyo: true, repeat: -1, paused: true,
+      }));
+      // wake on screen, sleep off screen
+      let on = false;
+      const gate = () => {
+        const r = el.getBoundingClientRect();
+        const want = r.bottom > 0 && r.top < innerHeight;
+        if (want !== on) { on = want; idle.forEach((t) => (want ? t.play() : t.pause())); }
+      };
+      ctx.lenis.on("scroll", gate);
+      ctx.ScrollTrigger.addEventListener("refresh", gate);
+      requestAnimationFrame(gate);
+    }
+
     // the end of the film should offer the way back rather than a dead stop
     el.querySelector<HTMLButtonElement>(".s17-again")!.addEventListener("click", () => {
       ctx.lenis.scrollTo(0, { duration: 2.6, easing: (t) => 1 - Math.pow(1 - t, 3) });

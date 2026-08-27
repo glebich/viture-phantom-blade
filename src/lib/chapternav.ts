@@ -71,13 +71,16 @@ const TOUCH_TRIGGER = 32; // px of finger travel that counts as a swipe
 //                   crushed into a distance-capped 3.4)
 //   empty journeys  0.5s + px/1500 — brisk, since nothing changes mid-way
 const FILM_BASE = 0.5;
-const FILM_FPS = 30; // natural playback of the 30-kept-fps sequences
+// A touch under natural playback reads as WEIGHT (client: "desktop too
+// quick, needs to be a bit more firm; mobile can be a bit better") — the
+// film lingers instead of hurrying. Desktop firmer than mobile.
+const FILM_FPS = window.matchMedia("(max-width: 640px)").matches ? 28 : 25.5;
 const FILM_MIN = 0.9;
-const FILM_MAX = 5.0;
-const EMPTY_PER_PX = 1 / 1500;
+const FILM_MAX = 5.4;
+const EMPTY_PER_PX = 1 / 1300;
 const EMPTY_MIN = 0.6;
-const EMPTY_MAX = 2.2;
-const RAMP = 0.1; // getting under way
+const EMPTY_MAX = 2.5;
+const RAMP = 0.13; // getting under way — a firmer, less jumpy launch
 const CRUISE_END = 0.45; // where the long deceleration begins
 const DECAY = 1.3; // shape of that deceleration — higher settles later
 const AREA =
