@@ -38,6 +38,7 @@ const CARDS = ["face1", "face2", "face3", "face4"];
 export const s16: Section = {
   id: "s16",
   html: `
+    <img class="s16-ground" src="/assets/ui/bg16-1920.webp" srcset="/assets/ui/bg16-768.webp 768w, /assets/ui/bg16-1280.webp 1280w, /assets/ui/bg16-1920.webp 1920w, /assets/ui/bg16-2880.webp 2880w" sizes="100vw" alt="" aria-hidden="true" />
     <div class="stage">
       <p class="s16-eyebrow">What Else Within The Box</p>
       <h2 class="s16-title">More treasures await within</h2>
@@ -45,7 +46,6 @@ export const s16: Section = {
         (c, i) => `<img class="s16-card s16-c${i}" src="/assets/ui/${c}.webp" alt="" />`
       ).join("")}
     </div>
-    <img class="s16-mountains" src="/assets/ui/mountains2.webp" alt="" aria-hidden="true" />
   `,
   init(el, ctx: SectionCtx) {
     const { gsap } = ctx;

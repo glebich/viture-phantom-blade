@@ -10,9 +10,8 @@ const PREORDER_URL = "https://www.viture.com/";
 export const s17: Section = {
   id: "s17",
   html: `
+    <img class="s17-ground" src="/assets/ui/bg17-1920.webp" srcset="/assets/ui/bg17-768.webp 768w, /assets/ui/bg17-1280.webp 1280w, /assets/ui/bg17-1920.webp 1920w, /assets/ui/bg17-2880.webp 2880w" sizes="100vw" alt="" aria-hidden="true" />
     <div class="stage">
-      <img class="s17-glyph s17-glyph--ying" src="/assets/ui/glyph-ying.png" alt="" aria-hidden="true" />
-      <img class="s17-glyph s17-glyph--ling" src="/assets/ui/glyph-ling.png" alt="" aria-hidden="true" />
       <img class="s17-lockup" src="/assets/ui/lockup.png" alt="VITURE × Phantom Blade Ø" />
       <h2 class="s17-title">Pre-order<br/>Exclusive</h2>
       <p class="s17-body t-caps">A hand-drawn map of the world shrouded in darkness. Meticulously crafted, richly detailed—made for those who explore every shadow.</p>
@@ -25,7 +24,6 @@ export const s17: Section = {
         <span class="s17-again-label">Watch Again</span>
       </button>
     </div>
-    <img class="s17-mountains" src="/assets/ui/mountains2.webp" alt="" aria-hidden="true" />
   `,
   init(el, ctx: SectionCtx) {
     const { gsap } = ctx;
