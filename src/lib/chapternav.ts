@@ -311,6 +311,19 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
       touchAcc += touchY - y; // finger up = positive = forward
       touchY = y;
       if (steppedThisTouch) return;
+      // Phones swipe RHYTHMICALLY — three quick swipes are one intention,
+      // not three. With mid-journey retargeting they each queued another
+      // page and the site never rested (client: "too wild, impossible to
+      // stop on one page"). On touch, a stroke that arrives while a journey
+      // is in flight is simply spent: the page in progress lands, and the
+      // NEXT stroke — after it has landed — moves on. The wheel keeps its
+      // mid-journey retarget: a notch is deliberate in a way a habitual
+      // swipe is not.
+      if (animating) {
+        steppedThisTouch = true;
+        touchAcc = 0;
+        return;
+      }
       // Touch is NEVER swallowed. The swallow exists for trackpads, whose
       // momentum tail keeps firing after the fingers lift; a finger on the
       // glass is unambiguous intent. A swipe DURING a journey retargets to

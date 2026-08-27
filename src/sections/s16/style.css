@@ -69,10 +69,9 @@
      `filter: blur(0px)` inline on every card, and inline beats a stylesheet —
      so the hover state has to say so explicitly. GSAP never animates these
      two on the cards afterwards, so nothing is being fought over. */
-  .s16-c0:hover { transform: rotate(-3.4deg) translateY(-15px) scale(1.035) !important; }
-  .s16-c1:hover { transform: rotate(2.9deg) translateY(-15px) scale(1.035) !important; }
-  .s16-c2:hover { transform: rotate(-2.3deg) translateY(-15px) scale(1.035) !important; }
-  .s16-c3:hover { transform: rotate(4.6deg) translateY(-15px) scale(1.035) !important; }
+  .s16-card:hover {
+    transform: translateY(-15px) scale(1.035) !important;
+  }
   .s16-card:hover {
     filter: brightness(1.16) drop-shadow(0 14px 46px rgba(226, 60, 45, 0.34)) !important;
   }
@@ -85,42 +84,17 @@
    x144–1582 — centre 863 against the canvas centre 960, which is the leftward
    lean — and measured 1438 wide against the design's 1517. Scaled 1.055 about
    the group centre and re-centred on 960. */
-/* The client's re-drawn cards (Figma 19938-312), assembled instead of cut
-   whole: rotated whole-card crops left EMPTY CORNER WEDGES wherever the
-   measured tilt was half a degree off, and each face carried its
-   NEIGHBOUR'S baked border, doubling against the live one (client, with
-   corner close-ups). Now CSS draws the frame — border, radius, glow are
-   geometric, so they cannot be cut or misaligned — and the crop supplies
-   only the INTERIOR (13px inside the measured rect: title, art, index,
-   seal, texture), sitting inside the frame with the card ground behind it.
-   Stacking mirrors the design (2 and 4 lie over their neighbours), so what
-   overlap residue remains in an interior hides under the live upper card. */
-.s16-card {
-  transform-origin: top left;
-  border: 1.5px solid #d92b20;
-  border-radius: 14px;
-  background: #0b0506;
-  box-shadow: 0 0 26px rgba(200, 36, 24, 0.38), 0 0 70px rgba(140, 18, 12, 0.18);
-  overflow: hidden;
-}
-.s16-card img {
-  position: absolute;
-  left: 13px;
-  top: 13px;
-  width: calc(100% - 26px);
-  height: calc(100% - 26px);
-}
-/* stacking as the frame draws it: 2 lies over 1 and 3; 4 lies over 3 */
-.s16-c0 { z-index: 1; }
-.s16-c1 { z-index: 3; }
-.s16-c2 { z-index: 2; }
-.s16-c3 { z-index: 3; }
-.s16-c0 { left: 203px; top: 411px; width: 378px; height: 545px; transform: rotate(-3.4deg); }
-.s16-c1 { left: 635px; top: 418px; width: 378px; height: 545px; transform: rotate(2.9deg); }
-.s16-c2 { left: 959px; top: 389px; width: 378px; height: 545px; transform: rotate(-2.3deg); }
-.s16-c3 { left: 1376px; top: 409px; width: 378px; height: 545px; transform: rotate(4.6deg); }
+/* The cards are the client's own per-card exports now (tilt, border,
+   radius and glow all baked, alpha edges) — nothing is cut from a flat
+   frame anymore, so neighbour borders and corner artifacts are impossible
+   by construction. Boxes place each export so its measured card body lands
+   on the design coordinates; no CSS transform is needed at rest. */
+.s16-card { position: absolute; }
+.s16-c0 { left: 64px; top: 301px; width: 688px; height: 775px; z-index: 1; }
+.s16-c1 { left: 467px; top: 335px; width: 686px; height: 742px; z-index: 3; }
+.s16-c2 { left: 821px; top: 288px; width: 677px; height: 784px; z-index: 2; }
+.s16-c3 { left: 1193px; top: 325px; width: 700px; height: 756px; z-index: 3; }
 
-/* the mountain ridge and mist along the fold (Figma 19938-405 band) */
 /* the relics float ABOVE the mist — the band is ground, not weather */
 .s16-card { position: absolute; z-index: 1; }
 
@@ -131,10 +105,10 @@
   .s16-eyebrow::before { margin-right: 18px; }
   .s16-eyebrow::after { margin-left: 18px; }
   .s16-title { top: 205px; font-size: 36px; }
-  .s16-c0 { left: 42px; top: 290px; width: 310px; height: 447px; transform: rotate(-3.4deg); }
-  .s16-c1 { left: 396px; top: 310px; width: 310px; height: 447px; transform: rotate(2.9deg); }
-  .s16-c2 { left: 46px; top: 620px; width: 310px; height: 447px; transform: rotate(-2.3deg); }
-  .s16-c3 { left: 392px; top: 645px; width: 310px; height: 447px; transform: rotate(4.6deg); }
+  .s16-c0 { left: -72px; top: 200px; width: 565px; height: 636px; }
+  .s16-c1 { left: 258px; top: 242px; width: 563px; height: 609px; }
+  .s16-c2 { left: -68px; top: 537px; width: 555px; height: 643px; }
+  .s16-c3 { left: 242px; top: 576px; width: 574px; height: 620px; }
 }
 
 /* ---------- mobile 375×812 ---------- */
@@ -148,10 +122,10 @@
   .s16-title { top: 160px; font-size: 24px; padding: 0 20px; }
   /* the client's plates are 378x545 with everything baked — the phone grid
      keeps that aspect, 2x2, tilts intact */
-  .s16-c0 { left: 14px; top: 252px; width: 166px; height: 239px; transform: rotate(-3.4deg); }
-  .s16-c1 { left: 196px; top: 262px; width: 166px; height: 239px; transform: rotate(2.9deg); }
-  .s16-c2 { left: 16px; top: 506px; width: 166px; height: 239px; transform: rotate(-2.3deg); }
-  .s16-c3 { left: 194px; top: 518px; width: 166px; height: 239px; transform: rotate(4.6deg); }
+  .s16-c0 { left: -47px; top: 204px; width: 302px; height: 340px; }
+  .s16-c1 { left: 122px; top: 225px; width: 301px; height: 326px; }
+  .s16-c2 { left: -45px; top: 461px; width: 297px; height: 344px; }
+  .s16-c3 { left: 114px; top: 481px; width: 307px; height: 332px; }
 }
 
 /* The ground is the client's own exported plate (Figma "Section-11x" PNG),
