@@ -158,19 +158,48 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
     index = clamped;
     animating = true;
     journeyT0 = performance.now();
-    // the journey's length follows the FILM it plays; plateau-only moves are
-    // paced by distance instead, briskly (see the constants above)
+    // ---- density-aware pacing ----
+    // Pricing the WHOLE journey by its film content fixed the durations but
+    // not the rhythm: the ease still distributed speed across DISTANCE, and
+    // the film is not spread evenly across it. Crossing from the weapon to
+    // the case, density swings 42 → 105 → 62 frames per 1000px with empty
+    // folds between — at constant scroll speed the film blasted through the
+    // dense clip and froze across the folds (Andrey: "дергается плейбек").
+    // So the journey is integrated SEGMENTWISE: each slice of the path costs
+    // its frames at natural rate plus its empty pixels at the brisk rate,
+    // and the ease traverses that cost curve — the film plays at a steady
+    // rate wherever there is film, and the empty stretches hurry.
+    const N = 48;
+    const segPx = (to - from) / N;
+    const cum: number[] = [];
+    let total = 0;
+    for (let k = 0; k < N; k++) {
+      const a = from + k * segPx;
+      const f = filmFramesBetween(a, a + segPx);
+      total += f / FILM_FPS + Math.abs(segPx) * EMPTY_PER_PX;
+      cum.push(total);
+    }
     const frames = filmFramesBetween(from, to);
+    const natural = FILM_BASE + total;
     const dur =
       frames > 8
-        ? Math.min(FILM_MAX, Math.max(FILM_MIN, FILM_BASE + frames / FILM_FPS))
-        : Math.min(EMPTY_MAX, Math.max(EMPTY_MIN, FILM_BASE + Math.abs(to - from) * EMPTY_PER_PX));
+        ? Math.min(FILM_MAX, Math.max(FILM_MIN, natural))
+        : Math.min(EMPTY_MAX, Math.max(EMPTY_MIN, natural));
+    // distance fraction at cost fraction c (piecewise-linear inverse)
+    const atCost = (c: number): number => {
+      const target = c * total;
+      let lo = 0;
+      while (lo < N - 1 && cum[lo] < target) lo++;
+      const prev = lo === 0 ? 0 : cum[lo - 1];
+      const span = Math.max(1e-9, cum[lo] - prev);
+      return (lo + (target - prev) / span) / N;
+    };
     lenis.scrollTo(to, {
       duration: dur,
       force: true,
       lock: true,
       immediate: reduced,
-      easing: travelEase,
+      easing: (t: number) => atCost(travelEase(t)),
       onComplete: () => {
         animating = false;
         blockedUntil = performance.now() + SETTLE_MS;

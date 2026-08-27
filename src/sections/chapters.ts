@@ -75,7 +75,11 @@ export const s10: Section = {
       // FREEZES there through the whole read — the copy lands over a still
       // frame and the stop sits mid-plateau — and resumes only when the
       // visitor scrolls on. Nothing plays after the text arrives (client).
-      hold: { clip: 0.095, from: 0.24, to: 0.42 },
+      // the pause is the moment the glasses ARE in the case — lens just
+      // peeking past the lid, the VITURE x PHANTOM BLADE mark readable
+      // (Andrey: it stopped "a bit further, revealing a whole lens instead
+      // of the part with the logo"). Frame 5, both renders agree.
+      hold: { clip: 0.048, from: 0.24, to: 0.42 },
       rest: 0.36,
       ctx, el,
       beats: [

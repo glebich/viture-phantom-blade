@@ -8,7 +8,7 @@ import type { Section, SectionCtx } from "./lib/section";
 import { sections } from "./sections";
 import { header } from "./sections/header";
 import { mountPaginator } from "./lib/paginator";
-import { restY, stopYs } from "./lib/rests";
+import { restY, stopYs, filmFramesBetween } from "./lib/rests";
 import { mountScrollHint } from "./lib/scrollhint";
 import { mountIdleCue } from "./lib/idlecue";
 import { mountThread } from "./lib/thread";
@@ -64,6 +64,7 @@ if (import.meta.env.DEV) {
     gsap,
     ScrollTrigger,
     stopYs,
+    filmFrames: filmFramesBetween,
   };
 }
 
