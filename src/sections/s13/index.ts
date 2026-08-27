@@ -41,7 +41,7 @@ const MODES = [
 export const s13: Section = {
   id: "s13",
   html: `
-    <video class="s13-side" muted loop playsinline preload="none" data-src="/video/sidemode.mp4"></video>
+    <video class="s13-side" muted loop playsinline preload="none" data-src="/video/sidemode.mp4" data-m-src="/video/sidemode-m.mp4"></video>
     <div class="s13-side-veil"></div>
     <div class="stage">
       <div class="s13-screen">
@@ -300,7 +300,10 @@ export const s13: Section = {
     // until the chapter is within a viewport.
     const vids = [vSide, v3d, vAnchor, vUwide];
     const attach = (v: HTMLVideoElement) => {
-      const src = v.dataset.src;
+      // phones get the vertical re-render where one exists (the client's
+      // Side-Mode V_1) — the landscape clip centre-cropped to a ninth of
+      // its frame on a portrait screen
+      const src = (window.matchMedia("(max-width: 640px)").matches && v.dataset.mSrc) || v.dataset.src;
       if (!src || v.src) return;
       v.preload = "auto";
       v.src = src;
