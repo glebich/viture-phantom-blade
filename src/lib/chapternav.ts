@@ -269,12 +269,17 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
   let touchY = 0;
   let touchAcc = 0;
   let touching = false;
+  // ONE page per gesture: after a swipe has stepped, the rest of that same
+  // finger-stroke is spent — without this, every further 32px of the stroke
+  // stacked another page and two swipes flew to the end of the site
+  let steppedThisTouch = false;
   window.addEventListener(
     "touchstart",
     (e: TouchEvent) => {
       if (document.documentElement.classList.contains("menu-open")) return;
       touching = true;
       touchAcc = 0;
+      steppedThisTouch = false;
       touchY = e.touches[0]?.clientY ?? 0;
     },
     { passive: true, capture: true }
@@ -289,6 +294,7 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
       const y = e.touches[0]?.clientY ?? 0;
       touchAcc += touchY - y; // finger up = positive = forward
       touchY = y;
+      if (steppedThisTouch) return;
       // Touch is NEVER swallowed. The swallow exists for trackpads, whose
       // momentum tail keeps firing after the fingers lift; a finger on the
       // glass is unambiguous intent. A swipe DURING a journey retargets to
@@ -297,6 +303,7 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
       if (Math.abs(touchAcc) < TOUCH_TRIGGER) return;
       const dir = touchAcc > 0 ? 1 : -1;
       touchAcc = 0;
+      steppedThisTouch = true;
       step(dir);
     },
     { passive: false, capture: true }
