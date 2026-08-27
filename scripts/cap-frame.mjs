@@ -1,0 +1,14 @@
+import { chromium } from "playwright";
+import sharp from "sharp";
+const [node, name, W = 1920, H = 1080] = process.argv.slice(2);
+const b = await chromium.launch();
+const pg = await b.newPage({ viewport: { width: +W + 60, height: +H + 80 }, deviceScaleFactor: 2 });
+await pg.goto(`https://www.figma.com/proto/Whv6FPNemFhi5egktiTWFn/x?node-id=${node}&scaling=contain&hide-ui=1`, { waitUntil: "domcontentloaded", timeout: 45000 });
+await pg.waitForTimeout(8000);
+const box = await pg.locator("canvas").first().boundingBox();
+const s = Math.min(box.width / W, box.height / H);
+const ox = box.x + (box.width - W * s) / 2, oy = box.y + (box.height - H * s) / 2;
+const buf = await pg.screenshot({ clip: { x: ox, y: oy, width: W * s, height: H * s } });
+await sharp(buf).toFile(`harvest/full2x/${name}.png`);
+console.log(name, (await sharp(`harvest/full2x/${name}.png`).metadata()).width);
+await b.close();

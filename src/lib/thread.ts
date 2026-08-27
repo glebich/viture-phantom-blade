@@ -36,8 +36,8 @@ const ANCHORS: [string, [number, number][]][] = [
   ["s15", [[0.0, 0.12], [0.5, 0.2], [1.0, 0.3]]],
   // Section 16 — threads between the relic cards (traced x 271→627)
   ["s16", [[0.0, 0.3], [0.5, 0.32], [1.0, 0.42]]],
-  // Section 17 — the finale arc past the map scroll (traced x 1047→1322)
-  ["s17", [[0.0, 0.42], [0.45, 0.6], [1.0, 0.72]]],
+  // Section 17 carries NO thread in the client's redesign (Figma 19938-405):
+  // the finale ground is the ghost calligraphy and the mountain mist.
 ];
 
 /** how far past each edge the cord swings — the turnarounds stay off-screen,

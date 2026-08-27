@@ -30,7 +30,7 @@
   position: absolute;
   left: 194px;
   top: 601px;
-  width: 460px;
+  width: 390px;
   font-size: 20px;
   line-height: 1.5;
   color: #d9cfc6;
@@ -75,10 +75,10 @@
 
 .s17-map {
   position: absolute;
-  left: 1005px;
-  top: 200px;
-  width: 530px;
-  height: 700px;
+  left: 998px;
+  top: 202px;
+  width: 556px;
+  height: 714px;
   object-fit: contain;
 }
 .s17-foot {
@@ -161,4 +161,42 @@
   .s17-again-arrow { width: 9px; height: 9px; }
   .s17-again-label { font-size: 12.5px; }
   .s17-again-label::before, .s17-again-label::after { width: 44px; margin-right: 12px; margin-left: 12px; }
+}
+
+/* ---------- the redesigned ground (Figma 19938-405) ----------
+   Ghost calligraphy — the 影 and 零 of the game's own lockup — breathe
+   behind the map at low opacity, and the mountain ridge with its mist
+   closes the page. Both sit under every content layer. */
+.s17-glyph {
+  position: absolute;
+  opacity: 0.13;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(0.5px);
+}
+.s17-glyph--ying { left: 738px; top: 348px; width: 168px; }
+.s17-glyph--ling { left: 1128px; top: 262px; width: 178px; opacity: 0.17; }
+.s17-mountains {
+  position: absolute;
+  left: -12px;
+  bottom: -8px;
+  width: 1944px;
+  height: auto;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.92;
+}
+.s17-lockup, .s17-title, .s17-body, .s17-cta, .s17-maplabel, .s17-map, .s17-foot, .s17-again {
+  z-index: 1;
+}
+
+@media (max-width: 1024px) and (min-width: 641px) {
+  .s17-glyph--ying { left: 60px; top: 420px; width: 170px; }
+  .s17-glyph--ling { left: 520px; top: 380px; width: 155px; }
+  .s17-mountains { left: -8px; bottom: -6px; width: 760px; }
+}
+@media (max-width: 640px) {
+  .s17-glyph--ying { left: 18px; top: 300px; width: 110px; }
+  .s17-glyph--ling { left: 252px; top: 270px; width: 100px; }
+  .s17-mountains { left: -4px; bottom: -4px; width: 383px; }
 }
