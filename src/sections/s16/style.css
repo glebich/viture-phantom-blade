@@ -96,15 +96,20 @@
 .s16-c3 { left: 1376px; top: 409px; width: 378px; height: 545px; transform: rotate(4.6deg); }
 
 /* the mountain ridge and mist along the fold (Figma 19938-405 band) */
+#s16 .stage { z-index: 2; }
 .s16-mountains {
+  /* OUTSIDE the stage: the mist hugs the real viewport bottom on every
+     window shape — inside the design-scaled stage its top edge drew a hard
+     line mid-page on wide or tall windows (client screenshots, twice) */
   position: absolute;
-  left: -12px;
-  bottom: -6px;
-  width: 1944px;
+  left: 0;
+  bottom: 0;
+  width: 100%;
   height: auto;
+  max-height: 42vh;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.82;
+  opacity: 0.5;
 }
 /* the relics float ABOVE the mist — the band is ground, not weather */
 .s16-card { position: absolute; z-index: 1; }

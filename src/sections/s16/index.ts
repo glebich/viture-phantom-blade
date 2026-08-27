@@ -44,8 +44,8 @@ export const s16: Section = {
       ${CARDS.map(
         (c, i) => `<img class="s16-card s16-c${i}" src="/assets/ui/${c}.webp" alt="" />`
       ).join("")}
-      <img class="s16-mountains" src="/assets/ui/mountains.webp" alt="" aria-hidden="true" />
     </div>
+    <img class="s16-mountains" src="/assets/ui/mountains2.webp" alt="" aria-hidden="true" />
   `,
   init(el, ctx: SectionCtx) {
     const { gsap } = ctx;

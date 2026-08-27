@@ -34,7 +34,9 @@ const ANCHORS: [string, [number, number][]][] = [
   ["s14", [[0.0, 0.11], [0.5, 0.05], [1.0, 0.12]]],
   // Section 15 — climbs back across behind the OSD panel (traced x 208→696)
   ["s15", [[0.0, 0.12], [0.5, 0.2], [1.0, 0.3]]],
-  // Section 16 — threads between the relic cards (traced x 271→627)
+  // Section 16 — a shallow crossing behind the relic plates (anchors are
+  // [section-progress, x-lean]: they steer which SIDE the cord favours; the
+  // serpentine supplies the crossing itself)
   ["s16", [[0.0, 0.3], [0.5, 0.32], [1.0, 0.42]]],
   // Section 17 carries NO thread in the client's redesign (Figma 19938-405):
   // the finale ground is the ghost calligraphy and the mountain mist.
