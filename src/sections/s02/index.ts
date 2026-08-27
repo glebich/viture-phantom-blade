@@ -153,18 +153,34 @@ export const s02: Section = {
     }
     let measured = false;
     let slowLine = false;
-    const mT0 = performance.now();
     const MEASURE_N = 6;
-    const AVG_FRAME_BYTES = 30_000;
     store.onLoad.add(() => {
       if (measured) return;
       const got = store.loaded.filter(Boolean).length;
       if (got >= MEASURE_N) {
         measured = true;
-        const secs = (performance.now() - mT0) / 1000;
-        const rate = (got * AVG_FRAME_BYTES) / Math.max(0.1, secs);
-        reportMeasuredRate(rate);
-        if (rate < 250_000) {
+        // Measure the LINE, not this store's share of it. The old estimate
+        // (wall clock from init, 30KB assumed per frame) charged the frames
+        // for every millisecond the gameplay preload spent hogging the pipe,
+        // so a fine desktop line measured "slow" and the whole visit was
+        // served the 960 tier (client: "asset quality real bad"). Sum the
+        // REAL transfer bytes of everything fetched over the network — video
+        // included, that's still line capacity — across the real window.
+        // Cache-only visits leave no transfers and report nothing (fast).
+        let rate = 0;
+        try {
+          const res = performance
+            .getEntriesByType("resource")
+            .filter((r) => (r as PerformanceResourceTiming).transferSize > 0) as PerformanceResourceTiming[];
+          if (res.length) {
+            const first = Math.min(...res.map((r) => r.startTime));
+            const last = Math.max(...res.map((r) => r.responseEnd));
+            const bytes = res.reduce((s, r) => s + r.transferSize, 0);
+            rate = bytes / Math.max(0.1, (last - first) / 1000);
+          }
+        } catch {}
+        if (rate > 0) reportMeasuredRate(rate);
+        if (rate > 0 && rate < 250_000) {
           slowLine = true;
           // slow line: the frames own the pipe; the loop streams when played
           videoGated = false;

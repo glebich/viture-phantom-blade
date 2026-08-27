@@ -45,8 +45,11 @@ export function isFrugal(): boolean {
  * opening frames, and once it reads clearly slow every frame not yet
  * requested drops a tier (URLs resolve at fetch time — see frameseq.ts). */
 let measuredSlow = false;
+let measuredRate = 0;
 export function reportMeasuredRate(bytesPerSec: number): void {
-  if (bytesPerSec > 0 && bytesPerSec < 250_000) measuredSlow = true;
+  if (bytesPerSec <= 0) return;
+  measuredRate = bytesPerSec;
+  if (bytesPerSec < 250_000) measuredSlow = true;
 }
 
 export function isPhone(): boolean {
@@ -55,10 +58,23 @@ export function isPhone(): boolean {
 
 /** 1920 or 960 — the frame tier this visit should download */
 export function frameTier(): 1920 | 960 {
-  if (isFrugal() || measuredSlow) return 960;
   const small = window.matchMedia("(max-width: 1024px)").matches;
-  // high-DPR phones upscale the 960 tier visibly, so they keep the big one
-  return small && (window.devicePixelRatio || 1) < 2.5 ? 960 : 1920;
+  if (small) {
+    if (isFrugal() || measuredSlow) return 960;
+    // high-DPR phones upscale the 960 tier visibly, so they keep the big one
+    return (window.devicePixelRatio || 1) < 2.5 ? 960 : 1920;
+  }
+  // A big screen upscales the 960 tier past 3x — the client caught a desktop
+  // visit served it and read the film as broken ("asset quality real bad").
+  // So large viewports drop the tier only on an EXPLICIT ask (saveData, a
+  // 2g/3g link) or a measured rate that is truly modem-class — never on
+  // Chrome's downlink guess (it underreports fine Wi-Fi below 3 Mbit) and
+  // never on the borderline threshold that phones use.
+  const c = info();
+  if (c.saveData) return 960;
+  if (c.effectiveType && /(^|-)(2g|slow-2g|3g)$/.test(c.effectiveType)) return 960;
+  if (measuredRate > 0 && measuredRate < 150_000) return 960;
+  return 1920;
 }
 
 /** the portrait sequences' own tiers */
