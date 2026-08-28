@@ -12,8 +12,10 @@ import type { FrameStore } from "../../lib/frameseq";
  * text and content scroll through"), scrubbed by MOUSE position: right =
  * forward, left = backwards, under the design's dark tint. */
 
+// room70 = the client's re-cut room plate (Room_upd.mp4, round 26); new dir
+// name because /assets/ ships immutable for a year
 function roomUrl(i: number): string {
-  return `/assets/room60-${frameTier()}/f_${String(i).padStart(3, "0")}.webp`;
+  return `/assets/room70-${frameTier()}/f_${String(i).padStart(3, "0")}.webp`;
 }
 const ROOM_FRAMES = 121;
 

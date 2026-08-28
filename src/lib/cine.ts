@@ -63,13 +63,34 @@ const PHONE_COUNTS: Record<string, number> = {
   clip660: 61,
 };
 
+/* The OPENING clips are the loader's promise — it holds the screen until
+ * both are fully down — so they are fetched at the tier the screen deserves
+ * and NEVER drop mid-download. A Safari first visit used to measure "slow"
+ * while the gameplay loop preloaded in parallel, and the tier fell mid-
+ * intro: the film arrived mixed-resolution and only a refresh (cache-warm,
+ * so no slow verdict) served it sharp (client: "first time loading in
+ * safari assets always bad quality and you need to refresh"). Later clips
+ * keep the fetch-time drop — they stream behind the scroll, where staying
+ * ahead of the scrub matters more than resolution ever could. */
+const OPENING = new Set(["intro60", "clip260"]);
+const lockedTier = new Map<string, number>();
+function lockTier(clip: string, tier: number): number {
+  const t = lockedTier.get(clip);
+  if (t !== undefined) return t;
+  lockedTier.set(clip, tier);
+  return tier;
+}
+
 export function tierUrl(clip: string): (i: number) => string {
-  if (isPhone() && PHONE_COUNTS[clip] !== undefined) {
-    const size = phoneFrameTier();
-    return (i) => `/assets/${clip}m-${size}/f_${String(i).padStart(3, "0")}.webp`;
-  }
-  const size = frameTier();
-  return (i) => `/assets/${clip}-${size}/f_${String(i).padStart(3, "0")}.webp`;
+  const phone = isPhone() && PHONE_COUNTS[clip] !== undefined;
+  const cur = phone ? phoneFrameTier : frameTier;
+  // locking at first FETCH was too late for the second clip — it starts
+  // downloading after the intro, by which time a slow verdict may already
+  // be in — so mountCine calls this once at mount to seed the lock
+  if (OPENING.has(clip)) lockTier(clip, cur());
+  const size = OPENING.has(clip) ? () => lockedTier.get(clip)! : cur;
+  return (i) =>
+    `/assets/${clip}${phone ? "m" : ""}-${size()}/f_${String(i).padStart(3, "0")}.webp`;
 }
 
 export function effectiveCount(clip: string, desktopCount: number): number {
@@ -82,6 +103,7 @@ export function mountCine(opts: CineOptions) {
 
   const rail = getRail(ctx);
   const count = effectiveCount(opts.clip, opts.count);
+  tierUrl(opts.clip); // seed the opening-tier lock before any measurement
   rail.register(opts.clip, count, el);
 
   const videoSpan = opts.videoSpan ?? 1;
