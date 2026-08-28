@@ -6,7 +6,8 @@ import type { Section, SectionCtx } from "../../lib/section";
  * commerce cluster stays hidden during the intro cinematic and fades in
  * when the hero rest is reached (s02's pin end). Mobile gets the dock. */
 
-const PREORDER_URL = "https://www.viture.com/";
+const PREORDER_URL =
+  "https://www.viture.com/product/viture-x-phantom-blade-zero-phantom-beast-xr-glasses?color=Jet+Black&size=Regular+%28IPD+64.0%C2%B16.0+mm%29";
 
 export const header: Section = {
   id: "header",

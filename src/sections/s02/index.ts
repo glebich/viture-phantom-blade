@@ -8,7 +8,8 @@ import { videoTier } from "../../lib/net";
  * The intro clip plays on the shared rail, forward with scroll and in
  * reverse when scrolling back; its final frame is the hero background. */
 
-const PREORDER_URL = "https://www.viture.com/";
+const PREORDER_URL =
+  "https://www.viture.com/product/viture-x-phantom-blade-zero-phantom-beast-xr-glasses?color=Jet+Black&size=Regular+%28IPD+64.0%C2%B16.0+mm%29";
 
 export const s02: Section = {
   id: "s02",
