@@ -96,6 +96,11 @@ const AREA =
 // remainder — the film freezes in the same instant the page does, and
 // nothing moves again until the visitor scrolls.
 const TRAVEL_END = 0.92;
+// Fraction of a journey after which a same-direction wheel push may retarget
+// to the following page (before it, pushes are spent — see the wheel
+// handler). At 0.65 the front-loaded ease has ~90% of the distance covered:
+// the page being arrived at is visibly on screen.
+const RETARGET_TAIL = 0.65;
 
 /** distance covered by fraction t of the journey */
 const travelEase = (raw: number): number => {
@@ -126,6 +131,8 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
   let prevAbs = Infinity; // |delta| of the previous wheel event
   let lastEventT = 0;
   let journeyT0 = 0; // when the in-flight journey started
+  let journeyDir = 0; // sign of the in-flight journey
+  let journeyDur = 1; // its duration, seconds
 
   const measure = () => {
     stops = stopYs();
@@ -158,6 +165,7 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
     index = clamped;
     animating = true;
     journeyT0 = performance.now();
+    journeyDir = Math.sign(to - from);
     // ---- density-aware pacing ----
     // Pricing the WHOLE journey by its film content fixed the durations but
     // not the rhythm: the ease still distributed speed across DISTANCE, and
@@ -185,6 +193,7 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
       frames > 8
         ? Math.min(FILM_MAX, Math.max(FILM_MIN, natural))
         : Math.min(EMPTY_MAX, Math.max(EMPTY_MIN, natural));
+    journeyDur = dur;
     // distance fraction at cost fraction c (piecewise-linear inverse)
     const atCost = (c: number): number => {
       const target = c * total;
@@ -286,6 +295,20 @@ export function mountChapterNav(lenis: Lenis, gsap: typeof Gsap): void {
       const dir = wheelAcc > 0 ? 1 : -1;
       wheelAcc = 0;
       prevAbs = Infinity; // this turn is spent; the next needs its own rise
+      // Mid-journey, a push the SAME way is spent while the film is still in
+      // transit. The journeys carry weight now, and honouring every push made
+      // each flick — and every notch of a clicky wheel, since notches arrive
+      // gap-separated — queue another page: the visitor sailed through stops
+      // without ever resting on them (client). Once the arrival is
+      // substantially on screen (the tail of the ease has ~90% of the ground
+      // covered), a fresh push means "move on" and is honoured at once — so
+      // nothing reads as stuck at the arrival, which is what removing the
+      // old blanket block was for. A push the OPPOSITE way is always a turn
+      // back, honoured immediately.
+      if (animating && dir === journeyDir) {
+        const jt = (now - journeyT0) / (journeyDur * 1000);
+        if (jt < RETARGET_TAIL) return;
+      }
       step(dir);
     },
     { passive: false, capture: true }
